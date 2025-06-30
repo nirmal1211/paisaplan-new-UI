@@ -1,0 +1,35 @@
+// Font families
+$font-primary: 'Roboto', Arial, sans-serif;
+$font-secondary: 'Poppins', Arial, sans-serif;
+
+// Font weights
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// Font sizes
+$font-xs: 0.75rem;
+$font-sm: 0.875rem;
+$font-base: 1rem;
+$font-lg: 1.125rem;
+$font-xl: 1.25rem;
+$font-2xl: 1.5rem;
+$font-3xl: 1.875rem;
+$font-4xl: 2.25rem;
+
+// Utility classes
+.font-primary { font-family: $font-primary; }
+.font-secondary { font-family: $font-secondary; }
+.font-regular { font-weight: $font-weight-regular; }
+.font-medium { font-weight: $font-weight-medium; }
+.font-semibold { font-weight: $font-weight-semibold; }
+.font-bold { font-weight: $font-weight-bold; }
+.font-xs { font-size: $font-xs; }
+.font-sm { font-size: $font-sm; }
+.font-base { font-size: $font-base; }
+.font-lg { font-size: $font-lg; }
+.font-xl { font-size: $font-xl; }
+.font-2xl { font-size: $font-2xl; }
+.font-3xl { font-size: $font-3xl; }
+.font-4xl { font-size: $font-4xl; }

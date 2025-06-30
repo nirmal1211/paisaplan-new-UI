@@ -1,0 +1,70 @@
+/*
+  Maroon-based color palette for light and dark mode, using #b92250 as the base color.
+  All color tokens are defined as CSS variables for easy theme switching and component usage.
+*/
+:root {
+  --color-primary: #b92250; /* base maroon */
+  --color-primary-foreground: #fff;
+  --color-secondary: #ffe0ec; /* maroon-pink */
+  --color-secondary-foreground: #b92250;
+  --color-accent: #a03a50; /* maroon-light */
+  --color-accent-foreground: #fff;
+  --color-success: #22c55e;
+  --color-warning: #f59e42;
+  --color-danger: #ef4444;
+  --color-danger-foreground: #fff;
+  --color-background: #fff6fa; /* very light maroon-pink */
+  --color-foreground: #3d2c22; /* deep brown for text */
+  --color-card: #fff;
+  --color-card-foreground: #3d2c22;
+  --color-border: #a03a50; /* maroon-light */
+  --color-muted: #b8a89a;
+  --color-navbar: #b92250;
+  --color-navbar-text: #ffe0ec;
+  --color-navbar-active-bg: #a03a50;
+  --color-navbar-divider: #a03a50;
+  --color-dropdown-bg: #fff;
+  --color-dropdown-text: #b92250;
+  --color-dropdown-hover-bg: #a03a50;
+  --color-dropdown-hover-text: #fff;
+  --color-user-dropdown-bg: #fff6fa;
+  --color-user-dropdown-text: #b92250;
+  --color-navbar-submenu-bg: #ffe0ec;
+  --color-navbar-submenu-text: #b92250;
+  --color-navbar-submenu-hover-bg: #b92250;
+  --color-navbar-submenu-hover-text: #fff;
+}
+
+[data-theme="dark"],
+.dark {
+  --color-primary: #ffe0ec; /* maroon-pink */
+  --color-primary-foreground: #b92250;
+  --color-secondary: #3d2c22; /* deep brown */
+  --color-secondary-foreground: #ffe0ec;
+  --color-accent: #a03a50;
+  --color-accent-foreground: #ffe0ec;
+  --color-success: #22d3ee;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
+  --color-danger-foreground: #b92250;
+  --color-background: #23201c; /* dark maroon-brown */
+  --color-foreground: #ffe0ec;
+  --color-card: #2d2722;
+  --color-card-foreground: #ffe0ec;
+  --color-border: #a03a50;
+  --color-muted: #b8a89a;
+  --color-navbar: #1e0d13;
+  --color-navbar-text: #ffe0ec;
+  --color-navbar-active-bg: #b92250;
+  --color-navbar-divider: #a03a50;
+  --color-dropdown-bg: #2d2722;
+  --color-dropdown-text: #ffe0ec;
+  --color-dropdown-hover-bg: #b92250;
+  --color-dropdown-hover-text: #fff;
+  --color-user-dropdown-bg: #1e0d13;
+  --color-user-dropdown-text: #ffe0ec;
+  --color-navbar-submenu-bg: #2d2722;
+  --color-navbar-submenu-text: #ffe0ec;
+  --color-navbar-submenu-hover-bg: #b92250;
+  --color-navbar-submenu-hover-text: #fff;
+}
