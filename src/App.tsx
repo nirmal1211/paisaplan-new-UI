@@ -93,7 +93,16 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-             
+              <Route
+                path="/my-policy"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <MyPoliciesPage />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </div>
         </Router>
