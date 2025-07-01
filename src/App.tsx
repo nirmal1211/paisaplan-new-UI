@@ -40,28 +40,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/policies">
-                <Route
-                  index
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <PoliciesPage />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path=":type"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <PoliciesPage />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
-              </Route>
+             
 
               <Route
                 path="/claims"
