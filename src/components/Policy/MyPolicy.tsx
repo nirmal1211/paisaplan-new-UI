@@ -173,28 +173,7 @@ const MyPolicy: React.FC<MyPolicyProps> = ({
       </div>
 
       {/* Priority Sections */}
-      <div className="space-y-8 mb-8">
-        {/* Upcoming Renewals */}
-        <UpcomingRenewals />
-        
-        {/* Document Upload Center */}
-        <DocumentUploadCenter />
-        
-        {/* Advertisement Banner */}
-        <div className="rounded-xl p-6 text-center"
-             style={{ backgroundColor: 'var(--color-secondary)' }}>
-          <h3 className="text-lg font-bold font-poppins mb-2" style={{ color: 'var(--color-primary)' }}>
-            Special Offer: Get 20% Off on New Policies!
-          </h3>
-          <p className="font-roboto mb-4" style={{ color: 'var(--color-muted)' }}>
-            Limited time offer on all insurance types. Terms and conditions apply.
-          </p>
-          <button className="px-6 py-2 rounded-lg font-semibold font-roboto text-white hover:opacity-90 transition-opacity"
-                  style={{ backgroundColor: 'var(--color-primary)' }}>
-            Learn More
-          </button>
-        </div>
-      </div>
+      
 
       {/* Top Section - 3 Column Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8" style={{ minHeight: '300px' }}>
