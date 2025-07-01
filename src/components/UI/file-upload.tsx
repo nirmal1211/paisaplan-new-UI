@@ -65,11 +65,15 @@ const FileUpload: React.FC<FileUploadProps> = ({
   return (
     <div className="w-full">
       <div
-        className={`border-2 border-dashed rounded-xl p-6 text-center transition-all duration-200 ${
+        className={`border-2 border-dashed rounded-xl p-4 text-center transition-all duration-200 ${
           dragActive 
-            ? 'border-primary-500 bg-primary-50' 
-            : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50'
+            ? 'border-opacity-100' 
+            : 'hover:border-opacity-80'
         }`}
+        style={{
+          borderColor: dragActive ? 'var(--color-primary)' : 'var(--color-border)',
+          backgroundColor: dragActive ? 'var(--color-secondary)' : 'transparent'
+        }}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
@@ -85,25 +89,26 @@ const FileUpload: React.FC<FileUploadProps> = ({
         />
         
         <div className="flex flex-col items-center">
-          <div className="bg-primary-100 p-3 rounded-full mb-4">
-            <Upload className="h-6 w-6 text-primary-600" />
+          <div className="p-3 rounded-full mb-3" style={{ backgroundColor: 'var(--color-secondary)' }}>
+            <Upload className="h-5 w-5" style={{ color: 'var(--color-primary)' }} />
           </div>
           
-          <h3 className="text-lg font-semibold text-gray-900 font-poppins mb-2">
+          <h3 className="text-base font-semibold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
             Upload Policy Documents
           </h3>
           
-          <p className="text-gray-600 font-roboto text-sm mb-4">
+          <p className="font-roboto text-sm mb-3" style={{ color: 'var(--color-muted)' }}>
             Drag and drop your files here, or{' '}
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="text-primary-600 hover:text-primary-700 font-medium underline"
+              className="font-medium underline hover:opacity-80"
+              style={{ color: 'var(--color-primary)' }}
             >
               browse
             </button>
           </p>
           
-          <div className="text-xs text-gray-500 font-roboto">
+          <div className="text-xs font-roboto" style={{ color: 'var(--color-muted)' }}>
             <p>Supported formats: {acceptedTypes.join(', ')}</p>
             <p>Maximum file size: {maxSize}MB</p>
           </div>
@@ -112,24 +117,25 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
       {/* Uploaded files list */}
       {uploadedFiles.length > 0 && (
-        <div className="mt-4 space-y-2">
-          <h4 className="text-sm font-semibold text-gray-800 font-roboto">Uploaded Files:</h4>
+        <div className="mt-3 space-y-2">
+          <h4 className="text-sm font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>Uploaded Files:</h4>
           {uploadedFiles.map((file, index) => (
-            <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+            <div key={index} className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
               <div className="flex items-center space-x-3">
                 <div className="bg-green-100 p-2 rounded-full">
                   <File className="h-4 w-4 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900 font-roboto">{file.name}</p>
-                  <p className="text-xs text-gray-500 font-roboto">{formatFileSize(file.size)}</p>
+                  <p className="text-sm font-medium font-roboto" style={{ color: 'var(--color-foreground)' }}>{file.name}</p>
+                  <p className="text-xs font-roboto" style={{ color: 'var(--color-muted)' }}>{formatFileSize(file.size)}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="h-4 w-4 text-green-500" />
                 <button
                   onClick={() => removeFile(index)}
-                  className="text-gray-400 hover:text-red-500 transition-colors"
+                  className="hover:text-red-500 transition-colors"
+                  style={{ color: 'var(--color-muted)' }}
                 >
                   <X className="h-4 w-4" />
                 </button>
