@@ -40,7 +40,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-             
                 <Route
                   path=":type"
                   element={
