@@ -1,17 +1,21 @@
 import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Calendar, Shield, FileText, ChevronDown, ChevronUp, Search, X } from 'lucide-react';
 import { mockPolicies, mockFAQs, insuranceSlides } from '../../data/mockData';
 import { Policy, FAQ } from '../../types/policy';
+import { InsurancePolicy, NavigationState, isValidPolicyType, isValidPolicyId, isCompletePolicy } from '../../types/insurance';
+import { premiumCalculator } from '../../utils/premiumCalculator';
 import InsuranceCarousel from '../../components/UI/carousel-insurance';
 import FileUpload from '../../components/UI/file-upload';
 
 const MyPoliciesPage: React.FC = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'policies' | 'faqs'>('policies');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
+  const [isNavigating, setIsNavigating] = useState<boolean>(false);
 
   // Get the policy with the nearest expiry for renewal card
   const nearestExpiryPolicy = useMemo(() => {
@@ -35,6 +39,247 @@ const MyPoliciesPage: React.FC = () => {
   }, [statusFilter, typeFilter, searchQuery]);
 
   const policyTypes = ['Health', 'Motor', 'Two-wheeler', 'Life', 'Travel', 'Home', 'Fire', 'Marine', 'Cyber', 'Professional'];
+
+  /**
+   * Handles navigation to vehicle insurance details page with comprehensive data validation
+   * and premium calculator integration
+   */
+  const handleViewMoreClick = async (
+    policyId: string,
+    policyType: 'two-wheeler' | 'motor',
+    policyDetails: InsurancePolicy
+  ): Promise<void> => {
+    try {
+      setIsNavigating(true);
+
+      // 1. Validate input parameters
+      if (!isValidPolicyId(policyId)) {
+        throw new Error('Invalid policy ID format');
+      }
+
+      if (!isValidPolicyType(policyType)) {
+        throw new Error('Invalid policy type. Must be "two-wheeler" or "motor"');
+      }
+
+      if (!isCompletePolicy(policyDetails)) {
+        throw new Error('Incomplete policy data. Missing required fields');
+      }
+
+      // 2. Validate policy data completeness
+      const requiredFields = [
+        'policyHolder.name',
+        'policyHolder.email',
+        'vehicle.make',
+        'vehicle.model',
+        'vehicle.registrationNumber',
+        'coverage.ownDamage.sumInsured',
+        'premiumBreakdown.totalPremium'
+      ];
+
+      for (const field of requiredFields) {
+        const value = field.split('.').reduce((obj, key) => obj?.[key], policyDetails);
+        if (!value) {
+          throw new Error(`Missing required field: ${field}`);
+        }
+      }
+
+      // 3. Prepare premium calculator parameters
+      const calculatorParams = {
+        vehicleValue: policyDetails.vehicle.vehicleValue,
+        vehicleType: policyDetails.vehicle.vehicleType,
+        fuelType: policyDetails.vehicle.fuelType,
+        cubicCapacity: policyDetails.vehicle.cubicCapacity,
+        registrationYear: new Date(policyDetails.vehicle.registrationDate).getFullYear(),
+        city: policyDetails.policyHolder.address.city,
+        previousInsurer: policyDetails.vehicle.previousInsurer,
+        ncbPercentage: policyDetails.vehicle.ncbPercentage,
+        selectedAddOns: policyDetails.addOns
+          .filter(addon => addon.isSelected)
+          .map(addon => addon.id),
+        policyDuration: policyDetails.policyTerm.duration,
+        claimsHistory: policyDetails.claimsHistory
+      };
+
+      // 4. Validate calculator parameters
+      if (calculatorParams.vehicleValue <= 0) {
+        throw new Error('Invalid vehicle value');
+      }
+
+      if (calculatorParams.registrationYear < 1990 || calculatorParams.registrationYear > new Date().getFullYear()) {
+        throw new Error('Invalid vehicle registration year');
+      }
+
+      // 5. Test premium calculation to ensure data integrity
+      try {
+        const testCalculation = premiumCalculator.calculatePremium(calculatorParams);
+        console.log('Premium calculation test successful:', testCalculation);
+      } catch (calcError) {
+        console.error('Premium calculation failed:', calcError);
+        throw new Error('Unable to calculate premium with current policy data');
+      }
+
+      // 6. Prepare navigation state
+      const navigationState: NavigationState = {
+        policy: policyDetails,
+        calculatorParams,
+        returnPath: '/my-policy'
+      };
+
+      // 7. Validate navigation state
+      if (!navigationState.policy || !navigationState.calculatorParams) {
+        throw new Error('Failed to prepare navigation data');
+      }
+
+      // 8. Navigate to vehicle insurance details page
+      const targetRoute = `/vehicle-insurance/${policyId}`;
+      
+      console.log('Navigating to:', targetRoute);
+      console.log('Navigation state:', navigationState);
+
+      navigate(targetRoute, {
+        state: navigationState,
+        replace: false
+      });
+
+      // 9. Log successful navigation for analytics
+      console.log(`Successfully navigated to policy details: ${policyId}`);
+
+    } catch (error) {
+      console.error('Navigation error:', error);
+      
+      // Handle different types of errors
+      if (error instanceof Error) {
+        switch (error.message) {
+          case 'Invalid policy ID format':
+            alert('Invalid policy ID. Please try again.');
+            break;
+          case 'Invalid policy type. Must be "two-wheeler" or "motor"':
+            alert('This policy type is not supported for detailed view.');
+            break;
+          case 'Incomplete policy data. Missing required fields':
+            alert('Policy data is incomplete. Please contact support.');
+            break;
+          default:
+            alert(`Unable to view policy details: ${error.message}`);
+        }
+      } else {
+        alert('An unexpected error occurred. Please try again.');
+      }
+    } finally {
+      setIsNavigating(false);
+    }
+  };
+
+  /**
+   * Mock function to create sample insurance policy data
+   * In a real application, this would fetch from an API
+   */
+  const createMockInsurancePolicy = (policyId: string, type: 'two-wheeler' | 'motor'): InsurancePolicy => {
+    return {
+      id: policyId,
+      policyNumber: `${type.toUpperCase()}-2024-${policyId}`,
+      policyType: type,
+      status: 'active',
+      provider: 'Sample Insurance Co.',
+      policyHolder: {
+        id: 'holder-1',
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        phone: '+91-9876543210',
+        dateOfBirth: '1985-06-15',
+        address: {
+          street: '123 Main Street',
+          city: 'Mumbai',
+          state: 'Maharashtra',
+          pincode: '400001'
+        },
+        panNumber: 'ABCDE1234F',
+        aadharNumber: '1234-5678-9012',
+        drivingLicenseNumber: 'MH01-20230001234',
+        licenseExpiryDate: '2028-06-15'
+      },
+      vehicle: {
+        make: type === 'two-wheeler' ? 'Honda' : 'Maruti Suzuki',
+        model: type === 'two-wheeler' ? 'Activa 6G' : 'Swift',
+        year: 2022,
+        registrationNumber: type === 'two-wheeler' ? 'MH01AB1234' : 'MH01CD5678',
+        engineNumber: 'ENG123456789',
+        chassisNumber: 'CHS987654321',
+        fuelType: type === 'two-wheeler' ? 'petrol' : 'petrol',
+        vehicleType: type === 'two-wheeler' ? 'two-wheeler' : 'four-wheeler',
+        cubicCapacity: type === 'two-wheeler' ? 109 : 1197,
+        seatingCapacity: type === 'two-wheeler' ? 2 : 5,
+        vehicleValue: type === 'two-wheeler' ? 75000 : 650000,
+        registrationDate: '2022-03-15',
+        previousInsurer: 'Previous Insurance Co.',
+        ncbPercentage: 20
+      },
+      coverage: {
+        ownDamage: {
+          sumInsured: type === 'two-wheeler' ? 75000 : 650000,
+          deductible: type === 'two-wheeler' ? 1000 : 5000,
+          coverage: ['Accident', 'Theft', 'Fire', 'Natural Calamities']
+        },
+        thirdPartyLiability: {
+          bodilyInjury: 1500000,
+          propertyDamage: 75000
+        },
+        personalAccident: {
+          ownerDriver: 1500000,
+          passengers: type === 'two-wheeler' ? 100000 : 200000
+        }
+      },
+      addOns: [
+        {
+          id: 'zero-dep',
+          name: 'Zero Depreciation',
+          description: 'No depreciation on claim settlement',
+          premium: type === 'two-wheeler' ? 800 : 3500,
+          isSelected: true,
+          isAvailable: true
+        },
+        {
+          id: 'roadside-assistance',
+          name: 'Roadside Assistance',
+          description: '24x7 roadside assistance',
+          premium: 500,
+          isSelected: true,
+          isAvailable: true
+        }
+      ],
+      premiumBreakdown: {
+        basePremium: type === 'two-wheeler' ? 2500 : 12000,
+        addOnPremiums: type === 'two-wheeler' ? 1300 : 4000,
+        discounts: {
+          ncb: type === 'two-wheeler' ? 500 : 2400,
+          loyalty: 0,
+          multiPolicy: 0,
+          others: 0
+        },
+        taxes: {
+          gst: type === 'two-wheeler' ? 612 : 2448,
+          serviceTax: 0
+        },
+        totalPremium: type === 'two-wheeler' ? 3912 : 16048,
+        payableAmount: type === 'two-wheeler' ? 3912 : 16048
+      },
+      policyTerm: {
+        startDate: '2024-01-15',
+        endDate: '2025-01-14',
+        duration: 12,
+        renewalDate: '2025-01-14',
+        gracePeriod: 30
+      },
+      claimsHistory: [],
+      createdAt: '2024-01-15T10:00:00Z',
+      updatedAt: '2024-01-15T10:00:00Z',
+      documents: {
+        policyDocument: '/documents/policy.pdf',
+        rcCopy: '/documents/rc.pdf',
+        drivingLicense: '/documents/license.pdf'
+      }
+    };
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -299,12 +544,28 @@ const MyPoliciesPage: React.FC = () => {
 
                   {/* Actions */}
                   <div className="flex space-x-2 pt-3 border-t" style={{ borderColor: 'var(--color-border)' }}>
-                    <button 
-                      className="flex-1 font-medium py-2 px-3 rounded-lg transition-colors font-roboto text-white hover:opacity-90"
-                      style={{ backgroundColor: 'var(--color-primary)' }}
-                    >
-                      View Details
-                    </button>
+                    {(policy.type === 'Motor' || policy.type === 'Two-wheeler') ? (
+                      <button 
+                        onClick={() => {
+                          const policyType = policy.type === 'Two-wheeler' ? 'two-wheeler' : 'motor';
+                          const mockPolicy = createMockInsurancePolicy(policy.id, policyType);
+                          handleViewMoreClick(policy.id, policyType, mockPolicy);
+                        }}
+                        disabled={isNavigating}
+                        className="flex-1 font-medium py-2 px-3 rounded-lg transition-colors font-roboto text-white hover:opacity-90 disabled:opacity-50"
+                        style={{ backgroundColor: 'var(--color-primary)' }}
+                      >
+                        {isNavigating ? 'Loading...' : 'View Details'}
+                      </button>
+                    ) : (
+                      <Link
+                        to={`/my-policy/${policy.id}`}
+                        className="flex-1 font-medium py-2 px-3 rounded-lg transition-colors font-roboto text-white hover:opacity-90 text-center"
+                        style={{ backgroundColor: 'var(--color-primary)' }}
+                      >
+                        View Details
+                      </Link>
+                    )}
                     <button 
                       className="flex items-center justify-center p-2 rounded-lg transition-colors"
                       style={{ 

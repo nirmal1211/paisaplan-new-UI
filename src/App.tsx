@@ -7,6 +7,7 @@ import DashboardPage from "./pages/Dashboard/DashboardPage";
 import PoliciesPage from "./pages/Policies/PoliciesPage";
 import MyPoliciesPage from "./pages/Policies/MyPoliciesPage";
 import PolicyDetailsPage from "./pages/Policies/PolicyDetailsPage";
+import VehicleInsuranceDetailsPage from "./pages/VehicleInsurance/VehicleInsuranceDetailsPage";
 import ClaimsPage from "./pages/Claims/ClaimsPage";
 import EndorsementsPage from "./pages/Endorsements/EndorsementsPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
@@ -112,6 +113,16 @@ function App() {
                     <ProtectedRoute>
                       <Layout>
                         <PolicyDetailsPage />
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/vehicle-insurance/:id"
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <VehicleInsuranceDetailsPage />
                       </Layout>
                     </ProtectedRoute>
                   }
