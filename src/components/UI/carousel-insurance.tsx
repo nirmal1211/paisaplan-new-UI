@@ -45,7 +45,7 @@ const InsuranceCarousel: React.FC<InsuranceCarouselProps> = ({
     <div className="relative rounded-xl shadow-lg overflow-hidden h-full" style={{ backgroundColor: 'var(--color-card)' }}>
       {/* Main slide content */}
       <div className="relative h-full">
-        <div className="h-32 overflow-hidden">
+        <div className="h-20 overflow-hidden">
           <img 
             src={slide.image} 
             alt={slide.title}
