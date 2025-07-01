@@ -23,7 +23,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabChange })
       backgroundColor: 'var(--color-background)', 
       borderColor: 'var(--color-border)' 
     }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:p-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex space-x-1 overflow-x-auto scrollbar-hide p-4">
           {tabs.map((tab) => {
             const Icon = tab.icon;
