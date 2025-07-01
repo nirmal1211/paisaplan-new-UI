@@ -118,29 +118,9 @@ const PolicyHeader: React.FC<PolicyHeaderProps> = ({
                 <Download className="h-5 w-5" />
               </button>
               
-              <button
-                onClick={onShare}
-                className="p-2 rounded-lg transition-all duration-200 hover:scale-105"
-                style={{ 
-                  backgroundColor: 'var(--color-secondary)',
-                  color: 'var(--color-primary)'
-                }}
-                title="Share Policy"
-              >
-                <Share2 className="h-5 w-5" />
-              </button>
+             
               
-              <button
-                onClick={onPrint}
-                className="p-2 rounded-lg transition-all duration-200 hover:scale-105"
-                style={{ 
-                  backgroundColor: 'var(--color-secondary)',
-                  color: 'var(--color-primary)'
-                }}
-                title="Print Policy"
-              >
-                <Printer className="h-5 w-5" />
-              </button>
+             
             </div>
           </div>
         </div>
