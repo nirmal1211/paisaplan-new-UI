@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import AuthProvider from "./contexts/AuthContext";
 import LoginPage from "./pages/Auth/LoginPage";
 import DashboardPage from "./pages/Dashboard/DashboardPage";
@@ -15,110 +16,112 @@ import { ThemeProvider } from "./theme/ThemeProvider";
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <Router>
-          <div className="min-h-screen bg-gray-50">
-            <Routes>
-              <Route path="/login" element={<LoginPage />} />
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <DashboardPage />
-                    </Layout>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <DashboardPage />
-                    </Layout>
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/policies">
+    <HelmetProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <Router>
+            <div className="min-h-screen bg-gray-50">
+              <Routes>
+                <Route path="/login" element={<LoginPage />} />
                 <Route
-                  index
+                  path="/"
                   element={
                     <ProtectedRoute>
                       <Layout>
-                        <PoliciesPage />
+                        <DashboardPage />
                       </Layout>
                     </ProtectedRoute>
                   }
                 />
                 <Route
-                  path=":type"
+                  path="/dashboard"
                   element={
                     <ProtectedRoute>
                       <Layout>
-                        <PoliciesPage />
+                        <DashboardPage />
                       </Layout>
                     </ProtectedRoute>
                   }
                 />
-              </Route>
+                <Route path="/policies">
+                  <Route
+                    index
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PoliciesPage />
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path=":type"
+                    element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PoliciesPage />
+                        </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
+                </Route>
 
-              <Route
-                path="/claims"
-                element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <ClaimsPage />
-                    </Layout>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/endorsements"
-                element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <EndorsementsPage />
-                    </Layout>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <ProfilePage />
-                    </Layout>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/my-policy"
-                element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <MyPoliciesPage />
-                    </Layout>
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/my-policy/:id"
-                element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <PolicyDetailsPage />
-                    </Layout>
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </div>
-        </Router>
-      </AuthProvider>
-    </ThemeProvider>
+                <Route
+                  path="/claims"
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <ClaimsPage />
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/endorsements"
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <EndorsementsPage />
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <ProfilePage />
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/my-policy"
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <MyPoliciesPage />
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/my-policy/:id"
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <PolicyDetailsPage />
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </div>
+          </Router>
+        </AuthProvider>
+      </ThemeProvider>
+    </HelmetProvider>
   );
 }
 
