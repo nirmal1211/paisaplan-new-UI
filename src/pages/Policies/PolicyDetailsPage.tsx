@@ -26,7 +26,10 @@ import {
   ChevronUp,
   Plus,
   CreditCard,
-  Edit
+  Edit,
+  Shield,
+  Mail,
+  MapPinIcon
 } from 'lucide-react';
 
 const PolicyDetailsPage: React.FC = () => {
@@ -660,7 +663,23 @@ const PolicyDetailsPage: React.FC = () => {
           onPrint={handlePrint}
         />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Main Content Container */}
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Document Download Button - Top Right */}
+          <div className="flex justify-end mb-6">
+            <button
+              onClick={handleDownload}
+              className="flex items-center space-x-2 w-11 h-11 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg"
+              style={{ 
+                backgroundColor: 'var(--color-primary)',
+                color: 'white'
+              }}
+              title="Download Policy"
+            >
+              <Download className="h-5 w-5 mx-auto" />
+            </button>
+          </div>
+
           {/* Policy Overview Card */}
           <div className="mb-8">
             <PolicyOverview policy={policy} />
@@ -673,17 +692,105 @@ const PolicyDetailsPage: React.FC = () => {
           <div className="py-8">
             {renderTabContent()}
           </div>
-        </div>
 
-        {/* Floating Action Button */}
-        <div className="fixed bottom-6 right-6 z-50">
-          <button 
-            className="w-14 h-14 rounded-full shadow-lg text-white transition-all duration-200 hover:scale-110 hover:shadow-xl"
-            style={{ backgroundColor: 'var(--color-primary)' }}
-            title="Quick Actions"
-          >
-            <Plus className="h-6 w-6 mx-auto" />
-          </button>
+          {/* Support Section */}
+          <div className="mt-16 rounded-xl shadow-lg p-8 border" style={{ 
+            backgroundColor: 'var(--color-card)',
+            borderColor: 'var(--color-border)'
+          }}>
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>
+                Need Support?
+              </h2>
+              
+              {/* Trovity Logo */}
+              <div className="flex items-center justify-center mb-6">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 rounded-lg" style={{ backgroundColor: 'var(--color-primary)' }}>
+                    <Shield className="h-8 w-8 text-white" />
+                  </div>
+                  <span className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                    Trovity
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Contact Email */}
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-3">
+                  <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                    <Mail className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  </div>
+                </div>
+                <h3 className="font-semibold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
+                  Email Support
+                </h3>
+                <a 
+                  href="mailto:support@trovity.com"
+                  className="font-roboto hover:underline transition-colors"
+                  style={{ color: 'var(--color-primary)' }}
+                >
+                  support@trovity.com
+                </a>
+              </div>
+
+              {/* Phone Number */}
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-3">
+                  <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                    <Phone className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  </div>
+                </div>
+                <h3 className="font-semibold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
+                  Phone Support
+                </h3>
+                <a 
+                  href="tel:+911800123456"
+                  className="font-roboto hover:underline transition-colors"
+                  style={{ color: 'var(--color-primary)' }}
+                >
+                  +91 1800 123 456
+                </a>
+              </div>
+
+              {/* Business Hours */}
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-3">
+                  <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                    <Clock className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  </div>
+                </div>
+                <h3 className="font-semibold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
+                  Business Hours
+                </h3>
+                <div className="font-roboto text-sm" style={{ color: 'var(--color-muted)' }}>
+                  <p>Mon - Fri: 9:00 AM - 6:00 PM</p>
+                  <p>Sat: 10:00 AM - 4:00 PM</p>
+                  <p>Sun: Closed</p>
+                </div>
+              </div>
+
+              {/* Physical Address */}
+              <div className="text-center">
+                <div className="flex items-center justify-center mb-3">
+                  <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                    <MapPinIcon className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  </div>
+                </div>
+                <h3 className="font-semibold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
+                  Office Address
+                </h3>
+                <div className="font-roboto text-sm" style={{ color: 'var(--color-muted)' }}>
+                  <p>Trovity Insurance Ltd.</p>
+                  <p>123 Business District</p>
+                  <p>Mumbai, Maharashtra 400001</p>
+                  <p>India</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
