@@ -440,7 +440,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           minHeight: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
         }}
       >
-        <main className="min-h-[calc(100vh-64px)] overflow-x-hidden overflow-y-auto bg-white p-4">
+        <main className="min-h-[calc(100vh-64px)] overflow-x-hidden overflow-y-auto bg-white">
           <div>{children}</div>
         </main>
       </div>
