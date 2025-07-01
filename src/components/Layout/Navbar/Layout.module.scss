@@ -141,7 +141,6 @@
 
 /* Hover state - subtle background tint */
 .layout-navbar__nav-link:hover {
-
   color: var(--color-primary);
   border-color: rgba(185, 34, 80, 0.12);
   transform: translateY(-1px);
@@ -155,18 +154,20 @@
   }
 }
 
-/* Active/Selected state - more prominent but still subtle */
+/* Active/Selected state - transparent background, no borders */
 .layout-navbar__nav-link--active {
-  background: rgba(185, 34, 80, 0.08);
+  /* Transparent background - no background color */
+  background: transparent;
   color: var(--color-primary);
-  border-color: rgba(185, 34, 80, 0.15);
   
-  /* Subtle inset shadow for depth */
-  box-shadow: 
-    0 1px 3px rgba(185, 34, 80, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  /* Remove all borders for active state */
+  border: none;
+  border-color: transparent;
   
-  /* Full width bottom border for active state */
+  /* Remove box-shadow for clean look */
+  box-shadow: none;
+  
+  /* Keep the bottom border indicator for visual feedback */
   &::after {
     width: 80%;
     height: 3px;
@@ -176,6 +177,14 @@
   font-weight: 600;
 }
 
+/* Focus state for active items - transparent background, no borders */
+.layout-navbar__nav-link--active:focus {
+  background: transparent;
+  border: none;
+  border-color: transparent;
+  box-shadow: none;
+}
+
 /* Dark mode adjustments */
 [data-theme="dark"] .layout-navbar__nav-link:hover {
   background: rgba(255, 224, 236, 0.08);
@@ -183,12 +192,20 @@
   box-shadow: 0 2px 8px rgba(255, 224, 236, 0.1);
 }
 
+/* Dark mode active state - also transparent */
 [data-theme="dark"] .layout-navbar__nav-link--active {
-  background: rgba(255, 224, 236, 0.12);
-  border-color: rgba(255, 224, 236, 0.2);
-  box-shadow: 
-    0 1px 3px rgba(255, 224, 236, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  background: transparent;
+  border: none;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* Dark mode focus state for active items */
+[data-theme="dark"] .layout-navbar__nav-link--active:focus {
+  background: transparent;
+  border: none;
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .layout-navbar__nav-link-icon {
@@ -633,10 +650,15 @@
   border-radius: 12px;
 }
 
-/* Focus styles for selected items */
+/* Focus styles for selected items - transparent background, no borders */
 .layout-navbar__nav-link--active:focus {
   outline-color: var(--color-primary);
   outline-width: 3px;
+  /* Ensure transparent background and no borders on focus */
+  background: transparent;
+  border: none;
+  border-color: transparent;
+  box-shadow: none;
 }
 
 /* Smooth scrolling for anchor links */
@@ -673,13 +695,19 @@ html {
     border: 2px solid currentColor;
   }
   
+  /* High contrast active state - maintain transparency but ensure visibility */
   .layout-navbar__nav-link--active {
-    background: currentColor;
-    color: var(--color-background);
+    background: transparent;
+    color: var(--color-primary);
+    border: none;
+    /* Use outline for high contrast instead of background */
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
   }
   
   .layout-navbar__nav-link--active::after {
-    background: var(--color-background);
+    background: var(--color-primary);
+    height: 4px; /* Thicker for better visibility */
   }
 }
 
@@ -690,6 +718,11 @@ html {
     box-shadow: none;
     background: white;
     border-bottom: 1px solid #000;
+  }
+  
+  .layout-navbar__nav-link--active {
+    background: transparent;
+    border: none;
   }
   
   .layout-navbar__nav-link--active::after {
