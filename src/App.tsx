@@ -77,16 +77,6 @@ function App() {
                   }
                 />
                 <Route
-                  path="/endorsements"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <EndorsementsPage />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
                   path="/profile"
                   element={
                     <ProtectedRoute>
