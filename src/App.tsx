@@ -40,9 +40,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-               
-            
-
               <Route
                 path="/claims"
                 element={
