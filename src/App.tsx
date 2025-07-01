@@ -40,16 +40,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="/my-policy"
-                element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <MyPoliciesPage />
-                    </Layout>
-                  </ProtectedRoute>
-                }
-              />
+              
               <Route
                 path="/claims"
                 element={
