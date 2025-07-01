@@ -27,6 +27,40 @@ export interface InsuranceSlide {
   features: string[];
 }
 
+export type PolicyType = 'Health' | 'Motor' | 'Two-wheeler' | 'Life' | 'Travel' | 'Home' | 'Fire' | 'Marine' | 'Cyber' | 'Professional' | 'All';
+
+export interface MyPolicyProps {
+  policy: {
+    number: string;
+    provider: string;
+    expiryDays: number;
+    status: 'Active' | 'Pending' | 'Expired';
+    type: PolicyType;
+    validFrom: Date;
+    validTo: Date;
+    sumInsured: number;
+    premium: number;
+  };
+  
+  insuranceTypes: Array<{
+    type: string;
+    image: string;
+    description: string;
+    ctaLink: string;
+  }>;
+  
+  faqs: Array<{
+    question: string;
+    answer: string;
+    id: string;
+  }>;
+
+  onRenew: (policyNumber: string) => void;
+  onUploadDocument: (file: File) => Promise<void>;
+  onFilterChange: (status: string, type: PolicyType) => void;
+  onPolicySelect: (policyNumber: string) => void;
+}
+
 export type RenewalStatus = 'urgent' | 'warning' | 'normal' | 'overdue';
 export type UploadStatus = 'pending' | 'uploading' | 'processing' | 'completed' | 'failed';
 

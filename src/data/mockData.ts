@@ -1,4 +1,4 @@
-import { Policy, FAQ, InsuranceSlide, RenewalItem, UploadFile, PaymentOption } from '../types/policy';
+import { Policy, FAQ, InsuranceSlide, RenewalItem, UploadFile, PaymentOption, MyPolicyProps } from '../types/policy';
 
 export const mockPolicies: Policy[] = [
   {
@@ -234,3 +234,56 @@ export const mockRecentUploads: UploadFile[] = [
     errors: ['File corrupted', 'OCR processing failed']
   }
 ];
+
+// Mock data for MyPolicy component
+export const mockMyPolicyData: MyPolicyProps = {
+  policy: {
+    number: 'HLTH12345',
+    provider: 'Star Health Insurance',
+    expiryDays: 45,
+    status: 'Active',
+    type: 'Health',
+    validFrom: new Date('2024-01-15'),
+    validTo: new Date('2025-01-14'),
+    sumInsured: 1000000,
+    premium: 18500
+  },
+  insuranceTypes: [
+    {
+      type: 'Health Insurance',
+      image: 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&dpr=2',
+      description: 'Comprehensive health coverage for you and your family',
+      ctaLink: '/buy-policy/health'
+    },
+    {
+      type: 'Motor Insurance',
+      image: 'https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&dpr=2',
+      description: 'Complete protection for your vehicle',
+      ctaLink: '/buy-policy/motor'
+    },
+    {
+      type: 'Two Wheeler Insurance',
+      image: 'https://images.pexels.com/photos/2116475/pexels-photo-2116475.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&dpr=2',
+      description: 'Affordable coverage for your bike or scooter',
+      ctaLink: '/buy-policy/two-wheeler'
+    }
+  ],
+  faqs: mockFAQs.map(faq => ({
+    id: faq.id,
+    question: faq.question,
+    answer: faq.answer
+  })),
+  onRenew: (policyNumber: string) => {
+    console.log('Renewing policy:', policyNumber);
+  },
+  onUploadDocument: async (file: File) => {
+    console.log('Uploading document:', file.name);
+    return new Promise(resolve => setTimeout(resolve, 2000));
+  },
+  onFilterChange: (status: string, type: any) => {
+    console.log('Filter changed:', status, type);
+  },
+  onPolicySelect: (policyNumber: string) => {
+    console.log('Policy selected:', policyNumber);
+  }
+};
