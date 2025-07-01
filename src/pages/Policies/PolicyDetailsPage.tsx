@@ -665,20 +665,7 @@ const PolicyDetailsPage: React.FC = () => {
 
         {/* Main Content Container */}
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Document Download Button - Top Right */}
-          <div className="flex justify-end mb-6">
-            <button
-              onClick={handleDownload}
-              className="flex items-center space-x-2 w-11 h-11 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg"
-              style={{ 
-                backgroundColor: 'var(--color-primary)',
-                color: 'white'
-              }}
-              title="Download Policy"
-            >
-              <Download className="h-5 w-5 mx-auto" />
-            </button>
-          </div>
+         
 
           {/* Policy Overview Card */}
           <div className="mb-8">
