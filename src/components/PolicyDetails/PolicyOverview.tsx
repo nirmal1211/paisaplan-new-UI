@@ -184,6 +184,7 @@ const PolicyOverview: React.FC<PolicyOverviewProps> = ({ policy }) => {
               ))}
             </div>
           </div>
+        </div>
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-8 border-t" style={{ borderColor: 'var(--color-border)' }}>
