@@ -5,6 +5,7 @@ import LoginPage from "./pages/Auth/LoginPage";
 import DashboardPage from "./pages/Dashboard/DashboardPage";
 import PoliciesPage from "./pages/Policies/PoliciesPage";
 import MyPoliciesPage from "./pages/Policies/MyPoliciesPage";
+import PolicyDetailsPage from "./pages/Policies/PolicyDetailsPage";
 import ClaimsPage from "./pages/Claims/ClaimsPage";
 import EndorsementsPage from "./pages/Endorsements/EndorsementsPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
@@ -99,6 +100,16 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <MyPoliciesPage />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/my-policy/:id"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <PolicyDetailsPage />
                     </Layout>
                   </ProtectedRoute>
                 }
