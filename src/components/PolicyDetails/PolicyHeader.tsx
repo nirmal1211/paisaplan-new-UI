@@ -65,10 +65,7 @@ const PolicyHeader: React.FC<PolicyHeaderProps> = ({
             </Link>
             
             <nav className="flex items-center space-x-2 text-sm font-roboto">
-              <Link to="/" className="hover:underline" style={{ color: 'var(--color-muted)' }}>
-                Home
-              </Link>
-              <span style={{ color: 'var(--color-muted)' }}>/</span>
+             
               <Link to="/my-policy" className="hover:underline" style={{ color: 'var(--color-muted)' }}>
                 My Policies
               </Link>
