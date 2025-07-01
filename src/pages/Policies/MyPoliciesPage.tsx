@@ -1,5 +1,5 @@
 import React from 'react';
-import MyPolicy from '../../pages/Policies/MyPoliciesPage';
+import MyPolicy from '../../components/Policy/MyPolicy';
 import { mockMyPolicyData } from '../../data/mockData';
 
 const MyPoliciesPage: React.FC = () => {
