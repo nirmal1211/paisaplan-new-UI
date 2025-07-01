@@ -42,10 +42,10 @@ const InsuranceCarousel: React.FC<InsuranceCarouselProps> = ({
   const slide = slides[currentSlide];
 
   return (
-    <div className="relative rounded-xl shadow-lg overflow-hidden h-full" style={{ backgroundColor: 'var(--color-card)' }}>
+    <div className="relative bg-white rounded-xl shadow-lg overflow-hidden h-full">
       {/* Main slide content */}
       <div className="relative h-full">
-        <div className="h-32 overflow-hidden">
+        <div className="h-48 overflow-hidden">
           <img 
             src={slide.image} 
             alt={slide.title}
@@ -53,40 +53,31 @@ const InsuranceCarousel: React.FC<InsuranceCarouselProps> = ({
           />
         </div>
         
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-lg font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>{slide.title}</h3>
-            <span 
-              className="px-2 py-1 rounded-full text-xs font-medium"
-              style={{ 
-                backgroundColor: 'var(--color-secondary)', 
-                color: 'var(--color-primary)' 
-              }}
-            >
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-xl font-bold text-gray-900 font-poppins">{slide.title}</h3>
+            <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium">
               {slide.type}
             </span>
           </div>
           
-          <p className="font-roboto text-sm mb-3 line-clamp-2" style={{ color: 'var(--color-muted)' }}>
+          <p className="text-gray-600 font-roboto text-sm mb-4 line-clamp-3">
             {slide.description}
           </p>
           
-          <div className="mb-3">
-            <h4 className="text-xs font-semibold mb-2 font-roboto" style={{ color: 'var(--color-foreground)' }}>Key Features:</h4>
+          <div className="mb-4">
+            <h4 className="text-sm font-semibold text-gray-800 mb-2 font-roboto">Key Features:</h4>
             <div className="grid grid-cols-2 gap-1">
               {slide.features.slice(0, 4).map((feature, index) => (
-                <div key={index} className="flex items-center text-xs" style={{ color: 'var(--color-muted)' }}>
-                  <div className="w-1.5 h-1.5 rounded-full mr-2" style={{ backgroundColor: 'var(--color-primary)' }}></div>
+                <div key={index} className="flex items-center text-xs text-gray-600">
+                  <div className="w-1.5 h-1.5 bg-primary-500 rounded-full mr-2"></div>
                   {feature}
                 </div>
               ))}
             </div>
           </div>
           
-          <button 
-            className="w-full font-semibold py-2 px-4 rounded-lg transition-colors duration-200 font-roboto text-white hover:opacity-90"
-            style={{ backgroundColor: 'var(--color-primary)' }}
-          >
+          <button className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors duration-200 font-roboto">
             Buy Now
           </button>
         </div>
@@ -95,8 +86,7 @@ const InsuranceCarousel: React.FC<InsuranceCarouselProps> = ({
       {/* Navigation arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md transition-all duration-200 z-10"
-        style={{ color: 'var(--color-foreground)' }}
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-700 p-2 rounded-full shadow-md transition-all duration-200 z-10"
         aria-label="Previous slide"
       >
         <ChevronLeft className="h-4 w-4" />
@@ -104,27 +94,23 @@ const InsuranceCarousel: React.FC<InsuranceCarouselProps> = ({
       
       <button
         onClick={nextSlide}
-        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-md transition-all duration-200 z-10"
-        style={{ color: 'var(--color-foreground)' }}
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-700 p-2 rounded-full shadow-md transition-all duration-200 z-10"
         aria-label="Next slide"
       >
         <ChevronRight className="h-4 w-4" />
       </button>
 
       {/* Slide indicators */}
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-2">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
             className={`w-2 h-2 rounded-full transition-all duration-200 ${
               index === currentSlide 
-                ? 'w-4' 
+                ? 'bg-primary-600 w-6' 
                 : 'bg-white/60 hover:bg-white/80'
             }`}
-            style={{
-              backgroundColor: index === currentSlide ? 'var(--color-primary)' : undefined
-            }}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}

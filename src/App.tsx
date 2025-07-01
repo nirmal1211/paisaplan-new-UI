@@ -40,16 +40,29 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="/my-policy"
-                element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <MyPoliciesPage />
-                    </Layout>
-                  </ProtectedRoute>
-                }
-              />
+              <Route path="/policies">
+                <Route
+                  index
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <PoliciesPage />
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path=":type"
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <PoliciesPage />
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
+              </Route>
+
               <Route
                 path="/claims"
                 element={
@@ -76,6 +89,16 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <ProfilePage />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/my-policy"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <MyPoliciesPage />
                     </Layout>
                   </ProtectedRoute>
                 }
