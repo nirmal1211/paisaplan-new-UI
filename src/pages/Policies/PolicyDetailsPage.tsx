@@ -393,10 +393,7 @@ const PolicyDetailsPage: React.FC = () => {
               <h2 className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
                 Claims History
               </h2>
-              <button className="flex items-center space-x-2 py-2 px-4 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--color-primary)' }}>
-                <Plus className="h-4 w-4" />
-                <span>File New Claim</span>
-              </button>
+              
             </div>
 
             {/* Claims List */}
