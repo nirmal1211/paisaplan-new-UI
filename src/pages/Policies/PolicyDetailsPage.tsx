@@ -25,7 +25,8 @@ import {
   ChevronDown,
   ChevronUp,
   Plus,
-  CreditCard
+  CreditCard,
+  Edit
 } from 'lucide-react';
 
 const PolicyDetailsPage: React.FC = () => {
