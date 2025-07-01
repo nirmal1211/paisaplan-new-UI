@@ -6,6 +6,8 @@ import { Skeleton } from '../../components/UI/skeleton';
 import PolicyHeader from '../../components/PolicyDetails/PolicyHeader';
 import PolicyOverview from '../../components/PolicyDetails/PolicyOverview';
 import TabNavigation, { TabType } from '../../components/PolicyDetails/TabNavigation';
+import MobileOptimizedPolicyDetails from '../../components/Mobile/MobileOptimizedPolicyDetails';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import { 
   FileText, 
   MapPin, 
@@ -40,6 +42,7 @@ const PolicyDetailsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
   const [selectedSpecialty, setSelectedSpecialty] = useState<string>('all');
+  const isMobile = useIsMobile();
 
   // Simulate loading
   useEffect(() => {
@@ -176,6 +179,22 @@ const PolicyDetailsPage: React.FC = () => {
           <Skeleton className="w-full h-64 rounded-xl" />
         </div>
       </div>
+    );
+  }
+
+  // Render mobile-optimized version for mobile devices
+  if (isMobile) {
+    return (
+      <>
+        <Helmet>
+          <title>{`${policy.type} Insurance - ${policy.policyNumber} | InsureTech Pro`}</title>
+          <meta name="description" content={`View details for your ${policy.type} insurance policy ${policy.policyNumber} with ${policy.provider}`} />
+          <meta name="keywords" content={`insurance, ${policy.type}, policy details, ${policy.provider}`} />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+        </Helmet>
+        <link rel="stylesheet" href="/src/styles/mobile-responsive.css" />
+        <MobileOptimizedPolicyDetails policy={policy} />
+      </>
     );
   }
 

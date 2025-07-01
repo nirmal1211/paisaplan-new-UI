@@ -1,0 +1,476 @@
+/* Mobile-First Responsive Design for Insurance Portal */
+
+/* Base styles - Mobile first approach */
+:root {
+  --base-font-size: 16px;
+  --header-font-size: 18px;
+  --content-font-size: 14px;
+  --min-touch-target: 44px;
+  --card-padding: 16px;
+  --card-margin: 12px;
+  --section-spacing: 16px;
+  --element-gap: 12px;
+  --small-gap: 8px;
+}
+
+/* Global mobile styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: var(--base-font-size);
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Mobile-optimized claim history section */
+.claim-history-container {
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: var(--card-padding);
+  -webkit-overflow-scrolling: touch;
+}
+
+.claim-card {
+  background: white;
+  padding: var(--card-padding);
+  margin-bottom: var(--card-margin);
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: var(--element-gap);
+}
+
+.claim-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--small-gap);
+}
+
+.claim-date {
+  font-size: var(--base-font-size);
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.claim-amount {
+  font-size: var(--content-font-size);
+  color: #4b5563;
+  margin: 0;
+}
+
+.claim-status {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.claim-status.approved {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.claim-status.pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.claim-status.processing {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.claim-status.rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* Policy overview section */
+.policy-overview-container {
+  padding: var(--card-padding);
+  max-width: 540px;
+  width: 100%;
+}
+
+.policy-overview-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-spacing);
+}
+
+.policyholder-name {
+  font-size: var(--header-font-size);
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.policy-number {
+  font-size: var(--content-font-size);
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  color: #6b7280;
+  margin: var(--small-gap) 0 0 0;
+  letter-spacing: 0.5px;
+}
+
+.policy-section {
+  margin-top: var(--section-spacing);
+}
+
+/* Network hospitals section */
+.hospitals-container {
+  padding: var(--card-padding);
+}
+
+.hospital-search-bar {
+  position: relative;
+  margin-bottom: var(--section-spacing);
+}
+
+.hospital-search-input {
+  width: 100%;
+  padding: var(--element-gap) var(--min-touch-target) var(--element-gap) var(--min-touch-target);
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-size: var(--base-font-size);
+  background-color: #f9fafb;
+  transition: all 0.2s ease;
+}
+
+.hospital-search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background-color: white;
+}
+
+.hospital-search-input::placeholder {
+  color: #9ca3af;
+  font-size: var(--content-font-size);
+}
+
+.hospital-search-icon {
+  position: absolute;
+  right: var(--element-gap);
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  pointer-events: none;
+}
+
+.hospital-card {
+  background: white;
+  padding: var(--card-padding);
+  margin-bottom: var(--card-margin);
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.hospital-name {
+  font-size: var(--base-font-size);
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 var(--small-gap) 0;
+  line-height: 1.3;
+}
+
+.hospital-address {
+  font-size: var(--content-font-size);
+  color: #6b7280;
+  margin: 0 0 var(--small-gap) 0;
+  line-height: 1.4;
+}
+
+.hospital-contact {
+  font-size: var(--content-font-size);
+  color: #4b5563;
+  margin: 0;
+}
+
+/* Touch-friendly buttons */
+.touch-button {
+  min-height: var(--min-touch-target);
+  min-width: var(--min-touch-target);
+  padding: var(--element-gap) var(--card-padding);
+  border: none;
+  border-radius: 8px;
+  font-size: var(--content-font-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--small-gap);
+}
+
+.touch-button:active {
+  transform: scale(0.98);
+}
+
+.touch-button-primary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.touch-button-primary:hover {
+  background-color: #2563eb;
+}
+
+.touch-button-secondary {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.touch-button-secondary:hover {
+  background-color: #e5e7eb;
+}
+
+/* Responsive breakpoints */
+
+/* Small mobile devices (320px) */
+@media (max-width: 320px) {
+  :root {
+    --card-padding: 12px;
+    --card-margin: 8px;
+    --section-spacing: 12px;
+    --element-gap: 8px;
+  }
+  
+  .claim-card {
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .hospital-card {
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .policyholder-name {
+    font-size: 16px;
+  }
+  
+  .policy-number {
+    font-size: 13px;
+  }
+}
+
+/* Standard mobile devices (375px) */
+@media (min-width: 375px) {
+  :root {
+    --base-font-size: 16px;
+    --header-font-size: 18px;
+    --content-font-size: 14px;
+  }
+  
+  .claim-history-container {
+    padding: var(--card-padding);
+  }
+  
+  .hospitals-container {
+    padding: var(--card-padding);
+  }
+}
+
+/* Large mobile devices (425px) */
+@media (min-width: 425px) {
+  :root {
+    --card-padding: 18px;
+    --section-spacing: 18px;
+    --element-gap: 14px;
+  }
+  
+  .policyholder-name {
+    font-size: 20px;
+  }
+  
+  .hospital-name {
+    font-size: 17px;
+  }
+  
+  .claim-date {
+    font-size: 17px;
+  }
+}
+
+/* Tablet and larger screens */
+@media (min-width: 768px) {
+  :root {
+    --card-padding: 20px;
+    --card-margin: 16px;
+    --section-spacing: 24px;
+    --element-gap: 16px;
+  }
+  
+  .claim-history-container {
+    padding: var(--card-padding);
+  }
+  
+  .hospitals-container {
+    padding: var(--card-padding);
+  }
+  
+  .policy-overview-container {
+    padding: var(--card-padding);
+  }
+  
+  /* Two-column layout for larger screens */
+  .hospital-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--card-margin);
+  }
+  
+  .claim-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--card-margin);
+  }
+}
+
+/* Desktop screens */
+@media (min-width: 1024px) {
+  :root {
+    --card-padding: 24px;
+    --card-margin: 20px;
+    --section-spacing: 32px;
+    --element-gap: 20px;
+  }
+  
+  .policy-overview-container {
+    max-width: 600px;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .claim-card,
+  .hospital-card {
+    border: 2px solid #000;
+  }
+  
+  .touch-button {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .claim-card,
+  .hospital-card {
+    background-color: #1f2937;
+    border-color: #374151;
+    color: #f9fafb;
+  }
+  
+  .claim-date,
+  .hospital-name,
+  .policyholder-name {
+    color: #f9fafb;
+  }
+  
+  .claim-amount,
+  .hospital-address,
+  .hospital-contact,
+  .policy-number {
+    color: #d1d5db;
+  }
+  
+  .hospital-search-input {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+  
+  .hospital-search-input::placeholder {
+    color: #9ca3af;
+  }
+}
+
+/* Print styles */
+@media print {
+  .claim-history-container,
+  .hospitals-container {
+    max-height: none;
+    overflow: visible;
+  }
+  
+  .touch-button {
+    display: none;
+  }
+  
+  .claim-card,
+  .hospital-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+}
+
+/* Focus styles for keyboard navigation */
+.touch-button:focus,
+.hospital-search-input:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Utility classes for spacing */
+.mb-small { margin-bottom: var(--small-gap); }
+.mb-medium { margin-bottom: var(--element-gap); }
+.mb-large { margin-bottom: var(--section-spacing); }
+
+.mt-small { margin-top: var(--small-gap); }
+.mt-medium { margin-top: var(--element-gap); }
+.mt-large { margin-top: var(--section-spacing); }
+
+.p-card { padding: var(--card-padding); }
+.gap-small { gap: var(--small-gap); }
+.gap-medium { gap: var(--element-gap); }
+.gap-large { gap: var(--section-spacing); }
