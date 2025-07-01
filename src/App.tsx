@@ -40,16 +40,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-                <Route
-                  path=":type"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <PoliciesPage />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
+               
               </Route>
 
               <Route
