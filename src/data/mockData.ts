@@ -1,4 +1,4 @@
-import { Policy, FAQ, InsuranceSlide } from '../types/policy';
+import { Policy, FAQ, InsuranceSlide, RenewalItem, UploadFile, PaymentOption } from '../types/policy';
 
 export const mockPolicies: Policy[] = [
   {
@@ -126,5 +126,111 @@ export const insuranceSlides: InsuranceSlide[] = [
     description: 'Affordable two-wheeler insurance with comprehensive coverage for your bike or scooter including theft and accident protection.',
     image: 'https://images.pexels.com/photos/2116475/pexels-photo-2116475.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&dpr=2',
     features: ['Theft Protection', 'Accident Coverage', 'Third Party Liability', 'Engine Protection']
+  }
+];
+
+export const mockPaymentOptions: PaymentOption[] = [
+  { id: '1', method: 'card', label: 'Credit/Debit Card', processingFee: 0, discount: 2 },
+  { id: '2', method: 'bank', label: 'Net Banking', processingFee: 0, discount: 1 },
+  { id: '3', method: 'wallet', label: 'Digital Wallet', processingFee: 0, discount: 3 },
+  { id: '4', method: 'emi', label: 'EMI (0% Interest)', processingFee: 99, discount: 0 }
+];
+
+export const mockRenewals: RenewalItem[] = [
+  {
+    id: '1',
+    policyId: '1',
+    policyNumber: 'HLTH12345',
+    provider: 'Star Health Insurance',
+    type: 'Health Insurance',
+    currentPremium: 18500,
+    newPremium: 19200,
+    renewalDate: new Date('2024-07-15'),
+    gracePeriod: 30,
+    status: 'urgent',
+    paymentOptions: mockPaymentOptions,
+    reminderSettings: {
+      email: true,
+      sms: true,
+      push: true,
+      frequency: 'daily'
+    }
+  },
+  {
+    id: '2',
+    policyId: '2',
+    policyNumber: 'MOTR67890',
+    provider: 'ICICI Lombard',
+    type: 'Motor Insurance',
+    currentPremium: 12800,
+    newPremium: 13500,
+    renewalDate: new Date('2024-08-20'),
+    gracePeriod: 15,
+    status: 'warning',
+    paymentOptions: mockPaymentOptions,
+    reminderSettings: {
+      email: true,
+      sms: false,
+      push: true,
+      frequency: 'weekly'
+    }
+  },
+  {
+    id: '3',
+    policyId: '4',
+    policyNumber: 'LIFE98765',
+    provider: 'LIC of India',
+    type: 'Life Insurance',
+    currentPremium: 45000,
+    newPremium: 47000,
+    renewalDate: new Date('2024-11-30'),
+    gracePeriod: 30,
+    status: 'normal',
+    paymentOptions: mockPaymentOptions,
+    reminderSettings: {
+      email: true,
+      sms: true,
+      push: false,
+      frequency: 'monthly'
+    }
+  }
+];
+
+export const mockRecentUploads: UploadFile[] = [
+  {
+    id: '1',
+    name: 'health-policy-certificate.pdf',
+    size: 2048576,
+    type: 'application/pdf',
+    progress: 100,
+    status: 'completed',
+    category: 'Policy Certificate',
+    ocrStatus: 'completed',
+    uploadTime: new Date('2024-05-20T10:30:00'),
+    errors: []
+  },
+  {
+    id: '2',
+    name: 'motor-insurance-receipt.jpg',
+    size: 1536000,
+    type: 'image/jpeg',
+    progress: 85,
+    status: 'processing',
+    category: 'Payment Receipt',
+    ocrStatus: 'processing',
+    uploadTime: new Date('2024-05-20T14:15:00'),
+    errors: []
+  },
+  {
+    id: '3',
+    name: 'medical-report-2024.pdf',
+    size: 3072000,
+    type: 'application/pdf',
+    progress: 100,
+    status: 'failed',
+    category: 'Medical Report',
+    ocrStatus: 'failed',
+    uploadTime: new Date('2024-05-19T16:45:00'),
+    errors: ['File corrupted', 'OCR processing failed']
   }
 ];
