@@ -19,7 +19,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabChange })
   ];
 
   return (
-    <div className="sticky top-20 z-30 backdrop-blur-md border-b" style={{ 
+    <div className="sticky p-20 z-30 backdrop-blur-md border-b" style={{ 
       backgroundColor: 'var(--color-background)', 
       borderColor: 'var(--color-border)' 
     }}>
