@@ -66,16 +66,17 @@ const getNavigationItems = (role: string) => {
         ],
       },
       { icon: AlertTriangle, label: "Claims", path: "/claims" },
+      { icon: Edit, label: "Endorsements", path: "/endorsements" },
     ],
     corporate_employee: [
-      { icon: FileText, label: "Policies", path: "/my-policy" },
+      { icon: FileText, label: "Policies", path: "/policies" },
       { icon: AlertTriangle, label: "Claims", path: "/claims" },
       { icon: Edit, label: "Endorsements", path: "/endorsements" },
       { icon: Users, label: "Dependents", path: "/dependents" },
     ],
     hr_admin: [
       { icon: Users, label: "Employees", path: "/employees" },
-      { icon: FileText, label: "Policies", path: "/my-policy" },
+      { icon: FileText, label: "Policies", path: "/policies" },
       { icon: Edit, label: "Endorsements", path: "/endorsements" },
       { icon: TrendingUp, label: "Analytics", path: "/analytics" },
     ],
@@ -99,7 +100,7 @@ const getNavigationItems = (role: string) => {
       { icon: Users, label: "Clients", path: "/clients" },
       { icon: Building, label: "Prospects", path: "/prospects" },
       { icon: TrendingUp, label: "Performance", path: "/performance" },
-      { icon: FileText, label: "Policies", path: "/my-policy" },
+      { icon: FileText, label: "Policies", path: "/policies" },
     ],
   };
   return [
@@ -291,7 +292,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       className={styles["layout-navbar__dropdown-divider"]}
                     />
                     <Link
-                      to="/my-policy"
+                      to="/policies"
                       className={
                         styles["layout-navbar__dropdown-item"] +
                         " rounded-b-xl flex items-center gap-2"

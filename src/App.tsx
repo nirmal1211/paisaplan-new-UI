@@ -8,8 +8,8 @@ import PoliciesPage from "./pages/Policies/PoliciesPage";
 import MyPoliciesPage from "./pages/Policies/MyPoliciesPage";
 import PolicyDetailsPage from "./pages/Policies/PolicyDetailsPage";
 import ClaimsPage from "./pages/Claims/ClaimsPage";
+import EndorsementsPage from "./pages/Endorsements/EndorsementsPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
-import VehicleInsuranceDetailsPage from "./pages/VehicleInsurance/VehicleInsuranceDetailsPage";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import Layout from "./components/Layout/Navbar";
 import { ThemeProvider } from "./theme/ThemeProvider";
@@ -77,6 +77,16 @@ function App() {
                   }
                 />
                 <Route
+                  path="/endorsements"
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <EndorsementsPage />
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/profile"
                   element={
                     <ProtectedRoute>
@@ -103,14 +113,6 @@ function App() {
                       <Layout>
                         <PolicyDetailsPage />
                       </Layout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/vehicle-insurance"
-                  element={
-                    <ProtectedRoute>
-                      <VehicleInsuranceDetailsPage />
                     </ProtectedRoute>
                   }
                 />
