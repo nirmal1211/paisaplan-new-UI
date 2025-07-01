@@ -18,17 +18,83 @@ function App() {
       <AuthProvider>
         <Router>
           <div className="min-h-screen bg-gray-50">
-           <Routes>
-  <Route path="/login" element={<LoginPage />} />
-  
-  <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-    <Route path="/" element={<DashboardPage />} />
-    <Route path="/dashboard" element={<DashboardPage />} />
-    <Route path="/claims" element={<ClaimsPage />} />
-    <Route path="/endorsements" element={<EndorsementsPage />} />
-    <Route path="/profile" element={<ProfilePage />} />
-  </Route>
-</Routes>
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <DashboardPage />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <DashboardPage />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/policies">
+                <Route
+                  index
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <PoliciesPage />
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path=":type"
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <PoliciesPage />
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
+              </Route>
+
+              <Route
+                path="/claims"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <ClaimsPage />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/endorsements"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <EndorsementsPage />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <ProfilePage />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+             
+            </Routes>
           </div>
         </Router>
       </AuthProvider>
