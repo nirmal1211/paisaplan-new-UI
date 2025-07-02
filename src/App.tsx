@@ -4,6 +4,7 @@ import { HelmetProvider } from "react-helmet-async";
 import AuthProvider from "./contexts/AuthContext";
 import LoginPage from "./pages/Auth/LoginPage";
 import DashboardPage from "./pages/Dashboard/DashboardPage";
+import ComprehensiveDashboard from "./pages/Dashboard/ComprehensiveDashboard";
 import PoliciesPage from "./pages/Policies/PoliciesPage";
 import MyPoliciesPage from "./pages/Policies/MyPoliciesPage";
 import PolicyDetailsPage from "./pages/Policies/PolicyDetailsPage";
@@ -39,7 +40,7 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <Layout>
-                        <DashboardPage />
+                        <ComprehensiveDashboard />
                       </Layout>
                     </ProtectedRoute>
                   }
