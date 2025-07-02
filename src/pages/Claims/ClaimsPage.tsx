@@ -495,601 +495,648 @@ const ClaimsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen relative" style={{ backgroundColor: 'var(--color-background)' }}>
-      {/* Background Image with Overlay */}
-      <div className="absolute inset-0 z-0">
-        <div 
-          className="w-full h-full bg-cover bg-center bg-no-repeat opacity-5"
-          style={{ 
-            backgroundImage: 'url(/ChatGPT Image Jul 2, 2025, 03_49_54 PM.png)',
-            backgroundSize: 'contain',
-            backgroundPosition: 'bottom right'
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-br opacity-10" style={{ 
-          background: `linear-gradient(135deg, var(--color-primary), var(--color-accent))` 
-        }} />
-      </div>
+      {/* Hero Section with Character Image */}
+      <div className="relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-gradient-to-br" style={{ 
+            background: `linear-gradient(135deg, var(--color-primary), var(--color-accent))` 
+          }} />
+        </div>
 
-      <div className="relative z-10 p-4 md:p-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Enhanced Header Section */}
-          <div className="mb-12 text-center">
-            <div className="inline-flex items-center space-x-4 mb-6">
-              <div className="p-4 rounded-2xl bg-gradient-to-br shadow-lg" style={{ 
-                background: `linear-gradient(135deg, var(--color-primary), var(--color-accent))` 
-              }}>
-                <FileText className="h-10 w-10 text-white" />
+        <div className="relative z-10 p-4 md:p-8">
+          <div className="max-w-7xl mx-auto">
+            {/* Enhanced Header Section with Character */}
+            <div className="mb-12">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                {/* Left Side - Text Content */}
+                <div className="text-center lg:text-left">
+                  <div className="inline-flex items-center space-x-4 mb-6">
+                    <div className="p-4 rounded-2xl bg-gradient-to-br shadow-lg" style={{ 
+                      background: `linear-gradient(135deg, var(--color-primary), var(--color-accent))` 
+                    }}>
+                      <FileText className="h-10 w-10 text-white" />
+                    </div>
+                    <div className="h-12 w-px bg-gradient-to-b" style={{ 
+                      background: `linear-gradient(to bottom, var(--color-primary), transparent)` 
+                    }} />
+                    <Shield className="h-8 w-8 animate-pulse" style={{ color: 'var(--color-primary)' }} />
+                  </div>
+
+                  <h1 className="text-5xl md:text-6xl font-bold font-poppins mb-4 bg-gradient-to-r bg-clip-text text-transparent" style={{ 
+                    backgroundImage: `linear-gradient(135deg, var(--color-foreground), var(--color-primary))` 
+                  }}>
+                    Claims Management
+                  </h1>
+                  
+                  <p className="text-xl font-roboto max-w-2xl leading-relaxed mb-8" style={{ color: 'var(--color-muted)' }}>
+                    Track, manage, and monitor all your insurance claims with real-time updates and comprehensive analytics. Your friendly claims assistant is here to help!
+                  </p>
+
+                  {/* Quick Stats */}
+                  <div className="flex items-center justify-center lg:justify-start space-x-8">
+                    <div className="text-center">
+                      <div className="text-3xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                        {claims.length}
+                      </div>
+                      <div className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+                        Total Claims
+                      </div>
+                    </div>
+                    <div className="h-12 w-px" style={{ backgroundColor: 'var(--color-border)' }} />
+                    <div className="text-center">
+                      <div className="text-3xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                        {claims.filter(c => c.status === 'approved').length}
+                      </div>
+                      <div className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+                        Approved
+                      </div>
+                    </div>
+                    <div className="h-12 w-px" style={{ backgroundColor: 'var(--color-border)' }} />
+                    <div className="text-center">
+                      <div className="text-3xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                        {formatCurrency(claims.reduce((sum, claim) => sum + (claim.approvedAmount || claim.requestedAmount), 0))}
+                      </div>
+                      <div className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+                        Total Value
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Side - Character Image */}
+                <div className="flex justify-center lg:justify-end">
+                  <div className="relative">
+                    {/* Character Image with Enhanced Styling */}
+                    <div className="relative transform hover:scale-105 transition-transform duration-500">
+                      <img 
+                        src="/ChatGPT Image Jul 2, 2025, 03_49_54 PM copy.png"
+                        alt="Claims Assistant Character"
+                        className="w-80 h-80 md:w-96 md:h-96 object-contain drop-shadow-2xl"
+                      />
+                      
+                      {/* Floating Animation Elements */}
+                      <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-br rounded-full animate-bounce" style={{ 
+                        background: `linear-gradient(135deg, var(--color-primary), var(--color-accent))`,
+                        animationDelay: '0.5s'
+                      }} />
+                      <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br rounded-full animate-bounce" style={{ 
+                        background: `linear-gradient(135deg, var(--color-accent), var(--color-primary))`,
+                        animationDelay: '1s'
+                      }} />
+                      <div className="absolute top-1/4 -left-6 w-4 h-4 bg-gradient-to-br rounded-full animate-pulse" style={{ 
+                        background: `linear-gradient(135deg, var(--color-primary), var(--color-accent))`
+                      }} />
+                    </div>
+
+                    {/* Speech Bubble */}
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-2xl p-4 shadow-xl border-2 animate-bounce" style={{ 
+                      borderColor: 'var(--color-primary)',
+                      animationDelay: '2s',
+                      animationDuration: '3s'
+                    }}>
+                      <div className="text-sm font-semibold font-poppins text-center" style={{ color: 'var(--color-primary)' }}>
+                        Hi! I'm here to help with your claims! 👋
+                      </div>
+                      {/* Speech bubble tail */}
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent" style={{ 
+                        borderTopColor: 'var(--color-primary)'
+                      }} />
+                    </div>
+
+                    {/* Background Glow Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-br rounded-full opacity-20 blur-3xl -z-10" style={{ 
+                      background: `linear-gradient(135deg, var(--color-primary), var(--color-accent))`
+                    }} />
+                  </div>
+                </div>
               </div>
-              <div className="h-12 w-px bg-gradient-to-b" style={{ 
-                background: `linear-gradient(to bottom, var(--color-primary), transparent)` 
-              }} />
-              <Shield className="h-8 w-8 animate-pulse" style={{ color: 'var(--color-primary)' }} />
             </div>
 
-            <h1 className="text-5xl md:text-6xl font-bold font-poppins mb-4 bg-gradient-to-r bg-clip-text text-transparent" style={{ 
-              backgroundImage: `linear-gradient(135deg, var(--color-foreground), var(--color-primary))` 
-            }}>
-              Claims Management
-            </h1>
-            
-            <p className="text-xl font-roboto max-w-3xl mx-auto leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-              Track, manage, and monitor all your insurance claims with real-time updates and comprehensive analytics
-            </p>
-
-            {/* Quick Stats */}
-            <div className="flex items-center justify-center space-x-8 mt-8">
-              <div className="text-center">
-                <div className="text-3xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
-                  {claims.length}
-                </div>
-                <div className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
-                  Total Claims
-                </div>
-              </div>
-              <div className="h-12 w-px" style={{ backgroundColor: 'var(--color-border)' }} />
-              <div className="text-center">
-                <div className="text-3xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
-                  {claims.filter(c => c.status === 'approved').length}
-                </div>
-                <div className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
-                  Approved
-                </div>
-              </div>
-              <div className="h-12 w-px" style={{ backgroundColor: 'var(--color-border)' }} />
-              <div className="text-center">
-                <div className="text-3xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
-                  {formatCurrency(claims.reduce((sum, claim) => sum + (claim.approvedAmount || claim.requestedAmount), 0))}
-                </div>
-                <div className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
-                  Total Value
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Enhanced Search and Filter Section */}
-          <div className="mb-8 rounded-2xl shadow-xl p-6" style={{ backgroundColor: 'var(--color-card)' }}>
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-              {/* Search Bar */}
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5" style={{ color: 'var(--color-muted)' }} />
-                <input
-                  type="text"
-                  placeholder="Search by Policy ID, Provider, Claim Number..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border-2 rounded-xl font-roboto focus:outline-none focus:ring-4 focus:ring-opacity-20 transition-all duration-300"
-                  style={{ 
-                    borderColor: 'var(--color-border)',
-                    backgroundColor: 'var(--color-background)',
-                    color: 'var(--color-foreground)',
-                    '--tw-ring-color': 'var(--color-primary)'
-                  }}
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 hover:opacity-70 transition-opacity"
-                    style={{ color: 'var(--color-muted)' }}
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                )}
-              </div>
-
-              {/* Filter Toggle and Sort */}
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center space-x-2 px-4 py-3 rounded-xl font-medium font-roboto transition-all duration-300 hover:scale-105"
-                  style={{ 
-                    backgroundColor: showFilters ? 'var(--color-primary)' : 'var(--color-secondary)',
-                    color: showFilters ? 'white' : 'var(--color-primary)'
-                  }}
-                >
-                  <Filter className="h-5 w-5" />
-                  <span>Filters</span>
-                  {showFilters ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                </button>
-
-                <div className="relative">
-                  <select
-                    value={`${sortOption.field}-${sortOption.direction}`}
-                    onChange={(e) => {
-                      const [field, direction] = e.target.value.split('-') as [SortOption['field'], SortOption['direction']];
-                      setSortOption({ field, direction });
-                    }}
-                    className="appearance-none border-2 rounded-xl px-4 py-3 pr-10 font-roboto focus:outline-none focus:ring-4 focus:ring-opacity-20 transition-all"
+            {/* Enhanced Search and Filter Section */}
+            <div className="mb-8 rounded-2xl shadow-xl p-6" style={{ backgroundColor: 'var(--color-card)' }}>
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+                {/* Search Bar */}
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5" style={{ color: 'var(--color-muted)' }} />
+                  <input
+                    type="text"
+                    placeholder="Search by Policy ID, Provider, Claim Number..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 border-2 rounded-xl font-roboto focus:outline-none focus:ring-4 focus:ring-opacity-20 transition-all duration-300"
                     style={{ 
                       borderColor: 'var(--color-border)',
                       backgroundColor: 'var(--color-background)',
                       color: 'var(--color-foreground)',
                       '--tw-ring-color': 'var(--color-primary)'
                     }}
-                  >
-                    <option value="date-desc">Newest First</option>
-                    <option value="date-asc">Oldest First</option>
-                    <option value="amount-desc">Highest Amount</option>
-                    <option value="amount-asc">Lowest Amount</option>
-                    <option value="status-asc">Status A-Z</option>
-                    <option value="provider-asc">Provider A-Z</option>
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 pointer-events-none" style={{ color: 'var(--color-muted)' }} />
-                </div>
-              </div>
-            </div>
-
-            {/* Advanced Filters */}
-            {showFilters && (
-              <div className="border-t pt-6 space-y-6" style={{ borderColor: 'var(--color-border)' }}>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {/* Status Filter */}
-                  <div>
-                    <label className="block text-sm font-semibold font-roboto mb-3" style={{ color: 'var(--color-foreground)' }}>
-                      Status
-                    </label>
-                    <div className="space-y-2">
-                      {uniqueStatuses.map(status => (
-                        <label key={status} className="flex items-center space-x-3 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={filters.status.includes(status)}
-                            onChange={() => handleFilterChange('status', status)}
-                            className="w-4 h-4 rounded focus:ring-4 focus:ring-opacity-20"
-                            style={{
-                              accentColor: 'var(--color-primary)',
-                              '--tw-ring-color': 'var(--color-primary)'
-                            }}
-                          />
-                          <span className="text-sm font-roboto capitalize" style={{ color: 'var(--color-foreground)' }}>
-                            {status.replace('_', ' ')}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Policy Type Filter */}
-                  <div>
-                    <label className="block text-sm font-semibold font-roboto mb-3" style={{ color: 'var(--color-foreground)' }}>
-                      Policy Type
-                    </label>
-                    <div className="space-y-2">
-                      {uniquePolicyTypes.map(type => (
-                        <label key={type} className="flex items-center space-x-3 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={filters.policyType.includes(type)}
-                            onChange={() => handleFilterChange('policyType', type)}
-                            className="w-4 h-4 rounded focus:ring-4 focus:ring-opacity-20"
-                            style={{
-                              accentColor: 'var(--color-primary)',
-                              '--tw-ring-color': 'var(--color-primary)'
-                            }}
-                          />
-                          <span className="text-sm font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                            {getPolicyTypeIcon(type)} {type}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Date Range Filter */}
-                  <div>
-                    <label className="block text-sm font-semibold font-roboto mb-3" style={{ color: 'var(--color-foreground)' }}>
-                      Date Range
-                    </label>
-                    <select
-                      value={filters.dateRange}
-                      onChange={(e) => handleFilterChange('dateRange', e.target.value)}
-                      className="w-full border-2 rounded-lg px-3 py-2 font-roboto focus:outline-none focus:ring-4 focus:ring-opacity-20"
-                      style={{ 
-                        borderColor: 'var(--color-border)',
-                        backgroundColor: 'var(--color-background)',
-                        color: 'var(--color-foreground)',
-                        '--tw-ring-color': 'var(--color-primary)'
-                      }}
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 hover:opacity-70 transition-opacity"
+                      style={{ color: 'var(--color-muted)' }}
                     >
-                      <option value="all">All Time</option>
-                      <option value="last_week">Last Week</option>
-                      <option value="last_month">Last Month</option>
-                      <option value="last_3_months">Last 3 Months</option>
-                    </select>
-                  </div>
-
-                  {/* Amount Range Filter */}
-                  <div>
-                    <label className="block text-sm font-semibold font-roboto mb-3" style={{ color: 'var(--color-foreground)' }}>
-                      Amount Range
-                    </label>
-                    <select
-                      value={filters.amountRange}
-                      onChange={(e) => handleFilterChange('amountRange', e.target.value)}
-                      className="w-full border-2 rounded-lg px-3 py-2 font-roboto focus:outline-none focus:ring-4 focus:ring-opacity-20"
-                      style={{ 
-                        borderColor: 'var(--color-border)',
-                        backgroundColor: 'var(--color-background)',
-                        color: 'var(--color-foreground)',
-                        '--tw-ring-color': 'var(--color-primary)'
-                      }}
-                    >
-                      <option value="all">All Amounts</option>
-                      <option value="under_50k">Under ₹50,000</option>
-                      <option value="50k_to_100k">₹50,000 - ₹1,00,000</option>
-                      <option value="over_100k">Over ₹1,00,000</option>
-                    </select>
-                  </div>
+                      <X className="h-5 w-5" />
+                    </button>
+                  )}
                 </div>
 
-                {/* Clear Filters */}
-                <div className="flex justify-end">
+                {/* Filter Toggle and Sort */}
+                <div className="flex items-center space-x-4">
                   <button
-                    onClick={clearFilters}
-                    className="px-4 py-2 rounded-lg font-medium font-roboto transition-all duration-300 hover:scale-105"
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="flex items-center space-x-2 px-4 py-3 rounded-xl font-medium font-roboto transition-all duration-300 hover:scale-105"
                     style={{ 
-                      backgroundColor: 'var(--color-secondary)',
-                      color: 'var(--color-primary)'
+                      backgroundColor: showFilters ? 'var(--color-primary)' : 'var(--color-secondary)',
+                      color: showFilters ? 'white' : 'var(--color-primary)'
                     }}
                   >
-                    Clear All Filters
+                    <Filter className="h-5 w-5" />
+                    <span>Filters</span>
+                    {showFilters ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                   </button>
+
+                  <div className="relative">
+                    <select
+                      value={`${sortOption.field}-${sortOption.direction}`}
+                      onChange={(e) => {
+                        const [field, direction] = e.target.value.split('-') as [SortOption['field'], SortOption['direction']];
+                        setSortOption({ field, direction });
+                      }}
+                      className="appearance-none border-2 rounded-xl px-4 py-3 pr-10 font-roboto focus:outline-none focus:ring-4 focus:ring-opacity-20 transition-all"
+                      style={{ 
+                        borderColor: 'var(--color-border)',
+                        backgroundColor: 'var(--color-background)',
+                        color: 'var(--color-foreground)',
+                        '--tw-ring-color': 'var(--color-primary)'
+                      }}
+                    >
+                      <option value="date-desc">Newest First</option>
+                      <option value="date-asc">Oldest First</option>
+                      <option value="amount-desc">Highest Amount</option>
+                      <option value="amount-asc">Lowest Amount</option>
+                      <option value="status-asc">Status A-Z</option>
+                      <option value="provider-asc">Provider A-Z</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 pointer-events-none" style={{ color: 'var(--color-muted)' }} />
+                  </div>
                 </div>
               </div>
-            )}
 
-            {/* Search Results Info */}
-            {(debouncedSearchQuery || Object.values(filters).some(f => Array.isArray(f) ? f.length > 0 : f !== 'all')) && (
-              <div className="mt-4 pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
-                <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
-                  Showing {filteredAndSortedClaims.length} of {claims.length} claims
-                  {debouncedSearchQuery && ` for "${debouncedSearchQuery}"`}
-                </p>
-              </div>
-            )}
-          </div>
+              {/* Advanced Filters */}
+              {showFilters && (
+                <div className="border-t pt-6 space-y-6" style={{ borderColor: 'var(--color-border)' }}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {/* Status Filter */}
+                    <div>
+                      <label className="block text-sm font-semibold font-roboto mb-3" style={{ color: 'var(--color-foreground)' }}>
+                        Status
+                      </label>
+                      <div className="space-y-2">
+                        {uniqueStatuses.map(status => (
+                          <label key={status} className="flex items-center space-x-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={filters.status.includes(status)}
+                              onChange={() => handleFilterChange('status', status)}
+                              className="w-4 h-4 rounded focus:ring-4 focus:ring-opacity-20"
+                              style={{
+                                accentColor: 'var(--color-primary)',
+                                '--tw-ring-color': 'var(--color-primary)'
+                              }}
+                            />
+                            <span className="text-sm font-roboto capitalize" style={{ color: 'var(--color-foreground)' }}>
+                              {status.replace('_', ' ')}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
 
-          {/* Enhanced Claims Grid */}
-          {filteredAndSortedClaims.length === 0 ? (
-            <div className="text-center py-16 rounded-2xl shadow-xl" style={{ backgroundColor: 'var(--color-card)' }}>
-              <div className="relative">
-                <FileText className="h-20 w-20 mx-auto mb-6 animate-pulse" style={{ color: 'var(--color-muted)' }} />
-                <div className="absolute -top-2 -right-2">
-                  <Search className="h-8 w-8 text-blue-500 animate-bounce" />
+                    {/* Policy Type Filter */}
+                    <div>
+                      <label className="block text-sm font-semibold font-roboto mb-3" style={{ color: 'var(--color-foreground)' }}>
+                        Policy Type
+                      </label>
+                      <div className="space-y-2">
+                        {uniquePolicyTypes.map(type => (
+                          <label key={type} className="flex items-center space-x-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={filters.policyType.includes(type)}
+                              onChange={() => handleFilterChange('policyType', type)}
+                              className="w-4 h-4 rounded focus:ring-4 focus:ring-opacity-20"
+                              style={{
+                                accentColor: 'var(--color-primary)',
+                                '--tw-ring-color': 'var(--color-primary)'
+                              }}
+                            />
+                            <span className="text-sm font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                              {getPolicyTypeIcon(type)} {type}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Date Range Filter */}
+                    <div>
+                      <label className="block text-sm font-semibold font-roboto mb-3" style={{ color: 'var(--color-foreground)' }}>
+                        Date Range
+                      </label>
+                      <select
+                        value={filters.dateRange}
+                        onChange={(e) => handleFilterChange('dateRange', e.target.value)}
+                        className="w-full border-2 rounded-lg px-3 py-2 font-roboto focus:outline-none focus:ring-4 focus:ring-opacity-20"
+                        style={{ 
+                          borderColor: 'var(--color-border)',
+                          backgroundColor: 'var(--color-background)',
+                          color: 'var(--color-foreground)',
+                          '--tw-ring-color': 'var(--color-primary)'
+                        }}
+                      >
+                        <option value="all">All Time</option>
+                        <option value="last_week">Last Week</option>
+                        <option value="last_month">Last Month</option>
+                        <option value="last_3_months">Last 3 Months</option>
+                      </select>
+                    </div>
+
+                    {/* Amount Range Filter */}
+                    <div>
+                      <label className="block text-sm font-semibold font-roboto mb-3" style={{ color: 'var(--color-foreground)' }}>
+                        Amount Range
+                      </label>
+                      <select
+                        value={filters.amountRange}
+                        onChange={(e) => handleFilterChange('amountRange', e.target.value)}
+                        className="w-full border-2 rounded-lg px-3 py-2 font-roboto focus:outline-none focus:ring-4 focus:ring-opacity-20"
+                        style={{ 
+                          borderColor: 'var(--color-border)',
+                          backgroundColor: 'var(--color-background)',
+                          color: 'var(--color-foreground)',
+                          '--tw-ring-color': 'var(--color-primary)'
+                        }}
+                      >
+                        <option value="all">All Amounts</option>
+                        <option value="under_50k">Under ₹50,000</option>
+                        <option value="50k_to_100k">₹50,000 - ₹1,00,000</option>
+                        <option value="over_100k">Over ₹1,00,000</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Clear Filters */}
+                  <div className="flex justify-end">
+                    <button
+                      onClick={clearFilters}
+                      className="px-4 py-2 rounded-lg font-medium font-roboto transition-all duration-300 hover:scale-105"
+                      style={{ 
+                        backgroundColor: 'var(--color-secondary)',
+                        color: 'var(--color-primary)'
+                      }}
+                    >
+                      Clear All Filters
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <h3 className="text-2xl font-bold font-poppins mb-3" style={{ color: 'var(--color-foreground)' }}>
-                No Claims Found
-              </h3>
-              <p className="font-roboto mb-6" style={{ color: 'var(--color-muted)' }}>
-                {debouncedSearchQuery || Object.values(filters).some(f => Array.isArray(f) ? f.length > 0 : f !== 'all')
-                  ? 'No claims match your current search and filter criteria.'
-                  : 'You haven\'t submitted any claims yet.'
-                }
-              </p>
+              )}
+
+              {/* Search Results Info */}
               {(debouncedSearchQuery || Object.values(filters).some(f => Array.isArray(f) ? f.length > 0 : f !== 'all')) && (
-                <button 
-                  onClick={clearFilters}
-                  className="px-6 py-3 rounded-xl font-semibold font-roboto text-white transition-all duration-300 hover:scale-105"
-                  style={{ backgroundColor: 'var(--color-primary)' }}
-                >
-                  Clear Filters
-                </button>
+                <div className="mt-4 pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
+                  <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+                    Showing {filteredAndSortedClaims.length} of {claims.length} claims
+                    {debouncedSearchQuery && ` for "${debouncedSearchQuery}"`}
+                  </p>
+                </div>
               )}
             </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
-                {paginatedClaims.map((claim) => (
-                  <div
-                    key={claim.id}
-                    className="group rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden relative"
-                    style={{ backgroundColor: 'var(--color-card)' }}
-                  >
-                    {/* Priority Indicator */}
-                    <div className={`absolute top-0 left-0 w-2 h-full ${getPriorityColor(claim.priority)} transition-all duration-300 group-hover:w-3`} />
 
-                    <div className="p-6">
-                      {/* Header */}
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center space-x-4">
-                          <div className="relative">
-                            <img
-                              src={claim.providerLogo}
-                              alt={claim.providerName}
-                              className="w-12 h-12 rounded-full object-cover border-2 transition-transform duration-300 group-hover:scale-110"
-                              style={{ borderColor: 'var(--color-border)' }}
-                              loading="lazy"
-                            />
-                            <div className="absolute -bottom-1 -right-1 text-lg">
-                              {getPolicyTypeIcon(claim.policyType)}
+            {/* Enhanced Claims Grid */}
+            {filteredAndSortedClaims.length === 0 ? (
+              <div className="text-center py-16 rounded-2xl shadow-xl" style={{ backgroundColor: 'var(--color-card)' }}>
+                <div className="relative">
+                  <FileText className="h-20 w-20 mx-auto mb-6 animate-pulse" style={{ color: 'var(--color-muted)' }} />
+                  <div className="absolute -top-2 -right-2">
+                    <Search className="h-8 w-8 text-blue-500 animate-bounce" />
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold font-poppins mb-3" style={{ color: 'var(--color-foreground)' }}>
+                  No Claims Found
+                </h3>
+                <p className="font-roboto mb-6" style={{ color: 'var(--color-muted)' }}>
+                  {debouncedSearchQuery || Object.values(filters).some(f => Array.isArray(f) ? f.length > 0 : f !== 'all')
+                    ? 'No claims match your current search and filter criteria.'
+                    : 'You haven\'t submitted any claims yet.'
+                  }
+                </p>
+                {(debouncedSearchQuery || Object.values(filters).some(f => Array.isArray(f) ? f.length > 0 : f !== 'all')) && (
+                  <button 
+                    onClick={clearFilters}
+                    className="px-6 py-3 rounded-xl font-semibold font-roboto text-white transition-all duration-300 hover:scale-105"
+                    style={{ backgroundColor: 'var(--color-primary)' }}
+                  >
+                    Clear Filters
+                  </button>
+                )}
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
+                  {paginatedClaims.map((claim) => (
+                    <div
+                      key={claim.id}
+                      className="group rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden relative"
+                      style={{ backgroundColor: 'var(--color-card)' }}
+                    >
+                      {/* Priority Indicator */}
+                      <div className={`absolute top-0 left-0 w-2 h-full ${getPriorityColor(claim.priority)} transition-all duration-300 group-hover:w-3`} />
+
+                      <div className="p-6">
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="flex items-center space-x-4">
+                            <div className="relative">
+                              <img
+                                src={claim.providerLogo}
+                                alt={claim.providerName}
+                                className="w-12 h-12 rounded-full object-cover border-2 transition-transform duration-300 group-hover:scale-110"
+                                style={{ borderColor: 'var(--color-border)' }}
+                                loading="lazy"
+                              />
+                              <div className="absolute -bottom-1 -right-1 text-lg">
+                                {getPolicyTypeIcon(claim.policyType)}
+                              </div>
+                            </div>
+                            <div>
+                              <h3 className="font-bold font-poppins text-lg" style={{ color: 'var(--color-foreground)' }}>
+                                {claim.providerName}
+                              </h3>
+                              <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+                                {claim.policyType} Insurance
+                              </p>
                             </div>
                           </div>
-                          <div>
-                            <h3 className="font-bold font-poppins text-lg" style={{ color: 'var(--color-foreground)' }}>
-                              {claim.providerName}
-                            </h3>
-                            <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
-                              {claim.policyType} Insurance
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold border-2 ${getStatusColor(claim.status)} flex items-center space-x-1`}>
+                            {getStatusIcon(claim.status)}
+                            <span className="capitalize">{claim.status.replace('_', ' ')}</span>
+                          </span>
+                        </div>
+
+                        {/* Policy Details */}
+                        <div className="space-y-3 mb-6">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Policy ID:</span>
+                            <span className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                              {claim.policyId}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Claim Number:</span>
+                            <span className="font-semibold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                              {claim.claimNumber}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Description:</span>
+                            <span className="font-medium font-roboto text-right max-w-48 truncate" style={{ color: 'var(--color-foreground)' }}>
+                              {claim.description}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Amount and Date Grid */}
+                        <div className="grid grid-cols-2 gap-4 mb-6">
+                          <div className="p-4 rounded-xl text-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                            <div className="flex items-center justify-center mb-2">
+                              <DollarSign className="h-5 w-5" style={{ color: 'var(--color-primary)' }} />
+                            </div>
+                            <p className="text-xs font-roboto uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
+                              Requested
+                            </p>
+                            <p className="text-lg font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                              {formatCurrency(claim.requestedAmount)}
+                            </p>
+                            {claim.approvedAmount && (
+                              <>
+                                <p className="text-xs font-roboto uppercase tracking-wide mt-2" style={{ color: 'var(--color-muted)' }}>
+                                  Approved
+                                </p>
+                                <p className="text-sm font-bold font-poppins text-emerald-600">
+                                  {formatCurrency(claim.approvedAmount)}
+                                </p>
+                              </>
+                            )}
+                          </div>
+
+                          <div className="p-4 rounded-xl text-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                            <div className="flex items-center justify-center mb-2">
+                              <Calendar className="h-5 w-5" style={{ color: 'var(--color-primary)' }} />
+                            </div>
+                            <p className="text-xs font-roboto uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
+                              Initiated
+                            </p>
+                            <p className="text-lg font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                              {formatDate(claim.claimInitiatedDate)}
+                            </p>
+                            <p className="text-xs font-roboto mt-2" style={{ color: 'var(--color-muted)' }}>
+                              Updated: {formatDate(claim.lastUpdated)}
                             </p>
                           </div>
                         </div>
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold border-2 ${getStatusColor(claim.status)} flex items-center space-x-1`}>
-                          {getStatusIcon(claim.status)}
-                          <span className="capitalize">{claim.status.replace('_', ' ')}</span>
-                        </span>
-                      </div>
 
-                      {/* Policy Details */}
-                      <div className="space-y-3 mb-6">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Policy ID:</span>
-                          <span className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-                            {claim.policyId}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Claim Number:</span>
-                          <span className="font-semibold font-poppins" style={{ color: 'var(--color-primary)' }}>
-                            {claim.claimNumber}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Description:</span>
-                          <span className="font-medium font-roboto text-right max-w-48 truncate" style={{ color: 'var(--color-foreground)' }}>
-                            {claim.description}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Amount and Date Grid */}
-                      <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="p-4 rounded-xl text-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
-                          <div className="flex items-center justify-center mb-2">
-                            <DollarSign className="h-5 w-5" style={{ color: 'var(--color-primary)' }} />
-                          </div>
-                          <p className="text-xs font-roboto uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
-                            Requested
-                          </p>
-                          <p className="text-lg font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
-                            {formatCurrency(claim.requestedAmount)}
-                          </p>
-                          {claim.approvedAmount && (
-                            <>
-                              <p className="text-xs font-roboto uppercase tracking-wide mt-2" style={{ color: 'var(--color-muted)' }}>
-                                Approved
+                        {/* Comments Section */}
+                        <div className="mb-6">
+                          <button
+                            onClick={() => toggleComments(claim.id)}
+                            className="flex items-center justify-between w-full p-3 rounded-xl transition-all duration-300 hover:scale-105"
+                            style={{ backgroundColor: 'var(--color-secondary)' }}
+                          >
+                            <div className="flex items-center space-x-2">
+                              <MessageSquare className="h-5 w-5" style={{ color: 'var(--color-primary)' }} />
+                              <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                                Comments
+                              </span>
+                            </div>
+                            {expandedComments.has(claim.id) ? 
+                              <ChevronUp className="h-5 w-5" style={{ color: 'var(--color-muted)' }} /> : 
+                              <ChevronDown className="h-5 w-5" style={{ color: 'var(--color-muted)' }} />
+                            }
+                          </button>
+                          
+                          {expandedComments.has(claim.id) && (
+                            <div className="mt-3 p-4 rounded-xl border-l-4 animate-slide-down" style={{ 
+                              backgroundColor: 'var(--color-background)',
+                              borderLeftColor: 'var(--color-primary)'
+                            }}>
+                              <p className="text-sm font-roboto leading-relaxed" style={{ color: 'var(--color-foreground)' }}>
+                                {claim.comments}
                               </p>
-                              <p className="text-sm font-bold font-poppins text-emerald-600">
-                                {formatCurrency(claim.approvedAmount)}
-                              </p>
-                            </>
+                              {claim.adjusterName && (
+                                <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--color-border)' }}>
+                                  <div className="flex items-center space-x-2">
+                                    <User className="h-4 w-4" style={{ color: 'var(--color-muted)' }} />
+                                    <span className="text-xs font-roboto" style={{ color: 'var(--color-muted)' }}>
+                                      Adjuster: {claim.adjusterName}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           )}
                         </div>
 
-                        <div className="p-4 rounded-xl text-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
-                          <div className="flex items-center justify-center mb-2">
-                            <Calendar className="h-5 w-5" style={{ color: 'var(--color-primary)' }} />
-                          </div>
-                          <p className="text-xs font-roboto uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
-                            Initiated
-                          </p>
-                          <p className="text-lg font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
-                            {formatDate(claim.claimInitiatedDate)}
-                          </p>
-                          <p className="text-xs font-roboto mt-2" style={{ color: 'var(--color-muted)' }}>
-                            Updated: {formatDate(claim.lastUpdated)}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Comments Section */}
-                      <div className="mb-6">
-                        <button
-                          onClick={() => toggleComments(claim.id)}
-                          className="flex items-center justify-between w-full p-3 rounded-xl transition-all duration-300 hover:scale-105"
-                          style={{ backgroundColor: 'var(--color-secondary)' }}
-                        >
-                          <div className="flex items-center space-x-2">
-                            <MessageSquare className="h-5 w-5" style={{ color: 'var(--color-primary)' }} />
-                            <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                              Comments
-                            </span>
-                          </div>
-                          {expandedComments.has(claim.id) ? 
-                            <ChevronUp className="h-5 w-5" style={{ color: 'var(--color-muted)' }} /> : 
-                            <ChevronDown className="h-5 w-5" style={{ color: 'var(--color-muted)' }} />
-                          }
-                        </button>
-                        
-                        {expandedComments.has(claim.id) && (
-                          <div className="mt-3 p-4 rounded-xl border-l-4 animate-slide-down" style={{ 
-                            backgroundColor: 'var(--color-background)',
-                            borderLeftColor: 'var(--color-primary)'
-                          }}>
-                            <p className="text-sm font-roboto leading-relaxed" style={{ color: 'var(--color-foreground)' }}>
-                              {claim.comments}
-                            </p>
-                            {claim.adjusterName && (
-                              <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--color-border)' }}>
-                                <div className="flex items-center space-x-2">
-                                  <User className="h-4 w-4" style={{ color: 'var(--color-muted)' }} />
-                                  <span className="text-xs font-roboto" style={{ color: 'var(--color-muted)' }}>
-                                    Adjuster: {claim.adjusterName}
-                                  </span>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Action Buttons */}
-                      <div className="flex space-x-3">
-                        <button className="flex-1 py-3 px-4 rounded-xl font-semibold font-roboto text-white transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2" style={{ backgroundColor: 'var(--color-primary)' }}>
-                          <Eye className="h-4 w-4" />
-                          <span>View Details</span>
-                        </button>
-                        <button className="py-3 px-4 rounded-xl transition-all duration-300 hover:scale-105" style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}>
-                          <Download className="h-4 w-4" />
-                        </button>
-                        {claim.adjusterContact && (
+                        {/* Action Buttons */}
+                        <div className="flex space-x-3">
+                          <button className="flex-1 py-3 px-4 rounded-xl font-semibold font-roboto text-white transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2" style={{ backgroundColor: 'var(--color-primary)' }}>
+                            <Eye className="h-4 w-4" />
+                            <span>View Details</span>
+                          </button>
                           <button className="py-3 px-4 rounded-xl transition-all duration-300 hover:scale-105" style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}>
-                            <Phone className="h-4 w-4" />
+                            <Download className="h-4 w-4" />
                           </button>
+                          {claim.adjusterContact && (
+                            <button className="py-3 px-4 rounded-xl transition-all duration-300 hover:scale-105" style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}>
+                              <Phone className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Progress Indicator */}
+                        {claim.status === 'processing' && (
+                          <div className="mt-4 p-3 rounded-xl" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs font-roboto" style={{ color: 'var(--color-muted)' }}>
+                                Processing Progress
+                              </span>
+                              <span className="text-xs font-roboto" style={{ color: 'var(--color-muted)' }}>
+                                Est. {formatDate(claim.estimatedResolution)}
+                              </span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className="h-2 rounded-full bg-gradient-to-r animate-pulse" style={{ 
+                                background: `linear-gradient(90deg, var(--color-primary), var(--color-accent))`,
+                                width: '65%'
+                              }}></div>
+                            </div>
+                          </div>
                         )}
                       </div>
-
-                      {/* Progress Indicator */}
-                      {claim.status === 'processing' && (
-                        <div className="mt-4 p-3 rounded-xl" style={{ backgroundColor: 'var(--color-secondary)' }}>
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-roboto" style={{ color: 'var(--color-muted)' }}>
-                              Processing Progress
-                            </span>
-                            <span className="text-xs font-roboto" style={{ color: 'var(--color-muted)' }}>
-                              Est. {formatDate(claim.estimatedResolution)}
-                            </span>
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div className="h-2 rounded-full bg-gradient-to-r animate-pulse" style={{ 
-                              background: `linear-gradient(90deg, var(--color-primary), var(--color-accent))`,
-                              width: '65%'
-                            }}></div>
-                          </div>
-                        </div>
-                      )}
                     </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Enhanced Pagination */}
-              {totalPages > 1 && (
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 rounded-2xl shadow-xl" style={{ backgroundColor: 'var(--color-card)' }}>
-                  <div className="flex items-center space-x-4">
-                    <span className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
-                      Items per page:
-                    </span>
-                    <select
-                      value={itemsPerPage}
-                      onChange={(e) => {
-                        setItemsPerPage(Number(e.target.value));
-                        setCurrentPage(1);
-                      }}
-                      className="border-2 rounded-lg px-3 py-2 font-roboto focus:outline-none focus:ring-4 focus:ring-opacity-20"
-                      style={{ 
-                        borderColor: 'var(--color-border)',
-                        backgroundColor: 'var(--color-background)',
-                        color: 'var(--color-foreground)',
-                        '--tw-ring-color': 'var(--color-primary)'
-                      }}
-                    >
-                      <option value={10}>10</option>
-                      <option value={20}>20</option>
-                      <option value={50}>50</option>
-                    </select>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => setCurrentPage(1)}
-                      disabled={currentPage === 1}
-                      className="p-2 rounded-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:scale-100"
-                      style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}
-                    >
-                      <ChevronsLeft className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                      disabled={currentPage === 1}
-                      className="p-2 rounded-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:scale-100"
-                      style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}
-                    >
-                      <ChevronLeft className="h-5 w-5" />
-                    </button>
-
-                    <div className="flex items-center space-x-1">
-                      {[...Array(Math.min(5, totalPages))].map((_, index) => {
-                        let pageNumber;
-                        if (totalPages <= 5) {
-                          pageNumber = index + 1;
-                        } else if (currentPage <= 3) {
-                          pageNumber = index + 1;
-                        } else if (currentPage >= totalPages - 2) {
-                          pageNumber = totalPages - 4 + index;
-                        } else {
-                          pageNumber = currentPage - 2 + index;
-                        }
-
-                        return (
-                          <button
-                            key={pageNumber}
-                            onClick={() => setCurrentPage(pageNumber)}
-                            className={`px-4 py-2 rounded-lg font-semibold font-roboto transition-all duration-300 hover:scale-105 ${
-                              currentPage === pageNumber 
-                                ? 'text-white shadow-lg' 
-                                : ''
-                            }`}
-                            style={{
-                              backgroundColor: currentPage === pageNumber 
-                                ? 'var(--color-primary)' 
-                                : 'var(--color-secondary)',
-                              color: currentPage === pageNumber 
-                                ? 'white' 
-                                : 'var(--color-primary)'
-                            }}
-                          >
-                            {pageNumber}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <button
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                      disabled={currentPage === totalPages}
-                      className="p-2 rounded-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:scale-100"
-                      style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}
-                    >
-                      <ChevronRight className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={() => setCurrentPage(totalPages)}
-                      disabled={currentPage === totalPages}
-                      className="p-2 rounded-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:scale-100"
-                      style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}
-                    >
-                      <ChevronsRight className="h-5 w-5" />
-                    </button>
-                  </div>
-
-                  <div className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
-                    Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredAndSortedClaims.length)} of {filteredAndSortedClaims.length} claims
-                  </div>
+                  ))}
                 </div>
-              )}
-            </>
-          )}
+
+                {/* Enhanced Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 rounded-2xl shadow-xl" style={{ backgroundColor: 'var(--color-card)' }}>
+                    <div className="flex items-center space-x-4">
+                      <span className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+                        Items per page:
+                      </span>
+                      <select
+                        value={itemsPerPage}
+                        onChange={(e) => {
+                          setItemsPerPage(Number(e.target.value));
+                          setCurrentPage(1);
+                        }}
+                        className="border-2 rounded-lg px-3 py-2 font-roboto focus:outline-none focus:ring-4 focus:ring-opacity-20"
+                        style={{ 
+                          borderColor: 'var(--color-border)',
+                          backgroundColor: 'var(--color-background)',
+                          color: 'var(--color-foreground)',
+                          '--tw-ring-color': 'var(--color-primary)'
+                        }}
+                      >
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                        className="p-2 rounded-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:scale-100"
+                        style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}
+                      >
+                        <ChevronsLeft className="h-5 w-5" />
+                      </button>
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className="p-2 rounded-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:scale-100"
+                        style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}
+                      >
+                        <ChevronLeft className="h-5 w-5" />
+                      </button>
+
+                      <div className="flex items-center space-x-1">
+                        {[...Array(Math.min(5, totalPages))].map((_, index) => {
+                          let pageNumber;
+                          if (totalPages <= 5) {
+                            pageNumber = index + 1;
+                          } else if (currentPage <= 3) {
+                            pageNumber = index + 1;
+                          } else if (currentPage >= totalPages - 2) {
+                            pageNumber = totalPages - 4 + index;
+                          } else {
+                            pageNumber = currentPage - 2 + index;
+                          }
+
+                          return (
+                            <button
+                              key={pageNumber}
+                              onClick={() => setCurrentPage(pageNumber)}
+                              className={`px-4 py-2 rounded-lg font-semibold font-roboto transition-all duration-300 hover:scale-105 ${
+                                currentPage === pageNumber 
+                                  ? 'text-white shadow-lg' 
+                                  : ''
+                              }`}
+                              style={{
+                                backgroundColor: currentPage === pageNumber 
+                                  ? 'var(--color-primary)' 
+                                  : 'var(--color-secondary)',
+                                color: currentPage === pageNumber 
+                                  ? 'white' 
+                                  : 'var(--color-primary)'
+                              }}
+                            >
+                              {pageNumber}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                        className="p-2 rounded-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:scale-100"
+                        style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                      </button>
+                      <button
+                        onClick={() => setCurrentPage(totalPages)}
+                        disabled={currentPage === totalPages}
+                        className="p-2 rounded-lg transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:scale-100"
+                        style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}
+                      >
+                        <ChevronsRight className="h-5 w-5" />
+                      </button>
+                    </div>
+
+                    <div className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+                      Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredAndSortedClaims.length)} of {filteredAndSortedClaims.length} claims
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
