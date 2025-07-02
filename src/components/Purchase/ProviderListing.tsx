@@ -1,8 +1,8 @@
 import React from 'react';
-import ResponsiveProviderListing from './ResponsiveProviderListing';
+import EnhancedProviderListing from './EnhancedProviderListing';
 
 const ProviderListing: React.FC = () => {
-  return <ResponsiveProviderListing />;
+  return <EnhancedProviderListing />;
 };
 
 export default ProviderListing;

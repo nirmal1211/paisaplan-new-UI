@@ -1,8 +1,8 @@
 import React from 'react';
-import ProviderDetailsContainer from './ProviderDetailsContainer';
+import EnhancedProviderDetails from './EnhancedProviderDetails';
 
 const ProviderDetails: React.FC = () => {
-  return <ProviderDetailsContainer />;
+  return <EnhancedProviderDetails />;
 };
 
 export default ProviderDetails;

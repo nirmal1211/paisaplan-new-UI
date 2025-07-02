@@ -5,16 +5,16 @@ import { mockProviders } from '../../data/purchaseData';
 import { Provider } from '../../types/purchase';
 import { 
   Star, Check, ArrowRight, Users, Shield, Phone, ArrowLeft,
-  X, BarChart3, ChevronLeft, ChevronRight, TrendingUp, Award,
   Heart, Car, Home, Plane, Gift, Target, ExternalLink, Zap
 } from 'lucide-react';
+import ComparisonPanel from './ComparisonPanel';
+import ComparisonModal from './ComparisonModal';
 
 const ResponsiveProviderListing: React.FC = () => {
   const navigate = useNavigate();
   const { state, dispatch } = usePurchase();
   const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
   const [showComparison, setShowComparison] = useState(false);
-  const [comparisonExpanded, setComparisonExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   // Responsive breakpoint detection
@@ -45,6 +45,17 @@ const ResponsiveProviderListing: React.FC = () => {
   const handleProviderDetails = (provider: Provider) => {
     dispatch({ type: 'SET_CURRENT_PROVIDER', payload: provider });
     navigate(`/buy-policy/provider/${provider.id}`);
+  };
+
+  const handleRemoveProvider = (providerId: string) => {
+    const newSelection = selectedProviders.filter(id => id !== providerId);
+    setSelectedProviders(newSelection);
+    dispatch({ type: 'SET_SELECTED_PROVIDERS', payload: newSelection });
+  };
+
+  const handleClearAll = () => {
+    setSelectedProviders([]);
+    dispatch({ type: 'SET_SELECTED_PROVIDERS', payload: [] });
   };
 
   const formatCurrency = (amount: number) => {
@@ -261,124 +272,6 @@ const ResponsiveProviderListing: React.FC = () => {
     </div>
   );
 
-  // Comparison Toggle Button
-  const ComparisonToggle = () => {
-    if (selectedProviders.length === 0) return null;
-
-    return (
-      <div className="fixed bottom-6 right-6 z-40">
-        <button
-          onClick={() => setShowComparison(true)}
-          className="bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 hover:scale-105"
-          aria-label="Open comparison"
-        >
-          <div className="flex items-center space-x-2">
-            <BarChart3 className="h-6 w-6" />
-            <span className="bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
-              {selectedProviders.length}
-            </span>
-          </div>
-        </button>
-      </div>
-    );
-  };
-
-  // Comparison Panel/Modal
-  const ComparisonPanel = () => {
-    const compareProviders = mockProviders.filter(p => selectedProviders.includes(p.id));
-    
-    if (!showComparison || compareProviders.length === 0) return null;
-
-    // Desktop: Right sidebar (30% width), Mobile: Bottom sheet (80vh)
-    const panelClasses = isMobile 
-      ? "fixed inset-x-0 bottom-0 h-[80vh] rounded-t-2xl"
-      : "fixed right-0 top-0 w-[30%] h-full";
-
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 animate-fade-in">
-        <div className={`${panelClasses} bg-white shadow-2xl overflow-hidden transition-all duration-300`}>
-          {/* Header */}
-          <div className="p-6 border-b border-gray-200 bg-white">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-                Compare Providers ({selectedProviders.length})
-              </h3>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setSelectedProviders([])}
-                  className="px-3 py-1 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
-                >
-                  Clear All
-                </button>
-                <button
-                  onClick={() => setShowComparison(false)}
-                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto p-6">
-            <div className="space-y-4">
-              {compareProviders.map(provider => (
-                <div key={provider.id} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <img
-                      src={provider.logo}
-                      alt={provider.name}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
-                    <div className="flex-1">
-                      <h4 className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-                        {provider.name}
-                      </h4>
-                      <div className="flex items-center space-x-1">
-                        {renderStars(provider.rating)}
-                        <span className="text-sm font-roboto ml-1" style={{ color: 'var(--color-muted)' }}>
-                          {provider.rating}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
-                        {formatCurrency(provider.basePremium)}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-500">Hospitals:</span>
-                      <span className="font-semibold ml-1">{provider.features.cashlessHospitals?.toLocaleString()}+</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Claims:</span>
-                      <span className="font-semibold ml-1">{provider.features.claimSettlementRatio}%</span>
-                    </div>
-                  </div>
-                  
-                  <button
-                    onClick={() => {
-                      setShowComparison(false);
-                      handleProviderDetails(provider);
-                    }}
-                    className="w-full mt-3 py-2 px-4 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90"
-                    style={{ backgroundColor: 'var(--color-primary)' }}
-                  >
-                    Choose This Provider
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)' }}>
       <div className="py-8">
@@ -424,11 +317,22 @@ const ResponsiveProviderListing: React.FC = () => {
         {/* Final Advertisement */}
         <AdBanner type="general" index={99} />
 
-        {/* Comparison Toggle */}
-        <ComparisonToggle />
+        {/* Persistent Comparison Panel */}
+        <ComparisonPanel 
+          selectedProviders={selectedProviders}
+          onRemoveProvider={handleRemoveProvider}
+          onClearAll={handleClearAll}
+          onCompare={() => setShowComparison(true)}
+          onSelectProvider={handleProviderDetails}
+        />
 
-        {/* Comparison Panel */}
-        <ComparisonPanel />
+        {/* Comparison Modal */}
+        <ComparisonModal 
+          isOpen={showComparison}
+          selectedProviders={selectedProviders}
+          onClose={() => setShowComparison(false)}
+          onSelectProvider={handleProviderDetails}
+        />
 
         {/* Help Section */}
         <div className="max-w-4xl mx-auto px-4 mt-16">
