@@ -1,8 +1,8 @@
 import React from 'react';
-import PolicyDetailsWithSticky from './PolicyDetailsWithSticky';
+import ProviderDetailsContainer from './ProviderDetailsContainer';
 
 const ProviderDetails: React.FC = () => {
-  return <PolicyDetailsWithSticky />;
+  return <ProviderDetailsContainer />;
 };
 
 export default ProviderDetails;

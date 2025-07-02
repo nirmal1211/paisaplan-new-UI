@@ -1,8 +1,8 @@
 import React from 'react';
-import CompactProviderCards from './CompactProviderCards';
+import ResponsiveProviderListing from './ResponsiveProviderListing';
 
 const ProviderListing: React.FC = () => {
-  return <CompactProviderCards />;
+  return <ResponsiveProviderListing />;
 };
 
 export default ProviderListing;
