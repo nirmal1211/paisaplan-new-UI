@@ -90,7 +90,7 @@ function App() {
                     }
                   />
                   <Route
-                    path=":policyType/:providerId"
+                    path=":policyType/provider/:providerId"
                     element={
                       <ProtectedRoute>
                         <ProviderDetailsPage />

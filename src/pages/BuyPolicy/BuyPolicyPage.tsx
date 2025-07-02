@@ -27,7 +27,11 @@ import {
   Info,
   AlertCircle,
   Plus,
-  Minus
+  Minus,
+  Home,
+  User,
+  Menu,
+  X
 } from 'lucide-react';
 
 interface PolicyType {
@@ -51,6 +55,23 @@ interface PolicyType {
   testimonials: { name: string; rating: number; comment: string; avatar: string; }[];
 }
 
+interface Dependent {
+  id: string;
+  name: string;
+  age: number;
+  relationship: string;
+  preExistingConditions: string[];
+  medicalHistory: string;
+}
+
+interface ClaimRecord {
+  id: string;
+  date: string;
+  amount: number;
+  nature: string;
+  status: 'approved' | 'rejected' | 'pending';
+}
+
 interface FormData {
   mobile: string;
   fullName: string;
@@ -58,13 +79,17 @@ interface FormData {
   // Health specific
   age?: number;
   preExistingConditions?: string[];
-  dependents?: { name: string; age: number; relationship: string; }[];
+  dependents?: Dependent[];
   // Motor specific
   vehicleRegNumber?: string;
   vehicleMake?: string;
   vehicleModel?: string;
   manufacturingYear?: number;
-  claimsHistory?: { count: number; lastClaimDate?: string; amount?: number; };
+  claimsHistory?: {
+    numberOfClaims: number;
+    claimRecords: ClaimRecord[];
+    ncbPercentage: number;
+  };
   // Life specific
   occupation?: string;
   annualIncome?: number;
@@ -78,12 +103,19 @@ const BuyPolicyPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     mobile: '',
     fullName: '',
-    email: ''
+    email: '',
+    dependents: [],
+    claimsHistory: {
+      numberOfClaims: 0,
+      claimRecords: [],
+      ncbPercentage: 0
+    }
   });
   const [currentStep, setCurrentStep] = useState(1);
   const [expandedSections, setExpandedSections] = useState<string[]>(['benefits']);
   const [activeInfoSection, setActiveInfoSection] = useState('overview');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const policyTypes: Record<string, PolicyType> = {
     health: {
@@ -117,7 +149,7 @@ const BuyPolicyPage: React.FC = () => {
         notCovered: [
           'Pre-existing diseases (first 2-4 years)',
           'Cosmetic surgery',
-          'Dental treatment (unless accidental)',
+          'Dental treatment (unless due to accident)',
           'Pregnancy expenses (first 2 years)',
           'Self-inflicted injuries',
           'War & nuclear risks',
@@ -437,12 +469,40 @@ const BuyPolicyPage: React.FC = () => {
       }
     }
 
+    if (policyType === 'health' && currentStep === 3) {
+      // Validate dependents
+      if (formData.dependents && formData.dependents.length > 0) {
+        formData.dependents.forEach((dependent, index) => {
+          if (!dependent.name) {
+            newErrors[`dependent_${index}_name`] = 'Dependent name is required';
+          }
+          if (!dependent.age || dependent.age < 0) {
+            newErrors[`dependent_${index}_age`] = 'Valid age is required';
+          }
+          if (!dependent.relationship) {
+            newErrors[`dependent_${index}_relationship`] = 'Relationship is required';
+          }
+        });
+      }
+    }
+
     if ((policyType === 'motor' || policyType === 'two-wheeler') && currentStep === 2) {
       if (!formData.vehicleRegNumber) {
         newErrors.vehicleRegNumber = 'Vehicle registration number is required';
       }
       if (!formData.vehicleMake) {
         newErrors.vehicleMake = 'Vehicle make is required';
+      }
+    }
+
+    if ((policyType === 'motor' || policyType === 'two-wheeler') && currentStep === 3) {
+      if (!formData.claimsHistory?.numberOfClaims && formData.claimsHistory?.numberOfClaims !== 0) {
+        newErrors.numberOfClaims = 'Number of claims is required';
+      }
+      if (formData.claimsHistory?.numberOfClaims && formData.claimsHistory.numberOfClaims > 0) {
+        if (!formData.claimsHistory.claimRecords || formData.claimsHistory.claimRecords.length === 0) {
+          newErrors.claimRecords = 'Claim details are required';
+        }
       }
     }
 
@@ -466,6 +526,76 @@ const BuyPolicyPage: React.FC = () => {
     }
   };
 
+  const addDependent = () => {
+    const newDependent: Dependent = {
+      id: Date.now().toString(),
+      name: '',
+      age: 0,
+      relationship: '',
+      preExistingConditions: [],
+      medicalHistory: ''
+    };
+    setFormData(prev => ({
+      ...prev,
+      dependents: [...(prev.dependents || []), newDependent]
+    }));
+  };
+
+  const removeDependent = (id: string) => {
+    setFormData(prev => ({
+      ...prev,
+      dependents: prev.dependents?.filter(dep => dep.id !== id) || []
+    }));
+  };
+
+  const updateDependent = (id: string, field: string, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      dependents: prev.dependents?.map(dep => 
+        dep.id === id ? { ...dep, [field]: value } : dep
+      ) || []
+    }));
+  };
+
+  const addClaimRecord = () => {
+    const newClaim: ClaimRecord = {
+      id: Date.now().toString(),
+      date: '',
+      amount: 0,
+      nature: '',
+      status: 'approved'
+    };
+    setFormData(prev => ({
+      ...prev,
+      claimsHistory: {
+        ...prev.claimsHistory!,
+        claimRecords: [...(prev.claimsHistory?.claimRecords || []), newClaim]
+      }
+    }));
+  };
+
+  const removeClaimRecord = (id: string) => {
+    setFormData(prev => ({
+      ...prev,
+      claimsHistory: {
+        ...prev.claimsHistory!,
+        claimRecords: prev.claimsHistory?.claimRecords.filter(claim => claim.id !== id) || []
+      }
+    }));
+  };
+
+  const updateClaimRecord = (id: string, field: string, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      claimsHistory: {
+        ...prev.claimsHistory!,
+        claimRecords: prev.claimsHistory?.claimRecords.map(claim => 
+          claim.id === id ? { ...claim, [field]: value } : claim
+        ) || []
+      }
+    }));
+  };
+
   const toggleSection = (section: string) => {
     setExpandedSections(prev => 
       prev.includes(section) 
@@ -474,16 +604,141 @@ const BuyPolicyPage: React.FC = () => {
     );
   };
 
+  const getMaxSteps = () => {
+    if (policyType === 'health') return 3; // Basic + Health Details + Dependents
+    if (policyType === 'motor' || policyType === 'two-wheeler') return 3; // Basic + Vehicle + Claims
+    return 2; // Basic + Policy specific
+  };
+
   const handleNext = () => {
     if (validateForm()) {
-      if (currentStep === 1) {
-        setCurrentStep(2);
+      const maxSteps = getMaxSteps();
+      if (currentStep < maxSteps) {
+        setCurrentStep(currentStep + 1);
       } else {
         // Navigate to provider selection
         navigate(`/buy-policy/${policyType}/providers`, { state: { formData } });
       }
     }
   };
+
+  const renderPersistentNavbar = () => (
+    <nav className="sticky top-0 z-50 backdrop-blur-md border-b" style={{ 
+      backgroundColor: 'var(--color-background)', 
+      borderColor: 'var(--color-border)' 
+    }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div className="flex items-center space-x-3">
+            <div className="p-2 rounded-lg" style={{ backgroundColor: 'var(--color-primary)' }}>
+              <Shield className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+              Trovity
+            </span>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center space-x-2 font-medium font-roboto transition-colors hover:opacity-80"
+              style={{ color: 'var(--color-foreground)' }}
+            >
+              <Home className="h-4 w-4" />
+              <span>Home</span>
+            </button>
+            <button
+              onClick={() => navigate('/policies')}
+              className="flex items-center space-x-2 font-medium font-roboto transition-colors hover:opacity-80"
+              style={{ color: 'var(--color-foreground)' }}
+            >
+              <Shield className="h-4 w-4" />
+              <span>Products</span>
+            </button>
+            <button
+              onClick={() => navigate('/my-policy')}
+              className="flex items-center space-x-2 font-medium font-roboto transition-colors hover:opacity-80"
+              style={{ color: 'var(--color-foreground)' }}
+            >
+              <FileText className="h-4 w-4" />
+              <span>My Policies</span>
+            </button>
+            <button
+              onClick={() => navigate('/profile')}
+              className="flex items-center space-x-2 font-medium font-roboto transition-colors hover:opacity-80"
+              style={{ color: 'var(--color-foreground)' }}
+            >
+              <User className="h-4 w-4" />
+              <span>Profile</span>
+            </button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 rounded-lg transition-colors"
+            style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t py-4" style={{ borderColor: 'var(--color-border)' }}>
+            <div className="space-y-4">
+              <button
+                onClick={() => {
+                  navigate('/');
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center space-x-2 w-full text-left font-medium font-roboto transition-colors hover:opacity-80"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                <Home className="h-4 w-4" />
+                <span>Home</span>
+              </button>
+              <button
+                onClick={() => {
+                  navigate('/policies');
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center space-x-2 w-full text-left font-medium font-roboto transition-colors hover:opacity-80"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                <Shield className="h-4 w-4" />
+                <span>Products</span>
+              </button>
+              <button
+                onClick={() => {
+                  navigate('/my-policy');
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center space-x-2 w-full text-left font-medium font-roboto transition-colors hover:opacity-80"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                <FileText className="h-4 w-4" />
+                <span>My Policies</span>
+              </button>
+              <button
+                onClick={() => {
+                  navigate('/profile');
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center space-x-2 w-full text-left font-medium font-roboto transition-colors hover:opacity-80"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                <User className="h-4 w-4" />
+                <span>Profile</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </nav>
+  );
 
   const renderBasicForm = () => (
     <div className="space-y-6">
@@ -559,244 +814,650 @@ const BuyPolicyPage: React.FC = () => {
     </div>
   );
 
-  const renderPolicySpecificForm = () => {
-    switch (policyType) {
-      case 'health':
-        return (
-          <div className="space-y-6">
-            <h3 className="text-xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-              Health Insurance Details
-            </h3>
-            
-            <div>
-              <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
-                Age *
-              </label>
+  const renderHealthDetailsForm = () => (
+    <div className="space-y-6">
+      <h3 className="text-xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+        Health Insurance Details
+      </h3>
+      
+      <div>
+        <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+          Age *
+        </label>
+        <input
+          type="number"
+          value={formData.age || ''}
+          onChange={(e) => handleInputChange('age', parseInt(e.target.value))}
+          placeholder="Enter your age"
+          min="18"
+          max="80"
+          className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+          style={{ 
+            borderColor: errors.age ? '#ef4444' : 'var(--color-border)',
+            backgroundColor: 'var(--color-background)',
+            color: 'var(--color-foreground)',
+            '--tw-ring-color': 'var(--color-primary)'
+          }}
+        />
+        {errors.age && (
+          <p className="text-red-500 text-sm mt-1 font-roboto">{errors.age}</p>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+          Pre-existing Health Conditions
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          {['Diabetes', 'Hypertension', 'Heart Disease', 'Asthma', 'Thyroid', 'None'].map(condition => (
+            <label key={condition} className="flex items-center space-x-2 cursor-pointer">
               <input
-                type="number"
-                value={formData.age || ''}
-                onChange={(e) => handleInputChange('age', parseInt(e.target.value))}
-                placeholder="Enter your age"
-                min="18"
-                max="80"
-                className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
-                style={{ 
-                  borderColor: errors.age ? '#ef4444' : 'var(--color-border)',
-                  backgroundColor: 'var(--color-background)',
-                  color: 'var(--color-foreground)',
-                  '--tw-ring-color': 'var(--color-primary)'
-                }}
-              />
-              {errors.age && (
-                <p className="text-red-500 text-sm mt-1 font-roboto">{errors.age}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
-                Pre-existing Health Conditions
-              </label>
-              <div className="grid grid-cols-2 gap-3">
-                {['Diabetes', 'Hypertension', 'Heart Disease', 'Asthma', 'Thyroid', 'None'].map(condition => (
-                  <label key={condition} className="flex items-center space-x-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={formData.preExistingConditions?.includes(condition) || false}
-                      onChange={(e) => {
-                        const conditions = formData.preExistingConditions || [];
-                        if (e.target.checked) {
-                          handleInputChange('preExistingConditions', [...conditions, condition]);
-                        } else {
-                          handleInputChange('preExistingConditions', conditions.filter(c => c !== condition));
-                        }
-                      }}
-                      className="rounded"
-                      style={{ accentColor: 'var(--color-primary)' }}
-                    />
-                    <span className="text-sm font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      {condition}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'motor':
-      case 'two-wheeler':
-        return (
-          <div className="space-y-6">
-            <h3 className="text-xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-              Vehicle Details
-            </h3>
-            
-            <div>
-              <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
-                Vehicle Registration Number *
-              </label>
-              <input
-                type="text"
-                value={formData.vehicleRegNumber || ''}
-                onChange={(e) => handleInputChange('vehicleRegNumber', e.target.value.toUpperCase())}
-                placeholder="MH01AB1234"
-                className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
-                style={{ 
-                  borderColor: errors.vehicleRegNumber ? '#ef4444' : 'var(--color-border)',
-                  backgroundColor: 'var(--color-background)',
-                  color: 'var(--color-foreground)',
-                  '--tw-ring-color': 'var(--color-primary)'
-                }}
-              />
-              {errors.vehicleRegNumber && (
-                <p className="text-red-500 text-sm mt-1 font-roboto">{errors.vehicleRegNumber}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
-                  Vehicle Make *
-                </label>
-                <select
-                  value={formData.vehicleMake || ''}
-                  onChange={(e) => handleInputChange('vehicleMake', e.target.value)}
-                  className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
-                  style={{ 
-                    borderColor: errors.vehicleMake ? '#ef4444' : 'var(--color-border)',
-                    backgroundColor: 'var(--color-background)',
-                    color: 'var(--color-foreground)',
-                    '--tw-ring-color': 'var(--color-primary)'
-                  }}
-                >
-                  <option value="">Select Make</option>
-                  {policyType === 'motor' ? 
-                    ['Maruti Suzuki', 'Hyundai', 'Tata', 'Mahindra', 'Honda', 'Toyota'].map(make => (
-                      <option key={make} value={make}>{make}</option>
-                    )) :
-                    ['Honda', 'Hero', 'Bajaj', 'TVS', 'Yamaha', 'Royal Enfield'].map(make => (
-                      <option key={make} value={make}>{make}</option>
-                    ))
+                type="checkbox"
+                checked={formData.preExistingConditions?.includes(condition) || false}
+                onChange={(e) => {
+                  const conditions = formData.preExistingConditions || [];
+                  if (e.target.checked) {
+                    handleInputChange('preExistingConditions', [...conditions, condition]);
+                  } else {
+                    handleInputChange('preExistingConditions', conditions.filter(c => c !== condition));
                   }
-                </select>
-                {errors.vehicleMake && (
-                  <p className="text-red-500 text-sm mt-1 font-roboto">{errors.vehicleMake}</p>
-                )}
+                }}
+                className="rounded"
+                style={{ accentColor: 'var(--color-primary)' }}
+              />
+              <span className="text-sm font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                {condition}
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderDependentsForm = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h3 className="text-xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+          Dependent Details *
+        </h3>
+        <button
+          onClick={addDependent}
+          className="flex items-center space-x-2 py-2 px-4 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90"
+          style={{ backgroundColor: 'var(--color-primary)' }}
+        >
+          <Plus className="h-4 w-4" />
+          <span>Add Dependent</span>
+        </button>
+      </div>
+
+      <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+        <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+          Please add at least one dependent to proceed with health insurance. You can add family members like spouse, children, or parents.
+        </p>
+      </div>
+
+      {formData.dependents && formData.dependents.length > 0 ? (
+        <div className="space-y-4">
+          {formData.dependents.map((dependent, index) => (
+            <div key={dependent.id} className="border rounded-lg p-6" style={{ borderColor: 'var(--color-border)' }}>
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-lg font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                  Dependent {index + 1}
+                </h4>
+                <button
+                  onClick={() => removeDependent(dependent.id)}
+                  className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={dependent.name}
+                    onChange={(e) => updateDependent(dependent.id, 'name', e.target.value)}
+                    placeholder="Enter name"
+                    className="w-full px-3 py-2 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+                    style={{ 
+                      borderColor: errors[`dependent_${index}_name`] ? '#ef4444' : 'var(--color-border)',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-foreground)',
+                      '--tw-ring-color': 'var(--color-primary)'
+                    }}
+                  />
+                  {errors[`dependent_${index}_name`] && (
+                    <p className="text-red-500 text-xs mt-1 font-roboto">{errors[`dependent_${index}_name`]}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+                    Age *
+                  </label>
+                  <input
+                    type="number"
+                    value={dependent.age || ''}
+                    onChange={(e) => updateDependent(dependent.id, 'age', parseInt(e.target.value))}
+                    placeholder="Enter age"
+                    min="0"
+                    max="100"
+                    className="w-full px-3 py-2 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+                    style={{ 
+                      borderColor: errors[`dependent_${index}_age`] ? '#ef4444' : 'var(--color-border)',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-foreground)',
+                      '--tw-ring-color': 'var(--color-primary)'
+                    }}
+                  />
+                  {errors[`dependent_${index}_age`] && (
+                    <p className="text-red-500 text-xs mt-1 font-roboto">{errors[`dependent_${index}_age`]}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+                    Relationship *
+                  </label>
+                  <select
+                    value={dependent.relationship}
+                    onChange={(e) => updateDependent(dependent.id, 'relationship', e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+                    style={{ 
+                      borderColor: errors[`dependent_${index}_relationship`] ? '#ef4444' : 'var(--color-border)',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-foreground)',
+                      '--tw-ring-color': 'var(--color-primary)'
+                    }}
+                  >
+                    <option value="">Select Relationship</option>
+                    <option value="spouse">Spouse</option>
+                    <option value="son">Son</option>
+                    <option value="daughter">Daughter</option>
+                    <option value="father">Father</option>
+                    <option value="mother">Mother</option>
+                    <option value="father-in-law">Father-in-law</option>
+                    <option value="mother-in-law">Mother-in-law</option>
+                  </select>
+                  {errors[`dependent_${index}_relationship`] && (
+                    <p className="text-red-500 text-xs mt-1 font-roboto">{errors[`dependent_${index}_relationship`]}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+                  Pre-existing Conditions
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {['Diabetes', 'Hypertension', 'Heart Disease', 'Asthma', 'Thyroid', 'None'].map(condition => (
+                    <label key={condition} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={dependent.preExistingConditions.includes(condition)}
+                        onChange={(e) => {
+                          const conditions = dependent.preExistingConditions;
+                          if (e.target.checked) {
+                            updateDependent(dependent.id, 'preExistingConditions', [...conditions, condition]);
+                          } else {
+                            updateDependent(dependent.id, 'preExistingConditions', conditions.filter(c => c !== condition));
+                          }
+                        }}
+                        className="rounded"
+                        style={{ accentColor: 'var(--color-primary)' }}
+                      />
+                      <span className="text-sm font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        {condition}
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
-                  Manufacturing Year
+                  Medical History
                 </label>
-                <select
-                  value={formData.manufacturingYear || ''}
-                  onChange={(e) => handleInputChange('manufacturingYear', parseInt(e.target.value))}
-                  className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+                <textarea
+                  value={dependent.medicalHistory}
+                  onChange={(e) => updateDependent(dependent.id, 'medicalHistory', e.target.value)}
+                  placeholder="Enter any relevant medical history, surgeries, or ongoing treatments"
+                  rows={3}
+                  className="w-full px-3 py-2 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
                   style={{ 
                     borderColor: 'var(--color-border)',
                     backgroundColor: 'var(--color-background)',
                     color: 'var(--color-foreground)',
                     '--tw-ring-color': 'var(--color-primary)'
                   }}
-                >
-                  <option value="">Select Year</option>
-                  {Array.from({ length: 20 }, (_, i) => new Date().getFullYear() - i).map(year => (
-                    <option key={year} value={year}>{year}</option>
-                  ))}
-                </select>
+                />
               </div>
             </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-8 border-2 border-dashed rounded-lg" style={{ borderColor: 'var(--color-border)' }}>
+          <Users className="h-12 w-12 mx-auto mb-4" style={{ color: 'var(--color-muted)' }} />
+          <h4 className="text-lg font-semibold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
+            No Dependents Added
+          </h4>
+          <p className="font-roboto mb-4" style={{ color: 'var(--color-muted)' }}>
+            Add family members to include them in your health insurance coverage
+          </p>
+          <button
+            onClick={addDependent}
+            className="py-2 px-4 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90"
+            style={{ backgroundColor: 'var(--color-primary)' }}
+          >
+            Add First Dependent
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderVehicleDetailsForm = () => (
+    <div className="space-y-6">
+      <h3 className="text-xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+        Vehicle Details
+      </h3>
+      
+      <div>
+        <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+          Vehicle Registration Number *
+        </label>
+        <input
+          type="text"
+          value={formData.vehicleRegNumber || ''}
+          onChange={(e) => handleInputChange('vehicleRegNumber', e.target.value.toUpperCase())}
+          placeholder="MH01AB1234"
+          className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+          style={{ 
+            borderColor: errors.vehicleRegNumber ? '#ef4444' : 'var(--color-border)',
+            backgroundColor: 'var(--color-background)',
+            color: 'var(--color-foreground)',
+            '--tw-ring-color': 'var(--color-primary)'
+          }}
+        />
+        {errors.vehicleRegNumber && (
+          <p className="text-red-500 text-sm mt-1 font-roboto">{errors.vehicleRegNumber}</p>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+            Vehicle Make *
+          </label>
+          <select
+            value={formData.vehicleMake || ''}
+            onChange={(e) => handleInputChange('vehicleMake', e.target.value)}
+            className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+            style={{ 
+              borderColor: errors.vehicleMake ? '#ef4444' : 'var(--color-border)',
+              backgroundColor: 'var(--color-background)',
+              color: 'var(--color-foreground)',
+              '--tw-ring-color': 'var(--color-primary)'
+            }}
+          >
+            <option value="">Select Make</option>
+            {policyType === 'motor' ? 
+              ['Maruti Suzuki', 'Hyundai', 'Tata', 'Mahindra', 'Honda', 'Toyota'].map(make => (
+                <option key={make} value={make}>{make}</option>
+              )) :
+              ['Honda', 'Hero', 'Bajaj', 'TVS', 'Yamaha', 'Royal Enfield'].map(make => (
+                <option key={make} value={make}>{make}</option>
+              ))
+            }
+          </select>
+          {errors.vehicleMake && (
+            <p className="text-red-500 text-sm mt-1 font-roboto">{errors.vehicleMake}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+            Manufacturing Year
+          </label>
+          <select
+            value={formData.manufacturingYear || ''}
+            onChange={(e) => handleInputChange('manufacturingYear', parseInt(e.target.value))}
+            className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+            style={{ 
+              borderColor: 'var(--color-border)',
+              backgroundColor: 'var(--color-background)',
+              color: 'var(--color-foreground)',
+              '--tw-ring-color': 'var(--color-primary)'
+            }}
+          >
+            <option value="">Select Year</option>
+            {Array.from({ length: 20 }, (_, i) => new Date().getFullYear() - i).map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderClaimsHistoryForm = () => (
+    <div className="space-y-6">
+      <h3 className="text-xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+        Previous Claims History *
+      </h3>
+
+      <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+        <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+          Please provide details of any insurance claims made in the last 3 years. This information is mandatory and affects your premium calculation.
+        </p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+          Number of Claims in Last 3 Years *
+        </label>
+        <select
+          value={formData.claimsHistory?.numberOfClaims ?? ''}
+          onChange={(e) => {
+            const count = parseInt(e.target.value);
+            handleInputChange('claimsHistory', {
+              ...formData.claimsHistory,
+              numberOfClaims: count,
+              claimRecords: count === 0 ? [] : formData.claimsHistory?.claimRecords || []
+            });
+          }}
+          className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+          style={{ 
+            borderColor: errors.numberOfClaims ? '#ef4444' : 'var(--color-border)',
+            backgroundColor: 'var(--color-background)',
+            color: 'var(--color-foreground)',
+            '--tw-ring-color': 'var(--color-primary)'
+          }}
+        >
+          <option value="">Select Number of Claims</option>
+          <option value={0}>0 - No Claims</option>
+          <option value={1}>1 Claim</option>
+          <option value={2}>2 Claims</option>
+          <option value={3}>3 Claims</option>
+          <option value={4}>4+ Claims</option>
+        </select>
+        {errors.numberOfClaims && (
+          <p className="text-red-500 text-sm mt-1 font-roboto">{errors.numberOfClaims}</p>
+        )}
+      </div>
+
+      {formData.claimsHistory?.numberOfClaims && formData.claimsHistory.numberOfClaims > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h4 className="text-lg font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+              Claim Details
+            </h4>
+            <button
+              onClick={addClaimRecord}
+              className="flex items-center space-x-2 py-2 px-4 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90"
+              style={{ backgroundColor: 'var(--color-primary)' }}
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add Claim</span>
+            </button>
           </div>
-        );
 
-      case 'life':
-        return (
-          <div className="space-y-6">
-            <h3 className="text-xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-              Life Insurance Details
-            </h3>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
-                  Occupation *
-                </label>
-                <select
-                  value={formData.occupation || ''}
-                  onChange={(e) => handleInputChange('occupation', e.target.value)}
-                  className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
-                  style={{ 
-                    borderColor: errors.occupation ? '#ef4444' : 'var(--color-border)',
-                    backgroundColor: 'var(--color-background)',
-                    color: 'var(--color-foreground)',
-                    '--tw-ring-color': 'var(--color-primary)'
-                  }}
-                >
-                  <option value="">Select Occupation</option>
-                  {['Salaried', 'Business', 'Professional', 'Self-employed', 'Retired'].map(occ => (
-                    <option key={occ} value={occ}>{occ}</option>
-                  ))}
-                </select>
-                {errors.occupation && (
-                  <p className="text-red-500 text-sm mt-1 font-roboto">{errors.occupation}</p>
-                )}
-              </div>
+          {formData.claimsHistory.claimRecords && formData.claimsHistory.claimRecords.length > 0 ? (
+            <div className="space-y-4">
+              {formData.claimsHistory.claimRecords.map((claim, index) => (
+                <div key={claim.id} className="border rounded-lg p-4" style={{ borderColor: 'var(--color-border)' }}>
+                  <div className="flex items-center justify-between mb-4">
+                    <h5 className="text-md font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                      Claim {index + 1}
+                    </h5>
+                    <button
+                      onClick={() => removeClaimRecord(claim.id)}
+                      className="p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
 
-              <div>
-                <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
-                  Annual Income *
-                </label>
-                <select
-                  value={formData.annualIncome || ''}
-                  onChange={(e) => handleInputChange('annualIncome', parseInt(e.target.value))}
-                  className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
-                  style={{ 
-                    borderColor: errors.annualIncome ? '#ef4444' : 'var(--color-border)',
-                    backgroundColor: 'var(--color-background)',
-                    color: 'var(--color-foreground)',
-                    '--tw-ring-color': 'var(--color-primary)'
-                  }}
-                >
-                  <option value="">Select Income</option>
-                  <option value={300000}>₹3-5 Lakhs</option>
-                  <option value={500000}>₹5-10 Lakhs</option>
-                  <option value={1000000}>₹10-20 Lakhs</option>
-                  <option value={2000000}>₹20+ Lakhs</option>
-                </select>
-                {errors.annualIncome && (
-                  <p className="text-red-500 text-sm mt-1 font-roboto">{errors.annualIncome}</p>
-                )}
-              </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+                        Claim Date
+                      </label>
+                      <input
+                        type="date"
+                        value={claim.date}
+                        onChange={(e) => updateClaimRecord(claim.id, 'date', e.target.value)}
+                        className="w-full px-3 py-2 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+                        style={{ 
+                          borderColor: 'var(--color-border)',
+                          backgroundColor: 'var(--color-background)',
+                          color: 'var(--color-foreground)',
+                          '--tw-ring-color': 'var(--color-primary)'
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+                        Claim Amount (₹)
+                      </label>
+                      <input
+                        type="number"
+                        value={claim.amount || ''}
+                        onChange={(e) => updateClaimRecord(claim.id, 'amount', parseInt(e.target.value))}
+                        placeholder="Enter claim amount"
+                        className="w-full px-3 py-2 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+                        style={{ 
+                          borderColor: 'var(--color-border)',
+                          backgroundColor: 'var(--color-background)',
+                          color: 'var(--color-foreground)',
+                          '--tw-ring-color': 'var(--color-primary)'
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+                        Nature of Claim
+                      </label>
+                      <select
+                        value={claim.nature}
+                        onChange={(e) => updateClaimRecord(claim.id, 'nature', e.target.value)}
+                        className="w-full px-3 py-2 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+                        style={{ 
+                          borderColor: 'var(--color-border)',
+                          backgroundColor: 'var(--color-background)',
+                          color: 'var(--color-foreground)',
+                          '--tw-ring-color': 'var(--color-primary)'
+                        }}
+                      >
+                        <option value="">Select Nature</option>
+                        <option value="accident">Accident</option>
+                        <option value="theft">Theft</option>
+                        <option value="fire">Fire</option>
+                        <option value="flood">Flood/Natural Calamity</option>
+                        <option value="vandalism">Vandalism</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+                        Claim Status
+                      </label>
+                      <select
+                        value={claim.status}
+                        onChange={(e) => updateClaimRecord(claim.id, 'status', e.target.value)}
+                        className="w-full px-3 py-2 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+                        style={{ 
+                          borderColor: 'var(--color-border)',
+                          backgroundColor: 'var(--color-background)',
+                          color: 'var(--color-foreground)',
+                          '--tw-ring-color': 'var(--color-primary)'
+                        }}
+                      >
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="pending">Pending</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-
-            <div>
-              <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
-                Smoking/Tobacco Habits
-              </label>
-              <div className="flex space-x-4">
-                {['Non-smoker', 'Occasional smoker', 'Regular smoker'].map(habit => (
-                  <label key={habit} className="flex items-center space-x-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="smokingHabits"
-                      value={habit}
-                      checked={formData.smokingHabits === habit}
-                      onChange={(e) => handleInputChange('smokingHabits', e.target.value)}
-                      style={{ accentColor: 'var(--color-primary)' }}
-                    />
-                    <span className="text-sm font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      {habit}
-                    </span>
-                  </label>
-                ))}
-              </div>
+          ) : (
+            <div className="text-center py-6 border-2 border-dashed rounded-lg" style={{ borderColor: 'var(--color-border)' }}>
+              <FileText className="h-8 w-8 mx-auto mb-2" style={{ color: 'var(--color-muted)' }} />
+              <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
+                No claim details added yet. Click "Add Claim" to provide claim information.
+              </p>
             </div>
-          </div>
-        );
+          )}
 
-      default:
-        return null;
+          {errors.claimRecords && (
+            <p className="text-red-500 text-sm font-roboto">{errors.claimRecords}</p>
+          )}
+        </div>
+      )}
+
+      <div>
+        <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+          No Claim Bonus (NCB) Percentage
+        </label>
+        <select
+          value={formData.claimsHistory?.ncbPercentage || 0}
+          onChange={(e) => handleInputChange('claimsHistory', {
+            ...formData.claimsHistory,
+            ncbPercentage: parseInt(e.target.value)
+          })}
+          className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+          style={{ 
+            borderColor: 'var(--color-border)',
+            backgroundColor: 'var(--color-background)',
+            color: 'var(--color-foreground)',
+            '--tw-ring-color': 'var(--color-primary)'
+          }}
+        >
+          <option value={0}>0% - New Policy/Claims Made</option>
+          <option value={20}>20% - 1 Year Claim Free</option>
+          <option value={25}>25% - 2 Years Claim Free</option>
+          <option value={35}>35% - 3 Years Claim Free</option>
+          <option value={45}>45% - 4 Years Claim Free</option>
+          <option value={50}>50% - 5+ Years Claim Free</option>
+        </select>
+      </div>
+    </div>
+  );
+
+  const renderLifeDetailsForm = () => (
+    <div className="space-y-6">
+      <h3 className="text-xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+        Life Insurance Details
+      </h3>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+            Occupation *
+          </label>
+          <select
+            value={formData.occupation || ''}
+            onChange={(e) => handleInputChange('occupation', e.target.value)}
+            className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+            style={{ 
+              borderColor: errors.occupation ? '#ef4444' : 'var(--color-border)',
+              backgroundColor: 'var(--color-background)',
+              color: 'var(--color-foreground)',
+              '--tw-ring-color': 'var(--color-primary)'
+            }}
+          >
+            <option value="">Select Occupation</option>
+            {['Salaried', 'Business', 'Professional', 'Self-employed', 'Retired'].map(occ => (
+              <option key={occ} value={occ}>{occ}</option>
+            ))}
+          </select>
+          {errors.occupation && (
+            <p className="text-red-500 text-sm mt-1 font-roboto">{errors.occupation}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+            Annual Income *
+          </label>
+          <select
+            value={formData.annualIncome || ''}
+            onChange={(e) => handleInputChange('annualIncome', parseInt(e.target.value))}
+            className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+            style={{ 
+              borderColor: errors.annualIncome ? '#ef4444' : 'var(--color-border)',
+              backgroundColor: 'var(--color-background)',
+              color: 'var(--color-foreground)',
+              '--tw-ring-color': 'var(--color-primary)'
+            }}
+          >
+            <option value="">Select Income</option>
+            <option value={300000}>₹3-5 Lakhs</option>
+            <option value={500000}>₹5-10 Lakhs</option>
+            <option value={1000000}>₹10-20 Lakhs</option>
+            <option value={2000000}>₹20+ Lakhs</option>
+          </select>
+          {errors.annualIncome && (
+            <p className="text-red-500 text-sm mt-1 font-roboto">{errors.annualIncome}</p>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+          Smoking/Tobacco Habits
+        </label>
+        <div className="flex space-x-4">
+          {['Non-smoker', 'Occasional smoker', 'Regular smoker'].map(habit => (
+            <label key={habit} className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                name="smokingHabits"
+                value={habit}
+                checked={formData.smokingHabits === habit}
+                onChange={(e) => handleInputChange('smokingHabits', e.target.value)}
+                style={{ accentColor: 'var(--color-primary)' }}
+              />
+              <span className="text-sm font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                {habit}
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderCurrentStepForm = () => {
+    if (currentStep === 1) {
+      return renderBasicForm();
     }
+
+    if (policyType === 'health') {
+      if (currentStep === 2) return renderHealthDetailsForm();
+      if (currentStep === 3) return renderDependentsForm();
+    }
+
+    if (policyType === 'motor' || policyType === 'two-wheeler') {
+      if (currentStep === 2) return renderVehicleDetailsForm();
+      if (currentStep === 3) return renderClaimsHistoryForm();
+    }
+
+    if (policyType === 'life' && currentStep === 2) {
+      return renderLifeDetailsForm();
+    }
+
+    return null;
   };
 
   const renderInfoPanel = () => (
@@ -1128,31 +1789,39 @@ const BuyPolicyPage: React.FC = () => {
 
   if (!currentPolicy) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--color-background)' }}>
-        <div className="text-center">
-          <AlertCircle className="h-12 w-12 mx-auto mb-4" style={{ color: 'var(--color-muted)' }} />
-          <h2 className="text-xl font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
-            Policy Type Not Found
-          </h2>
-          <p className="font-roboto mb-4" style={{ color: 'var(--color-muted)' }}>
-            The requested policy type is not available.
-          </p>
-          <button
-            onClick={() => navigate('/policies')}
-            className="py-2 px-4 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90"
-            style={{ backgroundColor: 'var(--color-primary)' }}
-          >
-            Back to Policies
-          </button>
+      <div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)' }}>
+        {renderPersistentNavbar()}
+        <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+          <div className="text-center">
+            <AlertCircle className="h-12 w-12 mx-auto mb-4" style={{ color: 'var(--color-muted)' }} />
+            <h2 className="text-xl font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
+              Policy Type Not Found
+            </h2>
+            <p className="font-roboto mb-4" style={{ color: 'var(--color-muted)' }}>
+              The requested policy type is not available.
+            </p>
+            <button
+              onClick={() => navigate('/policies')}
+              className="py-2 px-4 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90"
+              style={{ backgroundColor: 'var(--color-primary)' }}
+            >
+              Back to Policies
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
+  const maxSteps = getMaxSteps();
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)' }}>
+      {/* Persistent Navigation */}
+      {renderPersistentNavbar()}
+
       {/* Header */}
-      <div className="sticky top-0 z-40 backdrop-blur-md border-b" style={{ 
+      <div className="sticky top-16 z-40 backdrop-blur-md border-b" style={{ 
         backgroundColor: 'var(--color-background)', 
         borderColor: 'var(--color-border)' 
       }}>
@@ -1175,7 +1844,7 @@ const BuyPolicyPage: React.FC = () => {
                   Buy {currentPolicy.name}
                 </h1>
                 <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
-                  Step {currentStep} of 2
+                  Step {currentStep} of {maxSteps}
                 </p>
               </div>
             </div>
@@ -1187,12 +1856,12 @@ const BuyPolicyPage: React.FC = () => {
                   className="h-2 rounded-full transition-all duration-300"
                   style={{ 
                     backgroundColor: 'var(--color-primary)',
-                    width: `${(currentStep / 2) * 100}%`
+                    width: `${(currentStep / maxSteps) * 100}%`
                   }}
                 ></div>
               </div>
               <span className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
-                {Math.round((currentStep / 2) * 100)}%
+                {Math.round((currentStep / maxSteps) * 100)}%
               </span>
             </div>
           </div>
@@ -1201,7 +1870,7 @@ const BuyPolicyPage: React.FC = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-5 min-h-screen">
+        <div className="grid grid-cols-1 lg:grid-cols-5 min-h-[calc(100vh-8rem)]">
           {/* Information Panel - Left Side */}
           <div className="lg:col-span-2 border-r" style={{ borderColor: 'var(--color-border)' }}>
             {renderInfoPanel()}
@@ -1210,7 +1879,7 @@ const BuyPolicyPage: React.FC = () => {
           {/* Form Panel - Right Side */}
           <div className="lg:col-span-3 p-6 lg:p-8">
             <div className="max-w-2xl mx-auto">
-              {currentStep === 1 ? renderBasicForm() : renderPolicySpecificForm()}
+              {renderCurrentStepForm()}
 
               {/* Navigation Buttons */}
               <div className="flex justify-between mt-8 pt-6 border-t" style={{ borderColor: 'var(--color-border)' }}>
@@ -1232,7 +1901,7 @@ const BuyPolicyPage: React.FC = () => {
                   className="py-3 px-6 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90 ml-auto"
                   style={{ backgroundColor: 'var(--color-primary)' }}
                 >
-                  {currentStep === 2 ? 'View Providers' : 'Next'}
+                  {currentStep === maxSteps ? 'View Providers' : 'Next'}
                 </button>
               </div>
             </div>

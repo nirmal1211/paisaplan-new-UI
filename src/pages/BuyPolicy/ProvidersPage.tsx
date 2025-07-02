@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { Star, Award, FileText, Shield, TrendingUp, CheckCircle, ArrowLeft, Filter, Search, Heart, Car, Bike, Users, MapPin, Clock, DollarSign, GitCompare as Compare, Eye, Plus, X } from 'lucide-react';
+import { Star, Award, FileText, Shield, TrendingUp, CheckCircle, ArrowLeft, Filter, Search, Heart, Car, Bike, Users, MapPin, Clock, DollarSign, GitCompare as Compare, Eye, Plus, X, ChevronLeft, ChevronRight, Home, User, Menu } from 'lucide-react';
 
 interface Provider {
   id: string;
@@ -42,6 +42,8 @@ const ProvidersPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'premium' | 'rating' | 'claims'>('premium');
   const [filterBadges, setFilterBadges] = useState<string[]>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentProviderIndex, setCurrentProviderIndex] = useState(0);
 
   const formData = location.state?.formData;
 
@@ -107,6 +109,46 @@ const ProvidersPage: React.FC = () => {
         waitingPeriod: '2 years for pre-existing',
         addOnsAvailable: 10,
         maxCoverage: '₹1.5 Crores'
+      },
+      {
+        id: 'bajaj-allianz-health',
+        name: 'Bajaj Allianz Health',
+        logo: 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2',
+        rating: 4.2,
+        reviews: 9500,
+        basePremium: 17800,
+        claimSettlementRatio: 91.5,
+        networkSize: 8200,
+        keyBenefits: [
+          'Comprehensive coverage',
+          'Family floater options',
+          'Preventive care benefits',
+          'Online claim tracking'
+        ],
+        badges: ['document_free'],
+        waitingPeriod: '2 years for pre-existing',
+        addOnsAvailable: 7,
+        maxCoverage: '₹1 Crore'
+      },
+      {
+        id: 'max-bupa',
+        name: 'Max Bupa Health',
+        logo: 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2',
+        rating: 4.1,
+        reviews: 7800,
+        basePremium: 20500,
+        claimSettlementRatio: 89.7,
+        networkSize: 7500,
+        keyBenefits: [
+          'International coverage',
+          'Wellness rewards program',
+          'Second opinion services',
+          'Home healthcare'
+        ],
+        badges: ['max_coverage'],
+        waitingPeriod: '3 years for pre-existing',
+        addOnsAvailable: 9,
+        maxCoverage: '₹2 Crores'
       }
     ],
     motor: [
@@ -149,6 +191,46 @@ const ProvidersPage: React.FC = () => {
         waitingPeriod: 'No waiting period',
         addOnsAvailable: 8,
         maxCoverage: 'IDV Based'
+      },
+      {
+        id: 'icici-lombard-motor',
+        name: 'ICICI Lombard Motor',
+        logo: 'https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2',
+        rating: 4.3,
+        reviews: 11200,
+        basePremium: 13200,
+        claimSettlementRatio: 91.8,
+        networkSize: 4200,
+        keyBenefits: [
+          'Instant policy issuance',
+          'Mobile app for claims',
+          'Comprehensive add-ons',
+          'Emergency assistance'
+        ],
+        badges: ['recommended'],
+        waitingPeriod: 'No waiting period',
+        addOnsAvailable: 10,
+        maxCoverage: 'IDV Based'
+      },
+      {
+        id: 'hdfc-ergo-motor',
+        name: 'HDFC ERGO Motor',
+        logo: 'https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2',
+        rating: 4.1,
+        reviews: 8900,
+        basePremium: 12200,
+        claimSettlementRatio: 88.9,
+        networkSize: 3900,
+        keyBenefits: [
+          'Digital claim process',
+          'Wide garage network',
+          'Flexible payment options',
+          'Customer support 24x7'
+        ],
+        badges: ['document_free'],
+        waitingPeriod: 'No waiting period',
+        addOnsAvailable: 9,
+        maxCoverage: 'IDV Based'
       }
     ],
     'two-wheeler': [
@@ -171,6 +253,46 @@ const ProvidersPage: React.FC = () => {
         waitingPeriod: 'No waiting period',
         addOnsAvailable: 6,
         maxCoverage: 'IDV Based'
+      },
+      {
+        id: 'bajaj-allianz-bike',
+        name: 'Bajaj Allianz Bike',
+        logo: 'https://images.pexels.com/photos/2116475/pexels-photo-2116475.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2',
+        rating: 4.3,
+        reviews: 6800,
+        basePremium: 2900,
+        claimSettlementRatio: 89.2,
+        networkSize: 2800,
+        keyBenefits: [
+          'Affordable premiums',
+          'Quick claim settlement',
+          'Roadside assistance',
+          'Personal accident cover'
+        ],
+        badges: ['best_seller'],
+        waitingPeriod: 'No waiting period',
+        addOnsAvailable: 5,
+        maxCoverage: 'IDV Based'
+      },
+      {
+        id: 'iffco-tokio-bike',
+        name: 'IFFCO Tokio Bike',
+        logo: 'https://images.pexels.com/photos/2116475/pexels-photo-2116475.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2',
+        rating: 4.0,
+        reviews: 5500,
+        basePremium: 3100,
+        claimSettlementRatio: 87.5,
+        networkSize: 2500,
+        keyBenefits: [
+          'Comprehensive coverage',
+          'Easy renewal process',
+          'Theft protection',
+          'Third-party liability'
+        ],
+        badges: ['document_free'],
+        waitingPeriod: 'No waiting period',
+        addOnsAvailable: 4,
+        maxCoverage: 'IDV Based'
       }
     ],
     life: [
@@ -192,6 +314,46 @@ const ProvidersPage: React.FC = () => {
         badges: ['recommended', 'best_seller'],
         waitingPeriod: '12 months for suicide',
         addOnsAvailable: 4,
+        maxCoverage: '₹10 Crores'
+      },
+      {
+        id: 'hdfc-life',
+        name: 'HDFC Life Term',
+        logo: 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2',
+        rating: 4.3,
+        reviews: 18500,
+        basePremium: 7800,
+        claimSettlementRatio: 96.8,
+        networkSize: 0,
+        keyBenefits: [
+          'Online policy management',
+          'Quick claim processing',
+          'Rider options available',
+          'Premium waiver benefit'
+        ],
+        badges: ['document_free'],
+        waitingPeriod: '12 months for suicide',
+        addOnsAvailable: 6,
+        maxCoverage: '₹10 Crores'
+      },
+      {
+        id: 'icici-prudential',
+        name: 'ICICI Prudential Life',
+        logo: 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=2',
+        rating: 4.2,
+        reviews: 16200,
+        basePremium: 8200,
+        claimSettlementRatio: 97.2,
+        networkSize: 0,
+        keyBenefits: [
+          'Comprehensive term plans',
+          'Multiple payout options',
+          'Income tax benefits',
+          'Terminal illness benefit'
+        ],
+        badges: ['recommended'],
+        waitingPeriod: '12 months for suicide',
+        addOnsAvailable: 5,
         maxCoverage: '₹10 Crores'
       }
     ]
@@ -236,6 +398,124 @@ const ProvidersPage: React.FC = () => {
 
     setFilteredProviders(filtered);
   }, [providers, searchQuery, filterBadges, sortBy]);
+
+  const renderPersistentNavbar = () => (
+    <nav className="sticky top-0 z-50 backdrop-blur-md border-b" style={{ 
+      backgroundColor: 'var(--color-background)', 
+      borderColor: 'var(--color-border)' 
+    }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div className="flex items-center space-x-3">
+            <div className="p-2 rounded-lg" style={{ backgroundColor: 'var(--color-primary)' }}>
+              <Shield className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+              Trovity
+            </span>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center space-x-2 font-medium font-roboto transition-colors hover:opacity-80"
+              style={{ color: 'var(--color-foreground)' }}
+            >
+              <Home className="h-4 w-4" />
+              <span>Home</span>
+            </button>
+            <button
+              onClick={() => navigate('/policies')}
+              className="flex items-center space-x-2 font-medium font-roboto transition-colors hover:opacity-80"
+              style={{ color: 'var(--color-foreground)' }}
+            >
+              <Shield className="h-4 w-4" />
+              <span>Products</span>
+            </button>
+            <button
+              onClick={() => navigate('/my-policy')}
+              className="flex items-center space-x-2 font-medium font-roboto transition-colors hover:opacity-80"
+              style={{ color: 'var(--color-foreground)' }}
+            >
+              <FileText className="h-4 w-4" />
+              <span>My Policies</span>
+            </button>
+            <button
+              onClick={() => navigate('/profile')}
+              className="flex items-center space-x-2 font-medium font-roboto transition-colors hover:opacity-80"
+              style={{ color: 'var(--color-foreground)' }}
+            >
+              <User className="h-4 w-4" />
+              <span>Profile</span>
+            </button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 rounded-lg transition-colors"
+            style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t py-4" style={{ borderColor: 'var(--color-border)' }}>
+            <div className="space-y-4">
+              <button
+                onClick={() => {
+                  navigate('/');
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center space-x-2 w-full text-left font-medium font-roboto transition-colors hover:opacity-80"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                <Home className="h-4 w-4" />
+                <span>Home</span>
+              </button>
+              <button
+                onClick={() => {
+                  navigate('/policies');
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center space-x-2 w-full text-left font-medium font-roboto transition-colors hover:opacity-80"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                <Shield className="h-4 w-4" />
+                <span>Products</span>
+              </button>
+              <button
+                onClick={() => {
+                  navigate('/my-policy');
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center space-x-2 w-full text-left font-medium font-roboto transition-colors hover:opacity-80"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                <FileText className="h-4 w-4" />
+                <span>My Policies</span>
+              </button>
+              <button
+                onClick={() => {
+                  navigate('/profile');
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center space-x-2 w-full text-left font-medium font-roboto transition-colors hover:opacity-80"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                <User className="h-4 w-4" />
+                <span>Profile</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </nav>
+  );
 
   const getBadgeStyle = (badge: string) => {
     const styles = {
@@ -284,10 +564,22 @@ const ProvidersPage: React.FC = () => {
     };
   };
 
-  const renderProviderCard = (provider: Provider) => (
+  const nextProvider = () => {
+    setCurrentProviderIndex((prev) => 
+      prev === filteredProviders.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const prevProvider = () => {
+    setCurrentProviderIndex((prev) => 
+      prev === 0 ? filteredProviders.length - 1 : prev - 1
+    );
+  };
+
+  const renderProviderCard = (provider: Provider, index: number) => (
     <div
       key={provider.id}
-      className="rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+      className="flex-shrink-0 w-80 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
       style={{ backgroundColor: 'var(--color-card)' }}
     >
       {/* Badges */}
@@ -331,7 +623,7 @@ const ProvidersPage: React.FC = () => {
                   ))}
                 </div>
                 <span className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
-                  {provider.rating} ({provider.reviews.toLocaleString()} reviews)
+                  {provider.rating} ({provider.reviews.toLocaleString()})
                 </span>
               </div>
             </div>
@@ -387,7 +679,7 @@ const ProvidersPage: React.FC = () => {
         {/* Action Buttons */}
         <div className="flex space-x-2">
           <button
-            onClick={() => navigate(`/buy-policy/${policyType}/${provider.id}`, { 
+            onClick={() => navigate(`/buy-policy/${policyType}/provider/${provider.id}`, { 
               state: { formData, provider } 
             })}
             className="flex-1 py-2 px-4 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90"
@@ -544,8 +836,11 @@ const ProvidersPage: React.FC = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)' }}>
+      {/* Persistent Navigation */}
+      {renderPersistentNavbar()}
+
       {/* Header */}
-      <div className="sticky top-0 z-40 backdrop-blur-md border-b" style={{ 
+      <div className="sticky top-16 z-40 backdrop-blur-md border-b" style={{ 
         backgroundColor: 'var(--color-background)', 
         borderColor: 'var(--color-border)' 
       }}>
@@ -661,13 +956,70 @@ const ProvidersPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Providers Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredProviders.map(renderProviderCard)}
-        </div>
+        {/* Horizontal Provider Cards with Navigation */}
+        {filteredProviders.length > 0 ? (
+          <div className="relative">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                Available Providers ({filteredProviders.length})
+              </h2>
+              
+              {/* Navigation Controls */}
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={prevProvider}
+                  className="p-2 rounded-lg transition-all duration-200 hover:scale-105"
+                  style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}
+                  disabled={filteredProviders.length <= 1}
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <span className="text-sm font-roboto px-3" style={{ color: 'var(--color-muted)' }}>
+                  {currentProviderIndex + 1} of {filteredProviders.length}
+                </span>
+                <button
+                  onClick={nextProvider}
+                  className="p-2 rounded-lg transition-all duration-200 hover:scale-105"
+                  style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}
+                  disabled={filteredProviders.length <= 1}
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
 
-        {/* Empty State */}
-        {filteredProviders.length === 0 && (
+            {/* Horizontal Scrolling Container */}
+            <div className="relative overflow-hidden">
+              <div 
+                className="flex gap-6 transition-transform duration-300 ease-in-out"
+                style={{ 
+                  transform: `translateX(-${currentProviderIndex * (320 + 24)}px)` // 320px card width + 24px gap
+                }}
+              >
+                {filteredProviders.map((provider, index) => renderProviderCard(provider, index))}
+              </div>
+            </div>
+
+            {/* Dots Indicator */}
+            <div className="flex justify-center mt-6 space-x-2">
+              {filteredProviders.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentProviderIndex(index)}
+                  className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                    index === currentProviderIndex ? 'w-6' : ''
+                  }`}
+                  style={{
+                    backgroundColor: index === currentProviderIndex 
+                      ? 'var(--color-primary)' 
+                      : 'var(--color-border)'
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          /* Empty State */
           <div className="text-center py-12">
             <Shield className="h-12 w-12 mx-auto mb-4" style={{ color: 'var(--color-muted)' }} />
             <h3 className="text-xl font-semibold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
