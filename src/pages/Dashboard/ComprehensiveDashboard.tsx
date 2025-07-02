@@ -113,6 +113,11 @@ const ComprehensiveDashboard: React.FC = () => {
     }
   ]);
 
+  // Calculate overall risk score
+  const overallRiskScore = Math.round(
+    riskScores.reduce((sum, risk) => sum + risk.score, 0) / riskScores.length
+  );
+
   // Health Calculator State
   const [healthMetrics, setHealthMetrics] = useState<HealthMetrics>({
     age: 32,
@@ -126,6 +131,7 @@ const ComprehensiveDashboard: React.FC = () => {
 
   const [isCalculating, setIsCalculating] = useState(false);
   const [animatedCoverage, setAnimatedCoverage] = useState(0);
+  const [animatedOverallScore, setAnimatedOverallScore] = useState(0);
 
   // Government Schemes State
   const [governmentSchemes] = useState<GovernmentScheme[]>([
@@ -262,6 +268,26 @@ const ComprehensiveDashboard: React.FC = () => {
     return () => clearInterval(timer);
   }, [healthMetrics.recommendedCoverage]);
 
+  // Animation for overall risk score
+  useEffect(() => {
+    const duration = 2000;
+    const steps = 60;
+    const increment = overallRiskScore / steps;
+    let current = 0;
+
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= overallRiskScore) {
+        setAnimatedOverallScore(overallRiskScore);
+        clearInterval(timer);
+      } else {
+        setAnimatedOverallScore(Math.floor(current));
+      }
+    }, duration / steps);
+
+    return () => clearInterval(timer);
+  }, [overallRiskScore]);
+
   // Calculate BMI and update health metrics
   const calculateHealthMetrics = () => {
     setIsCalculating(true);
@@ -305,6 +331,18 @@ const ComprehensiveDashboard: React.FC = () => {
     if (score >= 80) return 'bg-green-50 border-green-200';
     if (score >= 60) return 'bg-yellow-50 border-yellow-200';
     return 'bg-red-50 border-red-200';
+  };
+
+  const getOverallRiskGradient = (score: number) => {
+    if (score >= 80) return 'from-green-500 to-emerald-600';
+    if (score >= 60) return 'from-yellow-500 to-orange-600';
+    return 'from-red-500 to-red-600';
+  };
+
+  const getOverallRiskLabel = (score: number) => {
+    if (score >= 80) return 'Excellent';
+    if (score >= 60) return 'Good';
+    return 'Needs Attention';
   };
 
   const getStatusColor = (status: string) => {
@@ -376,6 +414,70 @@ const ComprehensiveDashboard: React.FC = () => {
             </h2>
           </div>
 
+          {/* Overall Risk Score - Prominent Display */}
+          <div className="mb-6">
+            <div className={`relative rounded-2xl p-6 bg-gradient-to-br ${getOverallRiskGradient(overallRiskScore)} text-white overflow-hidden`}>
+              <div className="absolute inset-0 bg-black/10"></div>
+              <div className="relative z-10">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold font-poppins mb-2">Overall Risk Score</h3>
+                    <div className="flex items-baseline space-x-2">
+                      <span className="text-4xl font-bold font-poppins">{animatedOverallScore}</span>
+                      <span className="text-lg font-medium opacity-80">/100</span>
+                    </div>
+                    <p className="text-sm font-roboto opacity-90 mt-1">
+                      {getOverallRiskLabel(overallRiskScore)} Risk Profile
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <div className="relative w-20 h-20">
+                      <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
+                        <path
+                          d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke="rgba(255,255,255,0.2)"
+                          strokeWidth="2"
+                        />
+                        <path
+                          d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke="white"
+                          strokeWidth="2"
+                          strokeDasharray={`${animatedOverallScore}, 100`}
+                          className="transition-all duration-1000 ease-out"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Target className="h-6 w-6 text-white" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-4 grid grid-cols-3 gap-4">
+                  <div className="text-center">
+                    <p className="text-xs font-roboto opacity-80">Life</p>
+                    <p className="text-lg font-bold font-poppins">{riskScores[0].score}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs font-roboto opacity-80">Health</p>
+                    <p className="text-lg font-bold font-poppins">{riskScores[1].score}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs font-roboto opacity-80">Accident</p>
+                    <p className="text-lg font-bold font-poppins">{riskScores[2].score}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Individual Risk Scores */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {riskScores.map((risk, index) => (
               <div key={index} className={`rounded-xl p-4 border transition-all duration-300 hover:shadow-md hover:scale-105 ${getRiskBgColor(risk.score)}`}>
