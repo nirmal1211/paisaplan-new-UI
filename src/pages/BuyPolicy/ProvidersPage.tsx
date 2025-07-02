@@ -1,27 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  Star, 
-  Award, 
-  FileText, 
-  Shield, 
-  TrendingUp, 
-  CheckCircle, 
-  ArrowLeft, 
-  Filter, 
-  Search,
-  Heart,
-  Car,
-  Bike,
-  Users,
-  MapPin,
-  Clock,
-  DollarSign,
-  Compare,
-  Eye,
-  Plus,
-  X
-} from 'lucide-react';
+import { Star, Award, FileText, Shield, TrendingUp, CheckCircle, ArrowLeft, Filter, Search, Heart, Car, Bike, Users, MapPin, Clock, DollarSign, GitCompare as Compare, Eye, Plus, X } from 'lucide-react';
 
 interface Provider {
   id: string;
