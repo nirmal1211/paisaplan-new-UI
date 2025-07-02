@@ -30,7 +30,7 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <Layout>
-                        <DashboardPage />
+                        <ComprehensiveDashboard />
                       </Layout>
                     </ProtectedRoute>
                   }
