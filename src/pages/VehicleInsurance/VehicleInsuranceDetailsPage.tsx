@@ -1,81 +1,99 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useParams, useLocation, Navigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
+import React, { useState, useEffect } from 'react';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { 
-  Shield, 
+  ArrowLeft, 
   Copy, 
   Check, 
   Download, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Calendar, 
+  Share2, 
+  Printer,
+  Shield,
+  Calendar,
   DollarSign,
-  FileText,
   Users,
+  FileText,
   Car,
-  Settings,
-  Calculator,
-  CreditCard,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  XCircle,
+  Phone,
+  Mail,
+  MapPin,
+  Star,
   Eye,
-  Upload,
+  Edit,
+  Plus,
   Search,
   Filter,
   ChevronDown,
   ChevronUp,
-  Star,
-  Navigation,
-  Plus,
-  Edit,
-  Trash2,
-  ArrowLeft,
-  ArrowRight,
-  BarChart3,
-  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  XCircle,
+  CreditCard,
+  Calculator,
+  Wrench,
+  Camera,
+  User,
   Award,
-  Target,
-  Zap,
-  Activity
+  Navigation,
+  Receipt,
+  Gavel
 } from 'lucide-react';
-import { InsurancePolicy, NavigationState, PremiumCalculationResult } from '../../types/insurance';
-import { VehicleDashboardData } from '../../types/vehicleDashboard';
-import { Challan, ChallanSummary } from '../../types/challans';
+import { InsurancePolicy, NavigationState } from '../../types/insurance';
 import { mockVehicleDashboardData } from '../../data/vehicleDashboardData';
-import { mockChallansData, calculateChallanSummary } from '../../data/challansData';
+import { VehicleDashboardData } from '../../types/vehicleDashboard';
 import { premiumCalculator } from '../../utils/premiumCalculator';
+import { mockChallansData, calculateChallanSummary } from '../../data/challansData';
+import { Challan } from '../../types/challans';
 
 type TabType = 'overview' | 'coverage' | 'vehicle' | 'drivers' | 'claims' | 'documents' | 'calculator' | 'challans';
 
 const VehicleInsuranceDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
+  const navigate = useNavigate();
+  
   const [activeTab, setActiveTab] = useState<TabType>('overview');
-  const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [policy, setPolicy] = useState<InsurancePolicy | null>(null);
+  const [dashboardData, setDashboardData] = useState<VehicleDashboardData>(mockVehicleDashboardData);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [sortField, setSortField] = useState<keyof Challan>('dateOfViolation');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [sortBy, setSortBy] = useState<'date' | 'amount' | 'status'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'pending' | 'overdue' | 'disputed'>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
   // Get navigation state
-  const navigationState = location.state as NavigationState | null;
-  const [policy, setPolicy] = useState<InsurancePolicy | null>(navigationState?.policy || null);
-  const [dashboardData, setDashboardData] = useState<VehicleDashboardData>(mockVehicleDashboardData);
-  const [premiumCalculation, setPremiumCalculation] = useState<PremiumCalculationResult | null>(null);
-  const [challansData, setChallansData] = useState<Challan[]>(mockChallansData);
+  const navigationState = location.state as NavigationState;
 
-  // Calculate challan summary
-  const challanSummary = useMemo(() => calculateChallanSummary(challansData), [challansData]);
+  useEffect(() => {
+    // Simulate loading
+    const timer = setTimeout(() => {
+      if (navigationState?.policy) {
+        setPolicy(navigationState.policy);
+        // Merge policy data with dashboard data
+        setDashboardData(prev => ({
+          ...prev,
+          policy: navigationState.policy
+        }));
+      }
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [navigationState]);
+
+  // Challan data processing
+  const challansData = mockChallansData.filter(challan => 
+    policy ? challan.vehicleNumber === policy.vehicle.registrationNumber : true
+  );
+
+  const challanSummary = calculateChallanSummary(challansData);
 
   // Filter and sort challans
-  const filteredChallans = useMemo(() => {
-    let filtered = challansData.filter(challan => {
+  const filteredChallans = challansData
+    .filter(challan => {
       const matchesSearch = searchQuery === '' || 
         challan.challanId.toLowerCase().includes(searchQuery.toLowerCase()) ||
         challan.violationType.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -84,59 +102,29 @@ const VehicleInsuranceDetailsPage: React.FC = () => {
       const matchesStatus = statusFilter === 'all' || challan.paymentStatus === statusFilter;
       
       return matchesSearch && matchesStatus;
-    });
-
-    // Sort challans
-    filtered.sort((a, b) => {
-      const aValue = a[sortField];
-      const bValue = b[sortField];
+    })
+    .sort((a, b) => {
+      let comparison = 0;
       
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        const comparison = aValue.localeCompare(bValue);
-        return sortDirection === 'asc' ? comparison : -comparison;
+      switch (sortBy) {
+        case 'date':
+          comparison = new Date(a.dateOfViolation).getTime() - new Date(b.dateOfViolation).getTime();
+          break;
+        case 'amount':
+          comparison = a.fineAmount - b.fineAmount;
+          break;
+        case 'status':
+          comparison = a.paymentStatus.localeCompare(b.paymentStatus);
+          break;
       }
       
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        const comparison = aValue - bValue;
-        return sortDirection === 'asc' ? comparison : -comparison;
-      }
-      
-      return 0;
+      return sortOrder === 'asc' ? comparison : -comparison;
     });
-
-    return filtered;
-  }, [challansData, searchQuery, statusFilter, sortField, sortDirection]);
 
   // Pagination
   const totalPages = Math.ceil(filteredChallans.length / itemsPerPage);
-  const paginatedChallans = filteredChallans.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  useEffect(() => {
-    // Simulate loading
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-
-    // Calculate premium if we have calculator params
-    if (navigationState?.calculatorParams) {
-      try {
-        const calculation = premiumCalculator.calculatePremium(navigationState.calculatorParams);
-        setPremiumCalculation(calculation);
-      } catch (error) {
-        console.error('Premium calculation failed:', error);
-      }
-    }
-
-    return () => clearTimeout(timer);
-  }, [navigationState]);
-
-  // Handle policy not found
-  if (!loading && !policy) {
-    return <Navigate to="/my-policy" replace />;
-  }
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedChallans = filteredChallans.slice(startIndex, startIndex + itemsPerPage);
 
   const copyPolicyNumber = async () => {
     if (policy?.policyNumber) {
@@ -148,6 +136,18 @@ const VehicleInsuranceDetailsPage: React.FC = () => {
         console.error('Failed to copy policy number:', err);
       }
     }
+  };
+
+  const handleDownload = () => {
+    console.log('Downloading policy...');
+  };
+
+  const handleShare = () => {
+    console.log('Sharing policy...');
+  };
+
+  const handlePrint = () => {
+    window.print();
   };
 
   const formatDate = (dateString: string) => {
@@ -168,51 +168,45 @@ const VehicleInsuranceDetailsPage: React.FC = () => {
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
+      case 'active':
       case 'paid':
+      case 'approved':
+      case 'settled':
         return 'bg-green-100 text-green-800 border-green-200';
       case 'pending':
+      case 'under_review':
+      case 'processing':
         return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'expired':
       case 'overdue':
+      case 'rejected':
         return 'bg-red-100 text-red-800 border-red-200';
       case 'disputed':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
+        return 'bg-orange-100 text-orange-800 border-orange-200';
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   const getStatusIcon = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'paid':
+      case 'approved':
+      case 'settled':
         return <CheckCircle className="h-4 w-4 text-green-500" />;
       case 'pending':
+      case 'under_review':
+      case 'processing':
         return <Clock className="h-4 w-4 text-yellow-500" />;
       case 'overdue':
-        return <AlertTriangle className="h-4 w-4 text-red-500" />;
+      case 'rejected':
+        return <XCircle className="h-4 w-4 text-red-500" />;
       case 'disputed':
-        return <XCircle className="h-4 w-4 text-purple-500" />;
+        return <AlertTriangle className="h-4 w-4 text-orange-500" />;
       default:
         return <Clock className="h-4 w-4 text-gray-500" />;
     }
-  };
-
-  const handleSort = (field: keyof Challan) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('desc');
-    }
-  };
-
-  const renderSortIcon = (field: keyof Challan) => {
-    if (sortField !== field) {
-      return <ChevronDown className="h-4 w-4 text-gray-400" />;
-    }
-    return sortDirection === 'asc' ? 
-      <ChevronUp className="h-4 w-4 text-blue-600" /> : 
-      <ChevronDown className="h-4 w-4 text-blue-600" />;
   };
 
   if (loading) {
@@ -220,937 +214,881 @@ const VehicleInsuranceDetailsPage: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--color-background)' }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: 'var(--color-primary)' }}></div>
-          <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>Loading vehicle insurance details...</p>
+          <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>Loading policy details...</p>
         </div>
       </div>
     );
   }
 
-  const renderOverviewTab = () => (
-    <div className="space-y-8">
-      {/* Policy Overview Card */}
-      <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Policy Status */}
-          <div className="text-center">
-            <div className="p-4 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
-              <Shield className="h-10 w-10" style={{ color: 'var(--color-primary)' }} />
-            </div>
-            <h3 className="text-xl font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>Policy Active</h3>
-            <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>Valid until {formatDate(policy?.policyTerm.endDate || '')}</p>
-          </div>
-
-          {/* Coverage Amount */}
-          <div className="text-center">
-            <div className="p-4 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
-              <DollarSign className="h-10 w-10" style={{ color: 'var(--color-primary)' }} />
-            </div>
-            <h3 className="text-xl font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
-              {formatCurrency(policy?.coverage.ownDamage.sumInsured || 0)}
-            </h3>
-            <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>Total Coverage</p>
-          </div>
-
-          {/* Next Payment */}
-          <div className="text-center">
-            <div className="p-4 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
-              <Calendar className="h-10 w-10" style={{ color: 'var(--color-primary)' }} />
-            </div>
-            <h3 className="text-xl font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
-              {formatCurrency(policy?.premiumBreakdown.totalPremium || 0)}
-            </h3>
-            <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>Annual Premium</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <button className="p-6 rounded-xl shadow-lg text-left hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-card)' }}>
-          <FileText className="h-8 w-8 mb-4" style={{ color: 'var(--color-primary)' }} />
-          <h3 className="text-lg font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>File a Claim</h3>
-          <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>Report an incident and start your claim process</p>
-        </button>
-
-        <button className="p-6 rounded-xl shadow-lg text-left hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-card)' }}>
-          <Phone className="h-8 w-8 mb-4" style={{ color: 'var(--color-primary)' }} />
-          <h3 className="text-lg font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>Roadside Assistance</h3>
-          <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>24/7 emergency roadside support</p>
-        </button>
-
-        <button className="p-6 rounded-xl shadow-lg text-left hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-card)' }}>
-          <Download className="h-8 w-8 mb-4" style={{ color: 'var(--color-primary)' }} />
-          <h3 className="text-lg font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>Download Documents</h3>
-          <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>Access your policy documents anytime</p>
-        </button>
-      </div>
-    </div>
-  );
-
-  const renderCoverageTab = () => (
-    <div className="space-y-6">
-      <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
-        <h2 className="text-2xl font-bold font-poppins mb-6" style={{ color: 'var(--color-foreground)' }}>Coverage Details</h2>
-        
-        {/* Own Damage Coverage */}
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>Own Damage Coverage</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
-              <h4 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>Sum Insured</h4>
-              <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
-                {formatCurrency(policy?.coverage.ownDamage.sumInsured || 0)}
-              </p>
-            </div>
-            <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
-              <h4 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>Deductible</h4>
-              <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
-                {formatCurrency(policy?.coverage.ownDamage.deductible || 0)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Third Party Liability */}
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>Third Party Liability</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
-              <h4 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>Bodily Injury</h4>
-              <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
-                {formatCurrency(policy?.coverage.thirdPartyLiability.bodilyInjury || 0)}
-              </p>
-            </div>
-            <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
-              <h4 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>Property Damage</h4>
-              <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
-                {formatCurrency(policy?.coverage.thirdPartyLiability.propertyDamage || 0)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Add-on Coverages */}
-        <div>
-          <h3 className="text-xl font-semibold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>Add-on Coverages</h3>
-          <div className="space-y-4">
-            {policy?.addOns.filter(addon => addon.isSelected).map((addon) => (
-              <div key={addon.id} className="flex items-center justify-between p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
-                <div>
-                  <h4 className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>{addon.name}</h4>
-                  <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>{addon.description}</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
-                    {formatCurrency(addon.premium)}
-                  </p>
-                  <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Premium</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderVehicleTab = () => (
-    <div className="space-y-6">
-      <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
-        <h2 className="text-2xl font-bold font-poppins mb-6" style={{ color: 'var(--color-foreground)' }}>Vehicle Information</h2>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Basic Vehicle Details */}
-          <div>
-            <h3 className="text-xl font-semibold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>Basic Details</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between">
-                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Make & Model:</span>
-                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                  {policy?.vehicle.make} {policy?.vehicle.model}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Year:</span>
-                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                  {policy?.vehicle.year}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Registration Number:</span>
-                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                  {policy?.vehicle.registrationNumber}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Engine Number:</span>
-                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                  {policy?.vehicle.engineNumber}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Chassis Number:</span>
-                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                  {policy?.vehicle.chassisNumber}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Technical Specifications */}
-          <div>
-            <h3 className="text-xl font-semibold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>Technical Specifications</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between">
-                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Fuel Type:</span>
-                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                  {policy?.vehicle.fuelType?.charAt(0).toUpperCase() + policy?.vehicle.fuelType?.slice(1)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Cubic Capacity:</span>
-                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                  {policy?.vehicle.cubicCapacity} CC
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Seating Capacity:</span>
-                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                  {policy?.vehicle.seatingCapacity} persons
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Vehicle Value:</span>
-                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                  {formatCurrency(policy?.vehicle.vehicleValue || 0)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Registration Date:</span>
-                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                  {formatDate(policy?.vehicle.registrationDate || '')}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderDriversTab = () => (
-    <div className="space-y-6">
-      <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
-        <h2 className="text-2xl font-bold font-poppins mb-6" style={{ color: 'var(--color-foreground)' }}>Authorized Drivers</h2>
-        
-        {/* Primary Driver */}
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>Primary Driver</h3>
-          <div className="p-6 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
-                  {policy?.policyHolder.name}
-                </h4>
-                <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
-                  License: {policy?.policyHolder.drivingLicenseNumber}
-                </p>
-                <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
-                  Expires: {formatDate(policy?.policyHolder.licenseExpiryDate || '')}
-                </p>
-              </div>
-              <div>
-                <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
-                  Date of Birth: {formatDate(policy?.policyHolder.dateOfBirth || '')}
-                </p>
-                <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
-                  Phone: {policy?.policyHolder.phone}
-                </p>
-                <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
-                  Email: {policy?.policyHolder.email}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Additional Drivers */}
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>Additional Drivers</h3>
-            <button className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--color-primary)' }}>
-              <Plus className="h-4 w-4" />
-              <span>Add Driver</span>
-            </button>
-          </div>
-          
-          {dashboardData.authorizedDrivers.filter(driver => driver.relationship !== 'Primary').map((driver) => (
-            <div key={driver.id} className="p-6 rounded-lg mb-4" style={{ backgroundColor: 'var(--color-secondary)' }}>
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                  {driver.name} ({driver.relationship})
-                </h4>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  driver.riskRating === 'low' ? 'bg-green-100 text-green-800' :
-                  driver.riskRating === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-red-100 text-red-800'
-                }`}>
-                  {driver.riskRating} risk
-                </span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
-                    License: {driver.licenseNumber}
-                  </p>
-                  <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
-                    Expires: {formatDate(driver.licenseExpiryDate)}
-                  </p>
-                </div>
-                <div>
-                  <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
-                    Premium Impact: {formatCurrency(driver.premiumImpact)}
-                  </p>
-                  <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
-                    Violations: {driver.drivingHistory.length}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderClaimsTab = () => (
-    <div className="space-y-6">
-      <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>Claims History</h2>
-          <button className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--color-primary)' }}>
-            <Plus className="h-4 w-4" />
-            <span>File New Claim</span>
-          </button>
-        </div>
-
-        {dashboardData.claimsHistory.length > 0 ? (
-          <div className="space-y-4">
-            {dashboardData.claimsHistory.map((claim) => (
-              <div key={claim.id} className="p-6 rounded-lg border" style={{ backgroundColor: 'var(--color-secondary)', borderColor: 'var(--color-border)' }}>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-                    Claim #{claim.claimNumber}
-                  </h3>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    claim.status === 'settled' ? 'bg-green-100 text-green-800' :
-                    claim.status === 'approved' ? 'bg-blue-100 text-blue-800' :
-                    claim.status === 'under_review' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-red-100 text-red-800'
-                  }`}>
-                    {claim.status.replace('_', ' ')}
-                  </span>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                  <div>
-                    <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Incident Date</p>
-                    <p className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      {formatDate(claim.incidentDate)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Claim Amount</p>
-                    <p className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      {formatCurrency(claim.settledAmount || claim.requestedAmount)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Damage Type</p>
-                    <p className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      {claim.damageType.join(', ')}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
-                    Location: {claim.incidentLocation.address}
-                  </p>
-                  <button className="px-4 py-2 rounded-lg font-medium font-roboto transition-all duration-200" style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}>
-                    View Details
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <AlertTriangle className="h-12 w-12 mx-auto mb-4" style={{ color: 'var(--color-muted)' }} />
-            <h3 className="text-xl font-semibold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>No Claims Found</h3>
-            <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>You haven't filed any claims yet. We hope it stays that way!</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  const renderDocumentsTab = () => (
-    <div className="space-y-6">
-      <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>Policy Documents</h2>
-          <button className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--color-primary)' }}>
-            <Upload className="h-4 w-4" />
-            <span>Upload Document</span>
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {dashboardData.documents.map((doc) => (
-            <div key={doc.id} className="p-6 rounded-lg border hover:shadow-md transition-shadow" style={{ backgroundColor: 'var(--color-secondary)', borderColor: 'var(--color-border)' }}>
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="p-2 rounded-lg" style={{ backgroundColor: 'var(--color-card)' }}>
-                  <FileText className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-                    {doc.name}
-                  </h3>
-                  <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
-                    {doc.size} • {formatDate(doc.uploadDate)}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex space-x-2">
-                <button className="flex-1 py-2 px-3 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--color-primary)' }}>
-                  <Eye className="h-4 w-4 inline mr-2" />
-                  View
-                </button>
-                <button className="py-2 px-3 rounded-lg transition-all duration-200" style={{ backgroundColor: 'var(--color-card)', color: 'var(--color-primary)' }}>
-                  <Download className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderCalculatorTab = () => (
-    <div className="space-y-6">
-      <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
-        <h2 className="text-2xl font-bold font-poppins mb-6" style={{ color: 'var(--color-foreground)' }}>Premium Calculator</h2>
-        
-        {premiumCalculation ? (
-          <div className="space-y-6">
-            {/* Premium Breakdown */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="p-4 rounded-lg text-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
-                <h3 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>Base Premium</h3>
-                <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
-                  {formatCurrency(premiumCalculation.basePremium)}
-                </p>
-              </div>
-              
-              <div className="p-4 rounded-lg text-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
-                <h3 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>Add-ons</h3>
-                <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
-                  {formatCurrency(Object.values(premiumCalculation.addOnPremiums).reduce((sum, premium) => sum + premium, 0))}
-                </p>
-              </div>
-              
-              <div className="p-4 rounded-lg text-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
-                <h3 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>Discounts</h3>
-                <p className="text-2xl font-bold font-poppins text-green-600">
-                  -{formatCurrency(Object.values(premiumCalculation.discounts).reduce((sum, discount) => sum + discount, 0))}
-                </p>
-              </div>
-              
-              <div className="p-4 rounded-lg text-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
-                <h3 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>Total Premium</h3>
-                <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
-                  {formatCurrency(premiumCalculation.totalPremium)}
-                </p>
-              </div>
-            </div>
-
-            {/* Detailed Breakdown */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="p-6 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
-                <h3 className="text-lg font-semibold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>Coverage Breakdown</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Own Damage:</span>
-                    <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      {formatCurrency(premiumCalculation.breakdown.ownDamage)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Third Party:</span>
-                    <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      {formatCurrency(premiumCalculation.breakdown.thirdParty)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Personal Accident:</span>
-                    <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      {formatCurrency(premiumCalculation.breakdown.personalAccident)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Add-ons:</span>
-                    <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      {formatCurrency(premiumCalculation.breakdown.addOns)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
-                <h3 className="text-lg font-semibold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>Taxes & Charges</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>GST (18%):</span>
-                    <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      {formatCurrency(premiumCalculation.taxes.gst)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Service Tax:</span>
-                    <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      {formatCurrency(premiumCalculation.taxes.serviceTax)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <Calculator className="h-12 w-12 mx-auto mb-4" style={{ color: 'var(--color-muted)' }} />
-            <h3 className="text-xl font-semibold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>Premium Calculator</h3>
-            <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>Premium calculation data not available</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  const renderChallansTab = () => (
-    <div className="space-y-6">
-      {/* Challans Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="rounded-xl p-6 shadow-lg" style={{ backgroundColor: 'var(--color-card)' }}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Total Challans</p>
-              <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-                {challanSummary.totalChallans}
-              </p>
-            </div>
-            <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
-              <FileText className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-xl p-6 shadow-lg" style={{ backgroundColor: 'var(--color-card)' }}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Total Fine Amount</p>
-              <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-                {formatCurrency(challanSummary.totalFineAmount)}
-              </p>
-            </div>
-            <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
-              <DollarSign className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-xl p-6 shadow-lg" style={{ backgroundColor: 'var(--color-card)' }}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Pending Amount</p>
-              <p className="text-2xl font-bold font-poppins text-red-600">
-                {formatCurrency(challanSummary.pendingAmount)}
-              </p>
-            </div>
-            <div className="p-3 rounded-lg bg-red-100">
-              <AlertTriangle className="h-6 w-6 text-red-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-xl p-6 shadow-lg" style={{ backgroundColor: 'var(--color-card)' }}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Penalty Points</p>
-              <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-                {challanSummary.penaltyPoints}
-              </p>
-            </div>
-            <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
-              <Target className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Search and Filter Section */}
-      <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-card)' }}>
-        <div className="flex flex-col lg:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5" style={{ color: 'var(--color-muted)' }} />
-            <input
-              type="text"
-              placeholder="Search by challan ID, violation type, or location..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
-              style={{ 
-                borderColor: 'var(--color-border)',
-                backgroundColor: 'var(--color-background)',
-                color: 'var(--color-foreground)',
-                '--tw-ring-color': 'var(--color-primary)'
-              }}
-            />
-          </div>
-          <div className="relative">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="appearance-none border rounded-lg px-4 py-3 pr-10 font-roboto focus:outline-none focus:ring-2 transition-all min-w-48"
-              style={{ 
-                borderColor: 'var(--color-border)',
-                backgroundColor: 'var(--color-background)',
-                color: 'var(--color-foreground)',
-                '--tw-ring-color': 'var(--color-primary)'
-              }}
-            >
-              <option value="all">All Status</option>
-              <option value="paid">Paid</option>
-              <option value="pending">Pending</option>
-              <option value="overdue">Overdue</option>
-              <option value="disputed">Disputed</option>
-            </select>
-            <Filter className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 pointer-events-none" style={{ color: 'var(--color-muted)' }} />
-          </div>
-        </div>
-      </div>
-
-      {/* Challans Table */}
-      <div className="rounded-xl shadow-lg overflow-hidden" style={{ backgroundColor: 'var(--color-card)' }}>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead style={{ backgroundColor: 'var(--color-secondary)' }}>
-              <tr>
-                <th 
-                  className="px-6 py-4 text-left font-semibold font-roboto cursor-pointer hover:opacity-80 transition-opacity"
-                  style={{ color: 'var(--color-foreground)' }}
-                  onClick={() => handleSort('challanId')}
-                >
-                  <div className="flex items-center space-x-2">
-                    <span>Challan ID</span>
-                    {renderSortIcon('challanId')}
-                  </div>
-                </th>
-                <th 
-                  className="px-6 py-4 text-left font-semibold font-roboto cursor-pointer hover:opacity-80 transition-opacity"
-                  style={{ color: 'var(--color-foreground)' }}
-                  onClick={() => handleSort('dateOfViolation')}
-                >
-                  <div className="flex items-center space-x-2">
-                    <span>Date</span>
-                    {renderSortIcon('dateOfViolation')}
-                  </div>
-                </th>
-                <th 
-                  className="px-6 py-4 text-left font-semibold font-roboto cursor-pointer hover:opacity-80 transition-opacity"
-                  style={{ color: 'var(--color-foreground)' }}
-                  onClick={() => handleSort('violationType')}
-                >
-                  <div className="flex items-center space-x-2">
-                    <span>Violation Type</span>
-                    {renderSortIcon('violationType')}
-                  </div>
-                </th>
-                <th 
-                  className="px-6 py-4 text-left font-semibold font-roboto cursor-pointer hover:opacity-80 transition-opacity"
-                  style={{ color: 'var(--color-foreground)' }}
-                  onClick={() => handleSort('location')}
-                >
-                  <div className="flex items-center space-x-2">
-                    <span>Location</span>
-                    {renderSortIcon('location')}
-                  </div>
-                </th>
-                <th 
-                  className="px-6 py-4 text-left font-semibold font-roboto cursor-pointer hover:opacity-80 transition-opacity"
-                  style={{ color: 'var(--color-foreground)' }}
-                  onClick={() => handleSort('fineAmount')}
-                >
-                  <div className="flex items-center space-x-2">
-                    <span>Fine Amount</span>
-                    {renderSortIcon('fineAmount')}
-                  </div>
-                </th>
-                <th 
-                  className="px-6 py-4 text-left font-semibold font-roboto cursor-pointer hover:opacity-80 transition-opacity"
-                  style={{ color: 'var(--color-foreground)' }}
-                  onClick={() => handleSort('paymentStatus')}
-                >
-                  <div className="flex items-center space-x-2">
-                    <span>Status</span>
-                    {renderSortIcon('paymentStatus')}
-                  </div>
-                </th>
-                <th className="px-6 py-4 text-left font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedChallans.map((challan, index) => (
-                <tr 
-                  key={challan.id} 
-                  className={`border-t hover:opacity-80 transition-opacity ${index % 2 === 0 ? '' : 'bg-opacity-50'}`}
-                  style={{ 
-                    borderColor: 'var(--color-border)',
-                    backgroundColor: index % 2 === 0 ? 'transparent' : 'var(--color-secondary)'
-                  }}
-                >
-                  <td className="px-6 py-4">
-                    <div className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-                      {challan.challanId}
-                    </div>
-                    <div className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
-                      {challan.vehicleNumber}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      {formatDate(challan.dateOfViolation)}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="font-medium font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      {challan.violationType}
-                    </div>
-                    {challan.penaltyPoints && (
-                      <div className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
-                        {challan.penaltyPoints} penalty points
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      {challan.location}
-                    </div>
-                    {challan.officerName && (
-                      <div className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
-                        Officer: {challan.officerName}
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-                      {formatCurrency(challan.fineAmount)}
-                    </div>
-                    {challan.paymentDate && (
-                      <div className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
-                        Paid: {formatDate(challan.paymentDate)}
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-2">
-                      {getStatusIcon(challan.paymentStatus)}
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(challan.paymentStatus)}`}>
-                        {challan.paymentStatus.charAt(0).toUpperCase() + challan.paymentStatus.slice(1)}
-                      </span>
-                    </div>
-                    {challan.courtDate && challan.paymentStatus !== 'paid' && (
-                      <div className="text-sm font-roboto mt-1" style={{ color: 'var(--color-muted)' }}>
-                        Court: {formatDate(challan.courtDate)}
-                      </div>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex space-x-2">
-                      <button 
-                        className="p-2 rounded-lg transition-all duration-200 hover:scale-105"
-                        style={{ 
-                          backgroundColor: 'var(--color-secondary)',
-                          color: 'var(--color-primary)'
-                        }}
-                        title="View Details"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </button>
-                      {challan.paymentStatus === 'pending' && (
-                        <button 
-                          className="p-2 rounded-lg transition-all duration-200 hover:scale-105 text-white"
-                          style={{ backgroundColor: 'var(--color-primary)' }}
-                          title="Pay Now"
-                        >
-                          <CreditCard className="h-4 w-4" />
-                        </button>
-                      )}
-                      {challan.receiptNumber && (
-                        <button 
-                          className="p-2 rounded-lg transition-all duration-200 hover:scale-105"
-                          style={{ 
-                            backgroundColor: 'var(--color-secondary)',
-                            color: 'var(--color-primary)'
-                          }}
-                          title="Download Receipt"
-                        >
-                          <Download className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
-            <div className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
-              Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredChallans.length)} of {filteredChallans.length} challans
-            </div>
-            <div className="flex space-x-2">
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="p-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ 
-                  backgroundColor: 'var(--color-secondary)',
-                  color: 'var(--color-primary)'
-                }}
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </button>
-              
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`px-3 py-2 rounded-lg transition-all duration-200 font-roboto ${
-                    currentPage === page 
-                      ? 'text-white' 
-                      : ''
-                  }`}
-                  style={{
-                    backgroundColor: currentPage === page ? 'var(--color-primary)' : 'var(--color-secondary)',
-                    color: currentPage === page ? 'white' : 'var(--color-primary)'
-                  }}
-                >
-                  {page}
-                </button>
-              ))}
-              
-              <button
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="p-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ 
-                  backgroundColor: 'var(--color-secondary)',
-                  color: 'var(--color-primary)'
-                }}
-              >
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Empty State */}
-      {filteredChallans.length === 0 && (
-        <div className="rounded-xl shadow-lg p-8 text-center" style={{ backgroundColor: 'var(--color-card)' }}>
-          <FileText className="h-12 w-12 mx-auto mb-4" style={{ color: 'var(--color-muted)' }} />
-          <h3 className="text-xl font-semibold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
-            No Challans Found
-          </h3>
-          <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
-            {searchQuery || statusFilter !== 'all' 
-              ? 'No challans match your search criteria. Try adjusting your filters.'
-              : 'No traffic challans found for this vehicle. Keep up the good driving!'
-            }
+  if (!policy) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--color-background)' }}>
+        <div className="text-center">
+          <Shield className="h-16 w-16 mx-auto mb-4" style={{ color: 'var(--color-muted)' }} />
+          <h2 className="text-2xl font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
+            Policy Not Found
+          </h2>
+          <p className="font-roboto mb-4" style={{ color: 'var(--color-muted)' }}>
+            The requested policy could not be found.
           </p>
+          <button
+            onClick={() => navigate('/my-policy')}
+            className="py-2 px-4 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90"
+            style={{ backgroundColor: 'var(--color-primary)' }}
+          >
+            Back to Policies
+          </button>
         </div>
-      )}
-    </div>
-  );
+      </div>
+    );
+  }
+
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: Shield },
+    { id: 'coverage', label: 'Coverage', icon: FileText },
+    { id: 'vehicle', label: 'Vehicle', icon: Car },
+    { id: 'drivers', label: 'Drivers', icon: Users },
+    { id: 'claims', label: 'Claims', icon: AlertTriangle },
+    { id: 'documents', label: 'Documents', icon: FileText },
+    { id: 'calculator', label: 'Calculator', icon: Calculator },
+    { id: 'challans', label: 'Challans', icon: Gavel }
+  ];
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'overview':
-        return renderOverviewTab();
+        return (
+          <div className="space-y-6">
+            {/* Policy Status Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="rounded-xl p-6 text-white" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-accent))' }}>
+                <div className="flex items-center justify-between mb-4">
+                  <Shield className="h-8 w-8" />
+                  <span className="text-sm opacity-80">Own Damage</span>
+                </div>
+                <p className="text-2xl font-bold font-poppins">{formatCurrency(policy.coverage.ownDamage.sumInsured)}</p>
+                <p className="text-sm opacity-80">Sum Insured</p>
+              </div>
+
+              <div className="rounded-xl p-6 text-white" style={{ background: 'linear-gradient(135deg, #10B981, #059669)' }}>
+                <div className="flex items-center justify-between mb-4">
+                  <Users className="h-8 w-8" />
+                  <span className="text-sm opacity-80">Third Party</span>
+                </div>
+                <p className="text-2xl font-bold font-poppins">{formatCurrency(policy.coverage.thirdPartyLiability.bodilyInjury)}</p>
+                <p className="text-sm opacity-80">Liability Cover</p>
+              </div>
+
+              <div className="rounded-xl p-6 text-white" style={{ background: 'linear-gradient(135deg, #F59E0B, #D97706)' }}>
+                <div className="flex items-center justify-between mb-4">
+                  <DollarSign className="h-8 w-8" />
+                  <span className="text-sm opacity-80">Premium</span>
+                </div>
+                <p className="text-2xl font-bold font-poppins">{formatCurrency(policy.premiumBreakdown.totalPremium)}</p>
+                <p className="text-sm opacity-80">Annual</p>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-card)' }}>
+              <h3 className="text-xl font-bold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>
+                Quick Actions
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button className="flex items-center space-x-3 p-4 rounded-lg border transition-all duration-200 hover:shadow-md" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-background)' }}>
+                  <AlertTriangle className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  <div className="text-left">
+                    <p className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>File a Claim</p>
+                    <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Report an incident</p>
+                  </div>
+                </button>
+
+                <button className="flex items-center space-x-3 p-4 rounded-lg border transition-all duration-200 hover:shadow-md" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-background)' }}>
+                  <Phone className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  <div className="text-left">
+                    <p className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>Roadside Assistance</p>
+                    <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>24/7 support</p>
+                  </div>
+                </button>
+
+                <button className="flex items-center space-x-3 p-4 rounded-lg border transition-all duration-200 hover:shadow-md" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-background)' }}>
+                  <Download className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  <div className="text-left">
+                    <p className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>Download Documents</p>
+                    <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Policy & certificates</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+
       case 'coverage':
-        return renderCoverageTab();
+        return (
+          <div className="space-y-6">
+            {/* Own Damage Coverage */}
+            <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-card)' }}>
+              <h3 className="text-xl font-bold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>
+                Own Damage Coverage
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <p className="text-sm font-roboto mb-1" style={{ color: 'var(--color-muted)' }}>Sum Insured</p>
+                  <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                    {formatCurrency(policy.coverage.ownDamage.sumInsured)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-roboto mb-1" style={{ color: 'var(--color-muted)' }}>Deductible</p>
+                  <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                    {formatCurrency(policy.coverage.ownDamage.deductible)}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4">
+                <p className="text-sm font-roboto mb-2" style={{ color: 'var(--color-muted)' }}>Coverage Includes:</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {policy.coverage.ownDamage.coverage.map((item, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span className="text-sm font-roboto" style={{ color: 'var(--color-foreground)' }}>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Third Party Liability */}
+            <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-card)' }}>
+              <h3 className="text-xl font-bold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>
+                Third Party Liability
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <p className="text-sm font-roboto mb-1" style={{ color: 'var(--color-muted)' }}>Bodily Injury</p>
+                  <p className="text-xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                    {formatCurrency(policy.coverage.thirdPartyLiability.bodilyInjury)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-roboto mb-1" style={{ color: 'var(--color-muted)' }}>Property Damage</p>
+                  <p className="text-xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                    {formatCurrency(policy.coverage.thirdPartyLiability.propertyDamage)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Add-on Coverages */}
+            <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-card)' }}>
+              <h3 className="text-xl font-bold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>
+                Add-on Coverages
+              </h3>
+              <div className="space-y-4">
+                {policy.addOns.filter(addon => addon.isSelected).map((addon) => (
+                  <div key={addon.id} className="flex items-center justify-between p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                    <div>
+                      <h4 className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>{addon.name}</h4>
+                      <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>{addon.description}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                        {formatCurrency(addon.premium)}
+                      </p>
+                      <p className="text-xs font-roboto" style={{ color: 'var(--color-muted)' }}>Annual Premium</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+
       case 'vehicle':
-        return renderVehicleTab();
+        return (
+          <div className="space-y-6">
+            {/* Basic Vehicle Details */}
+            <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-card)' }}>
+              <h3 className="text-xl font-bold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>
+                Vehicle Details
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Make & Model</p>
+                  <p className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                    {policy.vehicle.make} {policy.vehicle.model}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Year</p>
+                  <p className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>{policy.vehicle.year}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Registration Number</p>
+                  <p className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>{policy.vehicle.registrationNumber}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Engine Number</p>
+                  <p className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>{policy.vehicle.engineNumber}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Chassis Number</p>
+                  <p className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>{policy.vehicle.chassisNumber}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Technical Specifications */}
+            <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-card)' }}>
+              <h3 className="text-xl font-bold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>
+                Technical Specifications
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Fuel Type</p>
+                  <p className="font-semibold font-poppins capitalize" style={{ color: 'var(--color-foreground)' }}>{policy.vehicle.fuelType}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Cubic Capacity</p>
+                  <p className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>{policy.vehicle.cubicCapacity} CC</p>
+                </div>
+                <div>
+                  <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Seating Capacity</p>
+                  <p className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>{policy.vehicle.seatingCapacity || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Vehicle Value</p>
+                  <p className="font-semibold font-poppins" style={{ color: 'var(--color-primary)' }}>{formatCurrency(policy.vehicle.vehicleValue)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
       case 'drivers':
-        return renderDriversTab();
+        return (
+          <div className="space-y-6">
+            {/* Primary Driver */}
+            <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-card)' }}>
+              <h3 className="text-xl font-bold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>
+                Primary Driver
+              </h3>
+              <div className="flex items-start space-x-4">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xl">
+                  {policy.policyHolder.name.charAt(0)}
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-lg font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>{policy.policyHolder.name}</h4>
+                  <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>License: {policy.policyHolder.drivingLicenseNumber}</p>
+                  <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>Expires: {formatDate(policy.policyHolder.licenseExpiryDate)}</p>
+                </div>
+                <div className="text-right">
+                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">Primary</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Drivers */}
+            <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-card)' }}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                  Additional Drivers
+                </h3>
+                <button className="flex items-center space-x-2 py-2 px-4 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--color-primary)' }}>
+                  <Plus className="h-4 w-4" />
+                  <span>Add Driver</span>
+                </button>
+              </div>
+              
+              {dashboardData.authorizedDrivers.filter(driver => driver.relationship !== 'Primary').map((driver) => (
+                <div key={driver.id} className="flex items-start space-x-4 p-4 rounded-lg mb-4" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold">
+                    {driver.name.charAt(0)}
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>{driver.name}</h4>
+                    <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+                      {driver.relationship} • License: {driver.licenseNumber}
+                    </p>
+                    <div className="flex items-center space-x-4 mt-2">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        driver.riskRating === 'low' ? 'bg-green-100 text-green-800' :
+                        driver.riskRating === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {driver.riskRating} risk
+                      </span>
+                      <span className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+                        Premium impact: +{formatCurrency(driver.premiumImpact)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
       case 'claims':
-        return renderClaimsTab();
+        return (
+          <div className="space-y-6">
+            {/* Claims Summary */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
+                <div className="flex items-center space-x-3 mb-2">
+                  <FileText className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Total Claims</span>
+                </div>
+                <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                  {dashboardData.claimsHistory.length}
+                </p>
+              </div>
+
+              <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
+                <div className="flex items-center space-x-3 mb-2">
+                  <DollarSign className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Total Claimed</span>
+                </div>
+                <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                  {formatCurrency(dashboardData.claimsHistory.reduce((sum, claim) => sum + claim.requestedAmount, 0))}
+                </p>
+              </div>
+
+              <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
+                <div className="flex items-center space-x-3 mb-2">
+                  <CheckCircle className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Settled Amount</span>
+                </div>
+                <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                  {formatCurrency(dashboardData.claimsHistory.reduce((sum, claim) => sum + (claim.settledAmount || 0), 0))}
+                </p>
+              </div>
+            </div>
+
+            {/* Claims History */}
+            <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-card)' }}>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                  Claims History
+                </h3>
+                <button className="flex items-center space-x-2 py-2 px-4 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--color-primary)' }}>
+                  <Plus className="h-4 w-4" />
+                  <span>File New Claim</span>
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {dashboardData.claimsHistory.map((claim) => (
+                  <div key={claim.id} className="border rounded-xl p-6" style={{ borderColor: 'var(--color-border)' }}>
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h4 className="text-lg font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                          {claim.claimNumber}
+                        </h4>
+                        <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
+                          {formatDate(claim.incidentDate)} • {claim.incidentLocation.address}
+                        </p>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(claim.status)}`}>
+                        {claim.status}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                      <div>
+                        <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Damage Type</p>
+                        <p className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                          {claim.damageType.join(', ')}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Requested Amount</p>
+                        <p className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                          {formatCurrency(claim.requestedAmount)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Settled Amount</p>
+                        <p className="font-semibold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                          {claim.settledAmount ? formatCurrency(claim.settledAmount) : 'Pending'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <span className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+                          {claim.documents.length} documents
+                        </span>
+                        <span className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+                          {claim.photos.length} photos
+                        </span>
+                      </div>
+                      <button className="py-2 px-4 rounded-lg font-medium font-roboto transition-all duration-200" style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}>
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+
       case 'documents':
-        return renderDocumentsTab();
+        return (
+          <div className="space-y-6">
+            {/* Document Categories */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {dashboardData.documents.map((doc) => (
+                <div key={doc.id} className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-card)' }}>
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                      <FileText className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                        {doc.name}
+                      </h4>
+                      <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+                        {doc.size} • {formatDate(doc.uploadDate)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex space-x-2">
+                    <button className="flex-1 py-2 px-3 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--color-primary)' }}>
+                      <Eye className="h-4 w-4 inline mr-2" />
+                      View
+                    </button>
+                    <button className="py-2 px-3 rounded-lg transition-all duration-200" style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}>
+                      <Download className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Upload New Document */}
+            <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-card)' }}>
+              <h3 className="text-xl font-bold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>
+                Upload New Document
+              </h3>
+              <div className="border-2 border-dashed rounded-xl p-8 text-center" style={{ borderColor: 'var(--color-border)' }}>
+                <div className="p-3 rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                  <FileText className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                </div>
+                <h4 className="font-semibold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
+                  Upload Document
+                </h4>
+                <p className="font-roboto mb-4" style={{ color: 'var(--color-muted)' }}>
+                  Drag and drop your files here, or click to browse
+                </p>
+                <button className="py-2 px-4 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--color-primary)' }}>
+                  Choose Files
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+
       case 'calculator':
-        return renderCalculatorTab();
+        return (
+          <div className="space-y-6">
+            {/* Premium Breakdown */}
+            <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-card)' }}>
+              <h3 className="text-xl font-bold font-poppins mb-6" style={{ color: 'var(--color-foreground)' }}>
+                Premium Calculation Breakdown
+              </h3>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                  <span className="font-roboto" style={{ color: 'var(--color-foreground)' }}>Base Premium (Own Damage)</span>
+                  <span className="font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                    {formatCurrency(policy.premiumBreakdown.basePremium)}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                  <span className="font-roboto" style={{ color: 'var(--color-foreground)' }}>Add-on Premiums</span>
+                  <span className="font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                    {formatCurrency(policy.premiumBreakdown.addOnPremiums)}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                  <span className="font-roboto" style={{ color: 'var(--color-foreground)' }}>NCB Discount</span>
+                  <span className="font-bold font-poppins text-green-600">
+                    -{formatCurrency(policy.premiumBreakdown.discounts.ncb)}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                  <span className="font-roboto" style={{ color: 'var(--color-foreground)' }}>GST (18%)</span>
+                  <span className="font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                    {formatCurrency(policy.premiumBreakdown.taxes.gst)}
+                  </span>
+                </div>
+
+                <div className="border-t pt-4" style={{ borderColor: 'var(--color-border)' }}>
+                  <div className="flex items-center justify-between p-4 rounded-lg" style={{ backgroundColor: 'var(--color-primary)' }}>
+                    <span className="font-bold font-poppins text-white">Total Premium</span>
+                    <span className="font-bold font-poppins text-xl text-white">
+                      {formatCurrency(policy.premiumBreakdown.totalPremium)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Coverage Breakdown */}
+            <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-card)' }}>
+              <h3 className="text-xl font-bold font-poppins mb-6" style={{ color: 'var(--color-foreground)' }}>
+                Coverage Breakdown
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <h4 className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>Own Damage</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Sum Insured</span>
+                      <span className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                        {formatCurrency(policy.coverage.ownDamage.sumInsured)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Deductible</span>
+                      <span className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                        {formatCurrency(policy.coverage.ownDamage.deductible)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>Third Party</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Bodily Injury</span>
+                      <span className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                        {formatCurrency(policy.coverage.thirdPartyLiability.bodilyInjury)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Property Damage</span>
+                      <span className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                        {formatCurrency(policy.coverage.thirdPartyLiability.propertyDamage)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
       case 'challans':
-        return renderChallansTab();
+        return (
+          <div className="space-y-6">
+            {/* Challan Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
+                <div className="flex items-center space-x-3 mb-2">
+                  <Gavel className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Total Challans</span>
+                </div>
+                <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                  {challanSummary.totalChallans}
+                </p>
+              </div>
+
+              <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
+                <div className="flex items-center space-x-3 mb-2">
+                  <DollarSign className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Total Fine</span>
+                </div>
+                <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                  {formatCurrency(challanSummary.totalFineAmount)}
+                </p>
+              </div>
+
+              <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
+                <div className="flex items-center space-x-3 mb-2">
+                  <CheckCircle className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Paid Amount</span>
+                </div>
+                <p className="text-2xl font-bold font-poppins text-green-600">
+                  {formatCurrency(challanSummary.paidAmount)}
+                </p>
+              </div>
+
+              <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
+                <div className="flex items-center space-x-3 mb-2">
+                  <AlertTriangle className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Pending Amount</span>
+                </div>
+                <p className="text-2xl font-bold font-poppins text-red-600">
+                  {formatCurrency(challanSummary.pendingAmount)}
+                </p>
+              </div>
+            </div>
+
+            {/* Search and Filter */}
+            <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-card)' }}>
+              <div className="flex flex-col lg:flex-row gap-4 mb-6">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5" style={{ color: 'var(--color-muted)' }} />
+                  <input
+                    type="text"
+                    placeholder="Search by challan ID, violation type, or location..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+                    style={{ 
+                      borderColor: 'var(--color-border)',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-foreground)',
+                      '--tw-ring-color': 'var(--color-primary)'
+                    }}
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value as any)}
+                    className="border rounded-lg px-4 py-3 font-roboto focus:outline-none focus:ring-2 transition-all"
+                    style={{ 
+                      borderColor: 'var(--color-border)',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-foreground)',
+                      '--tw-ring-color': 'var(--color-primary)'
+                    }}
+                  >
+                    <option value="all">All Status</option>
+                    <option value="paid">Paid</option>
+                    <option value="pending">Pending</option>
+                    <option value="overdue">Overdue</option>
+                    <option value="disputed">Disputed</option>
+                  </select>
+
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as any)}
+                    className="border rounded-lg px-4 py-3 font-roboto focus:outline-none focus:ring-2 transition-all"
+                    style={{ 
+                      borderColor: 'var(--color-border)',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-foreground)',
+                      '--tw-ring-color': 'var(--color-primary)'
+                    }}
+                  >
+                    <option value="date">Sort by Date</option>
+                    <option value="amount">Sort by Amount</option>
+                    <option value="status">Sort by Status</option>
+                  </select>
+
+                  <button
+                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                    className="px-4 py-3 border rounded-lg transition-all duration-200"
+                    style={{ 
+                      borderColor: 'var(--color-border)',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-foreground)'
+                    }}
+                  >
+                    {sortOrder === 'asc' ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Challans Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b" style={{ borderColor: 'var(--color-border)' }}>
+                      <th className="text-left py-3 px-4 font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Challan ID
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Date
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Violation Type
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Location
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Fine Amount
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Status
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedChallans.map((challan) => (
+                      <tr key={challan.id} className="border-b hover:bg-opacity-50 transition-colors" style={{ borderColor: 'var(--color-border)' }}>
+                        <td className="py-4 px-4">
+                          <span className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                            {challan.challanId}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                            {formatDate(challan.dateOfViolation)}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                            {challan.violationType}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="font-roboto text-sm" style={{ color: 'var(--color-muted)' }}>
+                            {challan.location}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                            {formatCurrency(challan.fineAmount)}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="flex items-center space-x-2">
+                            {getStatusIcon(challan.paymentStatus)}
+                            <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(challan.paymentStatus)}`}>
+                              {challan.paymentStatus}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="flex space-x-2">
+                            <button className="py-1 px-3 rounded-lg font-medium font-roboto text-sm transition-all duration-200" style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}>
+                              View
+                            </button>
+                            {challan.paymentStatus === 'pending' || challan.paymentStatus === 'overdue' ? (
+                              <button className="py-1 px-3 rounded-lg font-medium font-roboto text-sm text-white transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--color-primary)' }}>
+                                Pay Now
+                              </button>
+                            ) : null}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-6">
+                  <div className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+                    Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredChallans.length)} of {filteredChallans.length} challans
+                  </div>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className="py-2 px-4 border rounded-lg font-medium font-roboto transition-all duration-200 disabled:opacity-50"
+                      style={{ 
+                        borderColor: 'var(--color-border)',
+                        backgroundColor: 'var(--color-background)',
+                        color: 'var(--color-foreground)'
+                      }}
+                    >
+                      Previous
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`py-2 px-4 border rounded-lg font-medium font-roboto transition-all duration-200 ${
+                          currentPage === page ? 'text-white' : ''
+                        }`}
+                        style={{ 
+                          borderColor: 'var(--color-border)',
+                          backgroundColor: currentPage === page ? 'var(--color-primary)' : 'var(--color-background)',
+                          color: currentPage === page ? 'white' : 'var(--color-foreground)'
+                        }}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      className="py-2 px-4 border rounded-lg font-medium font-roboto transition-all duration-200 disabled:opacity-50"
+                      style={{ 
+                        borderColor: 'var(--color-border)',
+                        backgroundColor: 'var(--color-background)',
+                        color: 'var(--color-foreground)'
+                      }}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+
       default:
-        return renderOverviewTab();
+        return null;
     }
   };
 
   return (
-    <>
-      <Helmet>
-        <title>{`${policy?.vehicle.make} ${policy?.vehicle.model} Insurance - ${policy?.policyNumber} | Trovity`}</title>
-        <meta name="description" content={`Comprehensive vehicle insurance dashboard for ${policy?.vehicle.make} ${policy?.vehicle.model}`} />
-      </Helmet>
-
-      <div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)' }}>
-        {/* Header */}
-        <div className="sticky top-0 z-40 backdrop-blur-md border-b" style={{ 
-          backgroundColor: 'var(--color-background)', 
-          borderColor: 'var(--color-border)' 
-        }}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between py-4">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 hover:scale-105" style={{ 
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)' }}>
+      {/* Header */}
+      <div className="sticky top-0 z-40 backdrop-blur-md border-b" style={{ 
+        backgroundColor: 'var(--color-background)', 
+        borderColor: 'var(--color-border)' 
+      }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4">
+            {/* Back Button and Breadcrumb */}
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => navigate('/my-policy')}
+                className="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 hover:scale-105"
+                style={{ 
                   backgroundColor: 'var(--color-secondary)',
                   color: 'var(--color-primary)'
-                }}>
-                  <Car className="h-5 w-5" />
-                </div>
-                
-                <div>
-                  <h1 className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-                    {policy?.vehicle.make} {policy?.vehicle.model} ({policy?.vehicle.year})
-                  </h1>
-                  <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
-                    {policy?.vehicle.registrationNumber} • {policy?.provider}
-                  </p>
-                </div>
-              </div>
+                }}
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </button>
+              
+              <nav className="flex items-center space-x-2 text-sm font-roboto">
+                <button 
+                  onClick={() => navigate('/my-policy')}
+                  className="hover:underline" 
+                  style={{ color: 'var(--color-muted)' }}
+                >
+                  My Policies
+                </button>
+                <span style={{ color: 'var(--color-muted)' }}>/</span>
+                <span style={{ color: 'var(--color-foreground)' }}>Vehicle Insurance Details</span>
+              </nav>
+            </div>
 
-              <div className="flex items-center space-x-4">
+            {/* Policy Info and Actions */}
+            <div className="flex items-center space-x-6">
+              {/* Policy Number with Copy */}
+              <div className="hidden md:flex items-center space-x-2">
+                <span className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+                  Policy:
+                </span>
                 <div className="flex items-center space-x-2 px-3 py-1 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
                   <span className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-                    {policy?.policyNumber}
+                    {policy.policyNumber}
                   </span>
                   <button
                     onClick={copyPolicyNumber}
@@ -1161,65 +1099,96 @@ const VehicleInsuranceDetailsPage: React.FC = () => {
                     {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   </button>
                 </div>
+              </div>
 
-                <span className="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 border border-green-200">
-                  {policy?.status}
-                </span>
+              {/* Status Badge */}
+              <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(policy.status)}`}>
+                {policy.status}
+              </span>
+
+              {/* Quick Actions */}
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={handleDownload}
+                  className="p-2 rounded-lg transition-all duration-200 hover:scale-105"
+                  style={{ 
+                    backgroundColor: 'var(--color-secondary)',
+                    color: 'var(--color-primary)'
+                  }}
+                  title="Download Policy"
+                >
+                  <Download className="h-5 w-5" />
+                </button>
+                
+                <button
+                  onClick={handleShare}
+                  className="p-2 rounded-lg transition-all duration-200 hover:scale-105"
+                  style={{ 
+                    backgroundColor: 'var(--color-secondary)',
+                    color: 'var(--color-primary)'
+                  }}
+                  title="Share Policy"
+                >
+                  <Share2 className="h-5 w-5" />
+                </button>
+                
+                <button
+                  onClick={handlePrint}
+                  className="p-2 rounded-lg transition-all duration-200 hover:scale-105"
+                  style={{ 
+                    backgroundColor: 'var(--color-secondary)',
+                    color: 'var(--color-primary)'
+                  }}
+                  title="Print Policy"
+                >
+                  <Printer className="h-5 w-5" />
+                </button>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Tab Navigation */}
-        <div className="sticky top-20 z-30 backdrop-blur-md border-b" style={{ 
-          backgroundColor: 'var(--color-background)', 
-          borderColor: 'var(--color-border)' 
-        }}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex space-x-1 overflow-x-auto scrollbar-hide p-4">
-              {[
-                { id: 'overview', label: 'Overview', icon: Shield },
-                { id: 'coverage', label: 'Coverage', icon: FileText },
-                { id: 'vehicle', label: 'Vehicle Info', icon: Car },
-                { id: 'drivers', label: 'Drivers', icon: Users },
-                { id: 'claims', label: 'Claims', icon: AlertTriangle },
-                { id: 'documents', label: 'Documents', icon: FileText },
-                { id: 'calculator', label: 'Premium Calculator', icon: Calculator },
-                { id: 'challans', label: 'Challans', icon: FileText }
-              ].map((tab) => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
-                
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id as TabType)}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium font-roboto transition-all duration-200 whitespace-nowrap ${
-                      isActive 
-                        ? 'shadow-sm transform scale-105' 
-                        : 'hover:opacity-80'
-                    }`}
-                    style={{
-                      backgroundColor: isActive ? 'var(--color-card)' : 'transparent',
-                      color: isActive ? 'var(--color-primary)' : 'var(--color-muted)',
-                      border: isActive ? `1px solid var(--color-border)` : '1px solid transparent'
-                    }}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span className="hidden sm:inline">{tab.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+      {/* Tab Navigation */}
+      <div className="sticky top-20 z-30 backdrop-blur-md border-b" style={{ 
+        backgroundColor: 'var(--color-background)', 
+        borderColor: 'var(--color-border)' 
+      }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex space-x-1 overflow-x-auto scrollbar-hide p-4">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as TabType)}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium font-roboto transition-all duration-200 whitespace-nowrap ${
+                    isActive 
+                      ? 'shadow-sm transform scale-105' 
+                      : 'hover:opacity-80'
+                  }`}
+                  style={{
+                    backgroundColor: isActive ? 'var(--color-card)' : 'transparent',
+                    color: isActive ? 'var(--color-primary)' : 'var(--color-muted)',
+                    border: isActive ? `1px solid var(--color-border)` : '1px solid transparent'
+                  }}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
-
-        {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {renderTabContent()}
-        </div>
       </div>
-    </>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {renderTabContent()}
+      </div>
+    </div>
   );
 };
 
