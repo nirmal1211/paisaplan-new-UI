@@ -1,8 +1,8 @@
 import React from 'react';
-import FullWidthProviderListing from './FullWidthProviderListing';
+import CompactProviderCards from './CompactProviderCards';
 
 const ProviderListing: React.FC = () => {
-  return <FullWidthProviderListing />;
+  return <CompactProviderCards />;
 };
 
 export default ProviderListing;
