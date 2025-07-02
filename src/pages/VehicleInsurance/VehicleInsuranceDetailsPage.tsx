@@ -1665,6 +1665,7 @@ const VehicleInsuranceDetailsPage: React.FC = () => {
                 { id: 'claims', label: 'Claims', icon: AlertTriangle },
                 { id: 'documents', label: 'Documents', icon: FileText },
                 { id: 'calculator', label: 'Calculator', icon: Calculator },
+        { id: 'challans', label: 'Challans', icon: Gavel }
               ].map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeSection === tab.id;
