@@ -226,6 +226,519 @@ const VehicleInsuranceDetailsPage: React.FC = () => {
     );
   }
 
+  const renderOverviewTab = () => (
+    <div className="space-y-8">
+      {/* Policy Overview Card */}
+      <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Policy Status */}
+          <div className="text-center">
+            <div className="p-4 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
+              <Shield className="h-10 w-10" style={{ color: 'var(--color-primary)' }} />
+            </div>
+            <h3 className="text-xl font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>Policy Active</h3>
+            <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>Valid until {formatDate(policy?.policyTerm.endDate || '')}</p>
+          </div>
+
+          {/* Coverage Amount */}
+          <div className="text-center">
+            <div className="p-4 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
+              <DollarSign className="h-10 w-10" style={{ color: 'var(--color-primary)' }} />
+            </div>
+            <h3 className="text-xl font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
+              {formatCurrency(policy?.coverage.ownDamage.sumInsured || 0)}
+            </h3>
+            <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>Total Coverage</p>
+          </div>
+
+          {/* Next Payment */}
+          <div className="text-center">
+            <div className="p-4 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
+              <Calendar className="h-10 w-10" style={{ color: 'var(--color-primary)' }} />
+            </div>
+            <h3 className="text-xl font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
+              {formatCurrency(policy?.premiumBreakdown.totalPremium || 0)}
+            </h3>
+            <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>Annual Premium</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <button className="p-6 rounded-xl shadow-lg text-left hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-card)' }}>
+          <FileText className="h-8 w-8 mb-4" style={{ color: 'var(--color-primary)' }} />
+          <h3 className="text-lg font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>File a Claim</h3>
+          <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>Report an incident and start your claim process</p>
+        </button>
+
+        <button className="p-6 rounded-xl shadow-lg text-left hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-card)' }}>
+          <Phone className="h-8 w-8 mb-4" style={{ color: 'var(--color-primary)' }} />
+          <h3 className="text-lg font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>Roadside Assistance</h3>
+          <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>24/7 emergency roadside support</p>
+        </button>
+
+        <button className="p-6 rounded-xl shadow-lg text-left hover:shadow-xl transition-shadow" style={{ backgroundColor: 'var(--color-card)' }}>
+          <Download className="h-8 w-8 mb-4" style={{ color: 'var(--color-primary)' }} />
+          <h3 className="text-lg font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>Download Documents</h3>
+          <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>Access your policy documents anytime</p>
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderCoverageTab = () => (
+    <div className="space-y-6">
+      <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
+        <h2 className="text-2xl font-bold font-poppins mb-6" style={{ color: 'var(--color-foreground)' }}>Coverage Details</h2>
+        
+        {/* Own Damage Coverage */}
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>Own Damage Coverage</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+              <h4 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>Sum Insured</h4>
+              <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                {formatCurrency(policy?.coverage.ownDamage.sumInsured || 0)}
+              </p>
+            </div>
+            <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+              <h4 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>Deductible</h4>
+              <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                {formatCurrency(policy?.coverage.ownDamage.deductible || 0)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Third Party Liability */}
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>Third Party Liability</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+              <h4 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>Bodily Injury</h4>
+              <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                {formatCurrency(policy?.coverage.thirdPartyLiability.bodilyInjury || 0)}
+              </p>
+            </div>
+            <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+              <h4 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>Property Damage</h4>
+              <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                {formatCurrency(policy?.coverage.thirdPartyLiability.propertyDamage || 0)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Add-on Coverages */}
+        <div>
+          <h3 className="text-xl font-semibold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>Add-on Coverages</h3>
+          <div className="space-y-4">
+            {policy?.addOns.filter(addon => addon.isSelected).map((addon) => (
+              <div key={addon.id} className="flex items-center justify-between p-4 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                <div>
+                  <h4 className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>{addon.name}</h4>
+                  <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>{addon.description}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                    {formatCurrency(addon.premium)}
+                  </p>
+                  <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Premium</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderVehicleTab = () => (
+    <div className="space-y-6">
+      <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
+        <h2 className="text-2xl font-bold font-poppins mb-6" style={{ color: 'var(--color-foreground)' }}>Vehicle Information</h2>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Basic Vehicle Details */}
+          <div>
+            <h3 className="text-xl font-semibold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>Basic Details</h3>
+            <div className="space-y-4">
+              <div className="flex justify-between">
+                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Make & Model:</span>
+                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                  {policy?.vehicle.make} {policy?.vehicle.model}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Year:</span>
+                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                  {policy?.vehicle.year}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Registration Number:</span>
+                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                  {policy?.vehicle.registrationNumber}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Engine Number:</span>
+                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                  {policy?.vehicle.engineNumber}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Chassis Number:</span>
+                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                  {policy?.vehicle.chassisNumber}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Technical Specifications */}
+          <div>
+            <h3 className="text-xl font-semibold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>Technical Specifications</h3>
+            <div className="space-y-4">
+              <div className="flex justify-between">
+                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Fuel Type:</span>
+                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                  {policy?.vehicle.fuelType?.charAt(0).toUpperCase() + policy?.vehicle.fuelType?.slice(1)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Cubic Capacity:</span>
+                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                  {policy?.vehicle.cubicCapacity} CC
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Seating Capacity:</span>
+                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                  {policy?.vehicle.seatingCapacity} persons
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Vehicle Value:</span>
+                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                  {formatCurrency(policy?.vehicle.vehicleValue || 0)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Registration Date:</span>
+                <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                  {formatDate(policy?.vehicle.registrationDate || '')}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderDriversTab = () => (
+    <div className="space-y-6">
+      <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
+        <h2 className="text-2xl font-bold font-poppins mb-6" style={{ color: 'var(--color-foreground)' }}>Authorized Drivers</h2>
+        
+        {/* Primary Driver */}
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>Primary Driver</h3>
+          <div className="p-6 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h4 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>
+                  {policy?.policyHolder.name}
+                </h4>
+                <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
+                  License: {policy?.policyHolder.drivingLicenseNumber}
+                </p>
+                <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
+                  Expires: {formatDate(policy?.policyHolder.licenseExpiryDate || '')}
+                </p>
+              </div>
+              <div>
+                <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
+                  Date of Birth: {formatDate(policy?.policyHolder.dateOfBirth || '')}
+                </p>
+                <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
+                  Phone: {policy?.policyHolder.phone}
+                </p>
+                <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
+                  Email: {policy?.policyHolder.email}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Drivers */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>Additional Drivers</h3>
+            <button className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--color-primary)' }}>
+              <Plus className="h-4 w-4" />
+              <span>Add Driver</span>
+            </button>
+          </div>
+          
+          {dashboardData.authorizedDrivers.filter(driver => driver.relationship !== 'Primary').map((driver) => (
+            <div key={driver.id} className="p-6 rounded-lg mb-4" style={{ backgroundColor: 'var(--color-secondary)' }}>
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                  {driver.name} ({driver.relationship})
+                </h4>
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  driver.riskRating === 'low' ? 'bg-green-100 text-green-800' :
+                  driver.riskRating === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-red-100 text-red-800'
+                }`}>
+                  {driver.riskRating} risk
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
+                    License: {driver.licenseNumber}
+                  </p>
+                  <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
+                    Expires: {formatDate(driver.licenseExpiryDate)}
+                  </p>
+                </div>
+                <div>
+                  <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
+                    Premium Impact: {formatCurrency(driver.premiumImpact)}
+                  </p>
+                  <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
+                    Violations: {driver.drivingHistory.length}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderClaimsTab = () => (
+    <div className="space-y-6">
+      <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>Claims History</h2>
+          <button className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--color-primary)' }}>
+            <Plus className="h-4 w-4" />
+            <span>File New Claim</span>
+          </button>
+        </div>
+
+        {dashboardData.claimsHistory.length > 0 ? (
+          <div className="space-y-4">
+            {dashboardData.claimsHistory.map((claim) => (
+              <div key={claim.id} className="p-6 rounded-lg border" style={{ backgroundColor: 'var(--color-secondary)', borderColor: 'var(--color-border)' }}>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                    Claim #{claim.claimNumber}
+                  </h3>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    claim.status === 'settled' ? 'bg-green-100 text-green-800' :
+                    claim.status === 'approved' ? 'bg-blue-100 text-blue-800' :
+                    claim.status === 'under_review' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-red-100 text-red-800'
+                  }`}>
+                    {claim.status.replace('_', ' ')}
+                  </span>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Incident Date</p>
+                    <p className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                      {formatDate(claim.incidentDate)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Claim Amount</p>
+                    <p className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                      {formatCurrency(claim.settledAmount || claim.requestedAmount)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>Damage Type</p>
+                    <p className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                      {claim.damageType.join(', ')}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
+                    Location: {claim.incidentLocation.address}
+                  </p>
+                  <button className="px-4 py-2 rounded-lg font-medium font-roboto transition-all duration-200" style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}>
+                    View Details
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <AlertTriangle className="h-12 w-12 mx-auto mb-4" style={{ color: 'var(--color-muted)' }} />
+            <h3 className="text-xl font-semibold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>No Claims Found</h3>
+            <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>You haven't filed any claims yet. We hope it stays that way!</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderDocumentsTab = () => (
+    <div className="space-y-6">
+      <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>Policy Documents</h2>
+          <button className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--color-primary)' }}>
+            <Upload className="h-4 w-4" />
+            <span>Upload Document</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {dashboardData.documents.map((doc) => (
+            <div key={doc.id} className="p-6 rounded-lg border hover:shadow-md transition-shadow" style={{ backgroundColor: 'var(--color-secondary)', borderColor: 'var(--color-border)' }}>
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="p-2 rounded-lg" style={{ backgroundColor: 'var(--color-card)' }}>
+                  <FileText className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                    {doc.name}
+                  </h3>
+                  <p className="text-sm font-roboto" style={{ color: 'var(--color-muted)' }}>
+                    {doc.size} • {formatDate(doc.uploadDate)}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex space-x-2">
+                <button className="flex-1 py-2 px-3 rounded-lg font-medium font-roboto text-white transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--color-primary)' }}>
+                  <Eye className="h-4 w-4 inline mr-2" />
+                  View
+                </button>
+                <button className="py-2 px-3 rounded-lg transition-all duration-200" style={{ backgroundColor: 'var(--color-card)', color: 'var(--color-primary)' }}>
+                  <Download className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderCalculatorTab = () => (
+    <div className="space-y-6">
+      <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
+        <h2 className="text-2xl font-bold font-poppins mb-6" style={{ color: 'var(--color-foreground)' }}>Premium Calculator</h2>
+        
+        {premiumCalculation ? (
+          <div className="space-y-6">
+            {/* Premium Breakdown */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="p-4 rounded-lg text-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                <h3 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>Base Premium</h3>
+                <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                  {formatCurrency(premiumCalculation.basePremium)}
+                </p>
+              </div>
+              
+              <div className="p-4 rounded-lg text-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                <h3 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>Add-ons</h3>
+                <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                  {formatCurrency(Object.values(premiumCalculation.addOnPremiums).reduce((sum, premium) => sum + premium, 0))}
+                </p>
+              </div>
+              
+              <div className="p-4 rounded-lg text-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                <h3 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>Discounts</h3>
+                <p className="text-2xl font-bold font-poppins text-green-600">
+                  -{formatCurrency(Object.values(premiumCalculation.discounts).reduce((sum, discount) => sum + discount, 0))}
+                </p>
+              </div>
+              
+              <div className="p-4 rounded-lg text-center" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                <h3 className="font-semibold font-roboto mb-2" style={{ color: 'var(--color-foreground)' }}>Total Premium</h3>
+                <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-primary)' }}>
+                  {formatCurrency(premiumCalculation.totalPremium)}
+                </p>
+              </div>
+            </div>
+
+            {/* Detailed Breakdown */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="p-6 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                <h3 className="text-lg font-semibold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>Coverage Breakdown</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Own Damage:</span>
+                    <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                      {formatCurrency(premiumCalculation.breakdown.ownDamage)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Third Party:</span>
+                    <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                      {formatCurrency(premiumCalculation.breakdown.thirdParty)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Personal Accident:</span>
+                    <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                      {formatCurrency(premiumCalculation.breakdown.personalAccident)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Add-ons:</span>
+                    <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                      {formatCurrency(premiumCalculation.breakdown.addOns)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 rounded-lg" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                <h3 className="text-lg font-semibold font-poppins mb-4" style={{ color: 'var(--color-foreground)' }}>Taxes & Charges</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>GST (18%):</span>
+                    <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                      {formatCurrency(premiumCalculation.taxes.gst)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Service Tax:</span>
+                    <span className="font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                      {formatCurrency(premiumCalculation.taxes.serviceTax)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <Calculator className="h-12 w-12 mx-auto mb-4" style={{ color: 'var(--color-muted)' }} />
+            <h3 className="text-xl font-semibold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>Premium Calculator</h3>
+            <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>Premium calculation data not available</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   const renderChallansTab = () => (
     <div className="space-y-6">
       {/* Challans Summary Cards */}
@@ -578,6 +1091,29 @@ const VehicleInsuranceDetailsPage: React.FC = () => {
     </div>
   );
 
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return renderOverviewTab();
+      case 'coverage':
+        return renderCoverageTab();
+      case 'vehicle':
+        return renderVehicleTab();
+      case 'drivers':
+        return renderDriversTab();
+      case 'claims':
+        return renderClaimsTab();
+      case 'documents':
+        return renderDocumentsTab();
+      case 'calculator':
+        return renderCalculatorTab();
+      case 'challans':
+        return renderChallansTab();
+      default:
+        return renderOverviewTab();
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -680,18 +1216,7 @@ const VehicleInsuranceDetailsPage: React.FC = () => {
 
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {activeTab === 'challans' && renderChallansTab()}
-          {/* Other tab content would go here - keeping existing tabs unchanged */}
-          {activeTab !== 'challans' && (
-            <div className="rounded-xl shadow-lg p-8 text-center" style={{ backgroundColor: 'var(--color-card)' }}>
-              <h3 className="text-xl font-semibold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
-                {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Tab
-              </h3>
-              <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
-                This tab content is preserved from the existing implementation.
-              </p>
-            </div>
-          )}
+          {renderTabContent()}
         </div>
       </div>
     </>
