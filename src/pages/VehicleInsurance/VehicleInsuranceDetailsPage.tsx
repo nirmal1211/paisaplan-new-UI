@@ -316,6 +316,9 @@ const VehicleInsuranceDetailsPage: React.FC = () => {
 
   if (!policy) return null;
 
+
+  const challans = ()=>()
+
   const renderPolicyOverview = () => (
     <div className="space-y-6">
       {/* Policy Header Card */}
