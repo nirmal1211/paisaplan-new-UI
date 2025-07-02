@@ -1,57 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useLocation, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { 
-  ArrowLeft, 
-  Download, 
-  Share2, 
-  Printer, 
-  Copy, 
-  Check, 
-  Shield, 
-  Users, 
-  Calendar, 
-  DollarSign, 
-  Phone, 
-  Mail, 
-  Star,
-  FileText,
-  MapPin,
-  Search,
-  Filter,
-  Eye,
-  Navigation,
-  CheckCircle,
-  Clock,
-  XCircle,
-  AlertTriangle,
-  ChevronDown,
-  ChevronUp,
-  Plus,
-  CreditCard,
-  Edit,
-  Car,
-  User,
-  Camera,
-  Wrench,
-  Activity,
-  TrendingUp,
-  Calculator,
-  HelpCircle,
-  ExternalLink,
-  Zap,
-  Award,
-  Target,
-  BarChart3,
-  PieChart,
-  Receipt,
-  Gavel,
-  MapPinIcon,
-  AlertCircleIcon,
-  PaymentIcon,
-  CalendarIcon,
-  ClockIcon
-} from 'lucide-react';
+import { ArrowLeft, Download, Share2, Printer, Copy, Check, Shield, Users, Calendar, DollarSign, Phone, Mail, Star, FileText, MapPin, Search, Filter, Eye, Navigation, CheckCircle, Clock, XCircle, AlertTriangle, ChevronDown, ChevronUp, Plus, CreditCard, Edit, Car, User, Camera, Wrench, Activity, TrendingUp, Calculator, HelpCircle, ExternalLink, Zap, Award, Target, BarChart3, PieChart, Receipt, Gavel, MapPinIcon, AlertCircleIcon, TentIcon as PaymentIcon, CalendarIcon, ClockIcon } from 'lucide-react';
 import { InsurancePolicy, NavigationState, PremiumCalculatorParams, PremiumCalculationResult } from '../../types/insurance';
 import { VehicleDashboardData } from '../../types/vehicleDashboard';
 import { Challan, ChallanSummary, VIOLATION_TYPES } from '../../types/challans';
