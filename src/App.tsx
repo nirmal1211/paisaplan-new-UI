@@ -12,6 +12,7 @@ import VehicleInsuranceDetailsPage from "./pages/VehicleInsurance/VehicleInsuran
 import ClaimsPage from "./pages/Claims/ClaimsPage";
 import EndorsementsPage from "./pages/Endorsements/EndorsementsPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
+import PurchaseFlow from "./pages/Purchase/PurchaseFlow";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import Layout from "./components/Layout/Navbar";
 import { ThemeProvider } from "./theme/ThemeProvider";
@@ -25,6 +26,18 @@ function App() {
             <div className="min-h-screen bg-gray-50">
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
+                
+                {/* Purchase Flow Routes - Outside Layout */}
+                <Route
+                  path="/buy-policy/*"
+                  element={
+                    <ProtectedRoute>
+                      <PurchaseFlow />
+                    </ProtectedRoute>
+                  }
+                />
+                
+                {/* Main Application Routes - Inside Layout */}
                 <Route
                   path="/"
                   element={
