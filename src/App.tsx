@@ -12,6 +12,9 @@ import VehicleInsuranceDetailsPage from "./pages/VehicleInsurance/VehicleInsuran
 import ClaimsPage from "./pages/Claims/ClaimsPage";
 import EndorsementsPage from "./pages/Endorsements/EndorsementsPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
+import BuyPolicyPage from "./pages/BuyPolicy/BuyPolicyPage";
+import ProvidersPage from "./pages/BuyPolicy/ProvidersPage";
+import ProviderDetailsPage from "./pages/BuyPolicy/ProviderDetailsPage";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import Layout from "./components/Layout/Navbar";
 import { ThemeProvider } from "./theme/ThemeProvider";
@@ -63,6 +66,34 @@ function App() {
                         <Layout>
                           <PoliciesPage />
                         </Layout>
+                      </ProtectedRoute>
+                    }
+                  />
+                </Route>
+
+                {/* Buy Policy Routes */}
+                <Route path="/buy-policy">
+                  <Route
+                    path=":policyType"
+                    element={
+                      <ProtectedRoute>
+                        <BuyPolicyPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path=":policyType/providers"
+                    element={
+                      <ProtectedRoute>
+                        <ProvidersPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path=":policyType/:providerId"
+                    element={
+                      <ProtectedRoute>
+                        <ProviderDetailsPage />
                       </ProtectedRoute>
                     }
                   />
