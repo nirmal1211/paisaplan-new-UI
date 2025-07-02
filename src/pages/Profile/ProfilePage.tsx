@@ -3,7 +3,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { 
   User, Calendar, Phone, Mail, CreditCard, Briefcase, Heart, 
   Bell, Upload, Trash2, Eye, EyeOff, Plus, X, Save, Edit, 
-  FileText, CheckCircle, AlertCircle, Info, ChevronDown, ChevronUp
+  FileText, CheckCircle, AlertCircle, Info, ChevronDown, ChevronUp,
+  ChevronRight, Users
 } from 'lucide-react';
 
 interface Dependent {
