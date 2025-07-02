@@ -27,7 +27,7 @@ function App() {
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 
-                {/* Purchase Flow Routes - Outside Layout */}
+                {/* Purchase Flow Routes - With consistent navbar */}
                 <Route
                   path="/buy-policy/*"
                   element={

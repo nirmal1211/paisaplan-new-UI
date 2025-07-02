@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { usePurchase } from '../../contexts/PurchaseContext';
 import { policyTypes } from '../../data/purchaseData';
 import { FormField, Dependent } from '../../types/purchase';
-import { Heart, Shield, Bike, Car, Plus, Trash2, Phone, Check } from 'lucide-react';
+import { Heart, Shield, Bike, Car, Plus, Trash2, Phone, Check, ArrowLeft } from 'lucide-react';
 
 const PolicySelectionForm: React.FC = () => {
   const { policyType } = useParams<{ policyType: string }>();
@@ -57,7 +57,6 @@ const PolicySelectionForm: React.FC = () => {
       payload: { [fieldName]: value }
     });
 
-    // Clear error when user starts typing
     if (errors[fieldName]) {
       setErrors(prev => ({ ...prev, [fieldName]: '' }));
     }
@@ -93,14 +92,12 @@ const PolicySelectionForm: React.FC = () => {
     }
 
     setShowOtpModal(true);
-    // Simulate OTP sending
     console.log('OTP sent to:', state.formData.mobile);
   };
 
   const verifyOtp = async () => {
     setIsVerifying(true);
     
-    // Simulate OTP verification
     setTimeout(() => {
       if (otpCode === '123456') {
         dispatch({
@@ -121,7 +118,6 @@ const PolicySelectionForm: React.FC = () => {
 
     const newErrors: Record<string, string> = {};
 
-    // Validate base fields
     currentPolicyType.baseFields.forEach(field => {
       const value = state.formData[field.name as keyof typeof state.formData];
       const error = validateField(field, value);
@@ -130,12 +126,10 @@ const PolicySelectionForm: React.FC = () => {
       }
     });
 
-    // Validate mobile verification
     if (!state.formData.mobileVerified) {
       newErrors.mobile = 'Mobile number must be verified';
     }
 
-    // Validate dependents for health insurance
     if (policyType === 'health-insurance' && state.formData.dependents) {
       state.formData.dependents.forEach((dependent, index) => {
         if (!dependent.name) {
@@ -158,7 +152,6 @@ const PolicySelectionForm: React.FC = () => {
     e.preventDefault();
     
     if (validateForm()) {
-      dispatch({ type: 'SET_CURRENT_STEP', payload: 2 });
       navigate('/buy-policy/providers');
     }
   };
@@ -177,41 +170,21 @@ const PolicySelectionForm: React.FC = () => {
             <label className="block text-sm font-medium font-roboto" style={{ color: 'var(--color-foreground)' }}>
               {field.label} {field.required && <span style={{ color: 'var(--color-danger)' }}>*</span>}
             </label>
-            <div className="relative">
-              <input
-                type={field.type}
-                value={value || ''}
-                onChange={(e) => handleInputChange(field.name, field.type === 'number' ? Number(e.target.value) : e.target.value)}
-                placeholder={field.placeholder}
-                className={`w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all ${
-                  error ? 'border-red-500' : ''
-                }`}
-                style={{
-                  borderColor: error ? 'var(--color-danger)' : 'var(--color-border)',
-                  backgroundColor: 'var(--color-background)',
-                  color: 'var(--color-foreground)',
-                  '--tw-ring-color': 'var(--color-primary)'
-                }}
-              />
-              {field.name === 'mobile' && (
-                <button
-                  type="button"
-                  onClick={sendOtp}
-                  disabled={state.formData.mobileVerified}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 rounded text-sm font-medium transition-colors"
-                  style={{
-                    backgroundColor: state.formData.mobileVerified ? 'var(--color-success)' : 'var(--color-primary)',
-                    color: 'white'
-                  }}
-                >
-                  {state.formData.mobileVerified ? (
-                    <><Check className="h-4 w-4 inline mr-1" />Verified</>
-                  ) : (
-                    <>Verify</>
-                  )}
-                </button>
-              )}
-            </div>
+            <input
+              type={field.type}
+              value={value || ''}
+              onChange={(e) => handleInputChange(field.name, field.type === 'number' ? Number(e.target.value) : e.target.value)}
+              placeholder={field.placeholder}
+              className={`w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all ${
+                error ? 'border-red-500' : ''
+              }`}
+              style={{
+                borderColor: error ? 'var(--color-danger)' : 'var(--color-border)',
+                backgroundColor: 'var(--color-background)',
+                color: 'var(--color-foreground)',
+                '--tw-ring-color': 'var(--color-primary)'
+              }}
+            />
             {error && (
               <p className="text-sm font-roboto" style={{ color: 'var(--color-danger)' }}>
                 {error}
@@ -340,298 +313,312 @@ const PolicySelectionForm: React.FC = () => {
   const Icon = getIcon(currentPolicyType.icon);
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Policy Type Header */}
-      <div className="text-center mb-8">
-        <div className="flex items-center justify-center mb-4">
-          <div className="p-4 rounded-2xl" style={{ backgroundColor: 'var(--color-secondary)' }}>
-            <Icon className="h-12 w-12" style={{ color: 'var(--color-primary)' }} />
-          </div>
+    <div className="min-h-screen py-8" style={{ backgroundColor: 'var(--color-background)' }}>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Back Button */}
+        <div className="mb-8">
+          <button
+            onClick={() => navigate('/buy-policy')}
+            className="flex items-center space-x-2 text-sm font-roboto hover:opacity-80 transition-colors"
+            style={{ color: 'var(--color-primary)' }}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Policy Types</span>
+          </button>
         </div>
-        <h1 className="text-3xl font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
-          {currentPolicyType.name}
-        </h1>
-        <p className="text-lg font-roboto" style={{ color: 'var(--color-muted)' }}>
-          {currentPolicyType.description}
-        </p>
-      </div>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
-          <h2 className="text-xl font-bold font-poppins mb-6" style={{ color: 'var(--color-foreground)' }}>
-            Personal Information
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Common fields */}
-            <div className="space-y-2">
-              <label className="block text-sm font-medium font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                Email Address <span style={{ color: 'var(--color-danger)' }}>*</span>
-              </label>
-              <input
-                type="email"
-                value={state.formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                placeholder="Enter your email"
-                className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
-                style={{
-                  borderColor: 'var(--color-border)',
-                  backgroundColor: 'var(--color-background)',
-                  color: 'var(--color-foreground)',
-                  '--tw-ring-color': 'var(--color-primary)'
-                }}
-                required
-              />
+        {/* Policy Type Header */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center mb-4">
+            <div className="p-4 rounded-2xl" style={{ backgroundColor: 'var(--color-secondary)' }}>
+              <Icon className="h-12 w-12" style={{ color: 'var(--color-primary)' }} />
             </div>
+          </div>
+          <h1 className="text-3xl font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
+            {currentPolicyType.name}
+          </h1>
+          <p className="text-lg font-roboto" style={{ color: 'var(--color-muted)' }}>
+            {currentPolicyType.description}
+          </p>
+        </div>
 
-            <div className="space-y-2">
-              <label className="block text-sm font-medium font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                Mobile Number <span style={{ color: 'var(--color-danger)' }}>*</span>
-              </label>
-              <div className="relative">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
+            <h2 className="text-xl font-bold font-poppins mb-6" style={{ color: 'var(--color-foreground)' }}>
+              Personal Information
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Common fields */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                  Email Address <span style={{ color: 'var(--color-danger)' }}>*</span>
+                </label>
                 <input
-                  type="tel"
-                  value={state.formData.mobile}
-                  onChange={(e) => handleInputChange('mobile', e.target.value)}
-                  placeholder="Enter your mobile number"
-                  className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all pr-20"
+                  type="email"
+                  value={state.formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
                   style={{
-                    borderColor: errors.mobile ? 'var(--color-danger)' : 'var(--color-border)',
+                    borderColor: 'var(--color-border)',
                     backgroundColor: 'var(--color-background)',
                     color: 'var(--color-foreground)',
                     '--tw-ring-color': 'var(--color-primary)'
                   }}
                   required
                 />
-                <button
-                  type="button"
-                  onClick={sendOtp}
-                  disabled={state.formData.mobileVerified}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 rounded text-sm font-medium transition-colors"
-                  style={{
-                    backgroundColor: state.formData.mobileVerified ? 'var(--color-success)' : 'var(--color-primary)',
-                    color: 'white'
-                  }}
-                >
-                  {state.formData.mobileVerified ? (
-                    <><Check className="h-4 w-4 inline mr-1" />Verified</>
-                  ) : (
-                    <>Verify</>
-                  )}
-                </button>
               </div>
-              {errors.mobile && (
-                <p className="text-sm font-roboto" style={{ color: 'var(--color-danger)' }}>
-                  {errors.mobile}
-                </p>
-              )}
-            </div>
 
-            {/* Policy-specific fields */}
-            {currentPolicyType.baseFields.map(renderField)}
-          </div>
-        </div>
-
-        {/* Dependents Section for Health Insurance */}
-        {policyType === 'health-insurance' && (
-          <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-                Dependents (Optional)
-              </h2>
-              <button
-                type="button"
-                onClick={addDependent}
-                className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium font-roboto text-white transition-colors"
-                style={{ backgroundColor: 'var(--color-primary)' }}
-              >
-                <Plus className="h-4 w-4" />
-                <span>Add Dependent</span>
-              </button>
-            </div>
-
-            {state.formData.dependents?.map((dependent, index) => (
-              <div key={dependent.id} className="border rounded-lg p-6 mb-4" style={{ borderColor: 'var(--color-border)' }}>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
-                    Dependent {index + 1}
-                  </h3>
-                  <button
-                    type="button"
-                    onClick={() => removeDependent(index)}
-                    className="p-2 rounded-lg hover:opacity-80 transition-colors"
-                    style={{ backgroundColor: 'var(--color-danger)', color: 'white' }}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      Name <span style={{ color: 'var(--color-danger)' }}>*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={dependent.name}
-                      onChange={(e) => handleDependentChange(index, 'name', e.target.value)}
-                      placeholder="Enter dependent name"
-                      className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
-                      style={{
-                        borderColor: errors[`dependent_${index}_name`] ? 'var(--color-danger)' : 'var(--color-border)',
-                        backgroundColor: 'var(--color-background)',
-                        color: 'var(--color-foreground)',
-                        '--tw-ring-color': 'var(--color-primary)'
-                      }}
-                    />
-                    {errors[`dependent_${index}_name`] && (
-                      <p className="text-sm font-roboto" style={{ color: 'var(--color-danger)' }}>
-                        {errors[`dependent_${index}_name`]}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      Age <span style={{ color: 'var(--color-danger)' }}>*</span>
-                    </label>
-                    <input
-                      type="number"
-                      value={dependent.age || ''}
-                      onChange={(e) => handleDependentChange(index, 'age', Number(e.target.value))}
-                      placeholder="Enter age"
-                      className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
-                      style={{
-                        borderColor: errors[`dependent_${index}_age`] ? 'var(--color-danger)' : 'var(--color-border)',
-                        backgroundColor: 'var(--color-background)',
-                        color: 'var(--color-foreground)',
-                        '--tw-ring-color': 'var(--color-primary)'
-                      }}
-                    />
-                    {errors[`dependent_${index}_age`] && (
-                      <p className="text-sm font-roboto" style={{ color: 'var(--color-danger)' }}>
-                        {errors[`dependent_${index}_age`]}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                      Relation <span style={{ color: 'var(--color-danger)' }}>*</span>
-                    </label>
-                    <select
-                      value={dependent.relation}
-                      onChange={(e) => handleDependentChange(index, 'relation', e.target.value)}
-                      className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
-                      style={{
-                        borderColor: errors[`dependent_${index}_relation`] ? 'var(--color-danger)' : 'var(--color-border)',
-                        backgroundColor: 'var(--color-background)',
-                        color: 'var(--color-foreground)',
-                        '--tw-ring-color': 'var(--color-primary)'
-                      }}
-                    >
-                      <option value="">Select relation</option>
-                      <option value="spouse">Spouse</option>
-                      <option value="child">Child</option>
-                      <option value="parent">Parent</option>
-                      <option value="sibling">Sibling</option>
-                    </select>
-                    {errors[`dependent_${index}_relation`] && (
-                      <p className="text-sm font-roboto" style={{ color: 'var(--color-danger)' }}>
-                        {errors[`dependent_${index}_relation`]}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Submit Button */}
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="px-8 py-3 rounded-lg font-bold font-roboto text-white transition-all duration-200 hover:opacity-90"
-            style={{ backgroundColor: 'var(--color-primary)' }}
-          >
-            Continue to Providers
-          </button>
-        </div>
-      </form>
-
-      {/* OTP Modal */}
-      {showOtpModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="rounded-xl shadow-2xl p-8 max-w-md w-full mx-4" style={{ backgroundColor: 'var(--color-card)' }}>
-            <div className="text-center mb-6">
-              <div className="p-3 rounded-full mx-auto mb-4 w-fit" style={{ backgroundColor: 'var(--color-secondary)' }}>
-                <Phone className="h-8 w-8" style={{ color: 'var(--color-primary)' }} />
-              </div>
-              <h3 className="text-xl font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
-                Verify Mobile Number
-              </h3>
-              <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
-                Enter the OTP sent to {state.formData.mobile}
-              </p>
-              <p className="text-sm font-roboto mt-2" style={{ color: 'var(--color-muted)' }}>
-                Demo OTP: 123456
-              </p>
-            </div>
-
-            <div className="space-y-4">
               <div className="space-y-2">
                 <label className="block text-sm font-medium font-roboto" style={{ color: 'var(--color-foreground)' }}>
-                  Enter OTP
+                  Mobile Number <span style={{ color: 'var(--color-danger)' }}>*</span>
                 </label>
-                <input
-                  type="text"
-                  value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value)}
-                  placeholder="Enter 6-digit OTP"
-                  maxLength={6}
-                  className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all text-center text-lg tracking-widest"
-                  style={{
-                    borderColor: errors.otp ? 'var(--color-danger)' : 'var(--color-border)',
-                    backgroundColor: 'var(--color-background)',
-                    color: 'var(--color-foreground)',
-                    '--tw-ring-color': 'var(--color-primary)'
-                  }}
-                />
-                {errors.otp && (
+                <div className="relative">
+                  <input
+                    type="tel"
+                    value={state.formData.mobile}
+                    onChange={(e) => handleInputChange('mobile', e.target.value)}
+                    placeholder="Enter your mobile number"
+                    className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all pr-20"
+                    style={{
+                      borderColor: errors.mobile ? 'var(--color-danger)' : 'var(--color-border)',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-foreground)',
+                      '--tw-ring-color': 'var(--color-primary)'
+                    }}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={sendOtp}
+                    disabled={state.formData.mobileVerified}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 rounded text-sm font-medium transition-colors"
+                    style={{
+                      backgroundColor: state.formData.mobileVerified ? 'var(--color-success)' : 'var(--color-primary)',
+                      color: 'white'
+                    }}
+                  >
+                    {state.formData.mobileVerified ? (
+                      <><Check className="h-4 w-4 inline mr-1" />Verified</>
+                    ) : (
+                      <>Verify</>
+                    )}
+                  </button>
+                </div>
+                {errors.mobile && (
                   <p className="text-sm font-roboto" style={{ color: 'var(--color-danger)' }}>
-                    {errors.otp}
+                    {errors.mobile}
                   </p>
                 )}
               </div>
 
-              <div className="flex space-x-3">
+              {/* Policy-specific fields */}
+              {currentPolicyType.baseFields.map(renderField)}
+            </div>
+          </div>
+
+          {/* Dependents Section for Health Insurance */}
+          {policyType === 'health-insurance' && (
+            <div className="rounded-xl shadow-lg p-8" style={{ backgroundColor: 'var(--color-card)' }}>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                  Dependents (Optional)
+                </h2>
                 <button
                   type="button"
-                  onClick={() => setShowOtpModal(false)}
-                  className="flex-1 px-4 py-3 rounded-lg font-medium font-roboto transition-colors"
-                  style={{ 
-                    backgroundColor: 'var(--color-secondary)',
-                    color: 'var(--color-primary)'
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={verifyOtp}
-                  disabled={isVerifying || otpCode.length !== 6}
-                  className="flex-1 px-4 py-3 rounded-lg font-medium font-roboto text-white transition-colors disabled:opacity-50"
+                  onClick={addDependent}
+                  className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium font-roboto text-white transition-colors"
                   style={{ backgroundColor: 'var(--color-primary)' }}
                 >
-                  {isVerifying ? 'Verifying...' : 'Verify OTP'}
+                  <Plus className="h-4 w-4" />
+                  <span>Add Dependent</span>
                 </button>
+              </div>
+
+              {state.formData.dependents?.map((dependent, index) => (
+                <div key={dependent.id} className="border rounded-lg p-6 mb-4" style={{ borderColor: 'var(--color-border)' }}>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                      Dependent {index + 1}
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => removeDependent(index)}
+                      className="p-2 rounded-lg hover:opacity-80 transition-colors"
+                      style={{ backgroundColor: 'var(--color-danger)', color: 'white' }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Name <span style={{ color: 'var(--color-danger)' }}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={dependent.name}
+                        onChange={(e) => handleDependentChange(index, 'name', e.target.value)}
+                        placeholder="Enter dependent name"
+                        className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+                        style={{
+                          borderColor: errors[`dependent_${index}_name`] ? 'var(--color-danger)' : 'var(--color-border)',
+                          backgroundColor: 'var(--color-background)',
+                          color: 'var(--color-foreground)',
+                          '--tw-ring-color': 'var(--color-primary)'
+                        }}
+                      />
+                      {errors[`dependent_${index}_name`] && (
+                        <p className="text-sm font-roboto" style={{ color: 'var(--color-danger)' }}>
+                          {errors[`dependent_${index}_name`]}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Age <span style={{ color: 'var(--color-danger)' }}>*</span>
+                      </label>
+                      <input
+                        type="number"
+                        value={dependent.age || ''}
+                        onChange={(e) => handleDependentChange(index, 'age', Number(e.target.value))}
+                        placeholder="Enter age"
+                        className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+                        style={{
+                          borderColor: errors[`dependent_${index}_age`] ? 'var(--color-danger)' : 'var(--color-border)',
+                          backgroundColor: 'var(--color-background)',
+                          color: 'var(--color-foreground)',
+                          '--tw-ring-color': 'var(--color-primary)'
+                        }}
+                      />
+                      {errors[`dependent_${index}_age`] && (
+                        <p className="text-sm font-roboto" style={{ color: 'var(--color-danger)' }}>
+                          {errors[`dependent_${index}_age`]}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Relation <span style={{ color: 'var(--color-danger)' }}>*</span>
+                      </label>
+                      <select
+                        value={dependent.relation}
+                        onChange={(e) => handleDependentChange(index, 'relation', e.target.value)}
+                        className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+                        style={{
+                          borderColor: errors[`dependent_${index}_relation`] ? 'var(--color-danger)' : 'var(--color-border)',
+                          backgroundColor: 'var(--color-background)',
+                          color: 'var(--color-foreground)',
+                          '--tw-ring-color': 'var(--color-primary)'
+                        }}
+                      >
+                        <option value="">Select relation</option>
+                        <option value="spouse">Spouse</option>
+                        <option value="child">Child</option>
+                        <option value="parent">Parent</option>
+                        <option value="sibling">Sibling</option>
+                      </select>
+                      {errors[`dependent_${index}_relation`] && (
+                        <p className="text-sm font-roboto" style={{ color: 'var(--color-danger)' }}>
+                          {errors[`dependent_${index}_relation`]}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="px-8 py-3 rounded-lg font-bold font-roboto text-white transition-all duration-200 hover:opacity-90"
+              style={{ backgroundColor: 'var(--color-primary)' }}
+            >
+              Continue to Providers
+            </button>
+          </div>
+        </form>
+
+        {/* OTP Modal */}
+        {showOtpModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="rounded-xl shadow-2xl p-8 max-w-md w-full mx-4" style={{ backgroundColor: 'var(--color-card)' }}>
+              <div className="text-center mb-6">
+                <div className="p-3 rounded-full mx-auto mb-4 w-fit" style={{ backgroundColor: 'var(--color-secondary)' }}>
+                  <Phone className="h-8 w-8" style={{ color: 'var(--color-primary)' }} />
+                </div>
+                <h3 className="text-xl font-bold font-poppins mb-2" style={{ color: 'var(--color-foreground)' }}>
+                  Verify Mobile Number
+                </h3>
+                <p className="font-roboto" style={{ color: 'var(--color-muted)' }}>
+                  Enter the OTP sent to {state.formData.mobile}
+                </p>
+                <p className="text-sm font-roboto mt-2" style={{ color: 'var(--color-muted)' }}>
+                  Demo OTP: 123456
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                    Enter OTP
+                  </label>
+                  <input
+                    type="text"
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value)}
+                    placeholder="Enter 6-digit OTP"
+                    maxLength={6}
+                    className="w-full px-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all text-center text-lg tracking-widest"
+                    style={{
+                      borderColor: errors.otp ? 'var(--color-danger)' : 'var(--color-border)',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-foreground)',
+                      '--tw-ring-color': 'var(--color-primary)'
+                    }}
+                  />
+                  {errors.otp && (
+                    <p className="text-sm font-roboto" style={{ color: 'var(--color-danger)' }}>
+                      {errors.otp}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowOtpModal(false)}
+                    className="flex-1 px-4 py-3 rounded-lg font-medium font-roboto transition-colors"
+                    style={{ 
+                      backgroundColor: 'var(--color-secondary)',
+                      color: 'var(--color-primary)'
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={verifyOtp}
+                    disabled={isVerifying || otpCode.length !== 6}
+                    className="flex-1 px-4 py-3 rounded-lg font-medium font-roboto text-white transition-colors disabled:opacity-50"
+                    style={{ backgroundColor: 'var(--color-primary)' }}
+                  >
+                    {isVerifying ? 'Verifying...' : 'Verify OTP'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
