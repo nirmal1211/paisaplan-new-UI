@@ -1758,7 +1758,7 @@ const VehicleInsuranceDetailsPage: React.FC = () => {
       case 'calculator':
         return renderPremiumCalculator();
       case 'challans':
-          return renderChallans()
+          return renderChallans();
       default:
         return renderPolicyOverview();
     }
