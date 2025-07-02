@@ -1,0 +1,534 @@
+{
+  "policyInformation": [
+    {
+      "id": "1",
+      "policyNumber": "VIN-2024-001234",
+      "coverageType": "Comprehensive",
+      "policyStartDate": "2024-01-15",
+      "policyEndDate": "2025-01-14",
+      "premiumAmount": 18500,
+      "paymentFrequency": "Annual",
+      "currentStatus": "Active",
+      "provider": "Star Health & Allied Insurance",
+      "agentName": "Rajesh Kumar",
+      "agentContact": "+91-9876543210",
+      "renewalDate": "2025-01-14",
+      "gracePeriod": 30,
+      "policyType": "Private Car",
+      "sumInsured": 850000,
+      "deductible": 5000
+    },
+    {
+      "id": "2",
+      "policyNumber": "VIN-2024-005678",
+      "coverageType": "Third Party",
+      "policyStartDate": "2024-03-20",
+      "policyEndDate": "2025-03-19",
+      "premiumAmount": 3200,
+      "paymentFrequency": "Annual",
+      "currentStatus": "Active",
+      "provider": "ICICI Lombard General Insurance",
+      "agentName": "Priya Sharma",
+      "agentContact": "+91-9876543211",
+      "renewalDate": "2025-03-19",
+      "gracePeriod": 30,
+      "policyType": "Two Wheeler",
+      "sumInsured": 150000,
+      "deductible": 1000
+    },
+    {
+      "id": "3",
+      "policyNumber": "VIN-2023-009876",
+      "coverageType": "Comprehensive",
+      "policyStartDate": "2023-12-01",
+      "policyEndDate": "2024-11-30",
+      "premiumAmount": 22000,
+      "paymentFrequency": "Annual",
+      "currentStatus": "Expired",
+      "provider": "Bajaj Allianz General Insurance",
+      "agentName": "Amit Patel",
+      "agentContact": "+91-9876543212",
+      "renewalDate": "2024-11-30",
+      "gracePeriod": 30,
+      "policyType": "Private Car",
+      "sumInsured": 1200000,
+      "deductible": 7500
+    }
+  ],
+  "vehicleDetails": [
+    {
+      "id": "1",
+      "policyId": "1",
+      "make": "Maruti Suzuki",
+      "model": "Swift Dzire",
+      "yearOfManufacture": 2022,
+      "registrationNumber": "MH01CD5678",
+      "vinNumber": "MA3ERLF1S00A12345",
+      "chassisNumber": "CHS987654321",
+      "engineNumber": "ENG123456789",
+      "color": "Pearl White",
+      "usageType": "Personal",
+      "fuelType": "Petrol",
+      "cubicCapacity": 1197,
+      "seatingCapacity": 5,
+      "vehicleValue": 850000,
+      "registrationDate": "2022-03-15",
+      "fitnessValidUpto": "2037-03-14",
+      "permitValidUpto": "2025-03-14",
+      "roadTaxValidUpto": "2025-03-31",
+      "pucValidUpto": "2024-09-15"
+    },
+    {
+      "id": "2",
+      "policyId": "2",
+      "make": "Honda",
+      "model": "Activa 6G",
+      "yearOfManufacture": 2023,
+      "registrationNumber": "MH01AB1234",
+      "vinNumber": "ME4KE1110N0123456",
+      "chassisNumber": "CHS456789123",
+      "engineNumber": "ENG987654321",
+      "color": "Matte Black",
+      "usageType": "Personal",
+      "fuelType": "Petrol",
+      "cubicCapacity": 109,
+      "seatingCapacity": 2,
+      "vehicleValue": 150000,
+      "registrationDate": "2023-03-20",
+      "fitnessValidUpto": "2038-03-19",
+      "permitValidUpto": "2026-03-19",
+      "roadTaxValidUpto": "2025-03-31",
+      "pucValidUpto": "2024-09-20"
+    },
+    {
+      "id": "3",
+      "policyId": "3",
+      "make": "Hyundai",
+      "model": "Creta",
+      "yearOfManufacture": 2021,
+      "registrationNumber": "MH01EF9876",
+      "vinNumber": "KMHRC81DBMA123456",
+      "chassisNumber": "CHS789123456",
+      "engineNumber": "ENG456789123",
+      "color": "Phantom Black",
+      "usageType": "Personal",
+      "fuelType": "Diesel",
+      "cubicCapacity": 1493,
+      "seatingCapacity": 5,
+      "vehicleValue": 1200000,
+      "registrationDate": "2021-12-01",
+      "fitnessValidUpto": "2036-11-30",
+      "permitValidUpto": "2024-11-30",
+      "roadTaxValidUpto": "2024-12-31",
+      "pucValidUpto": "2024-06-01"
+    }
+  ],
+  "coverageDetails": [
+    {
+      "id": "1",
+      "policyId": "1",
+      "coveredRisks": [
+        "Accidental Damage",
+        "Fire and Explosion",
+        "Self Ignition",
+        "Lightning",
+        "Earthquake",
+        "Flood",
+        "Typhoon/Hurricane/Tornado/Cyclone",
+        "Hailstorm",
+        "Riot, Strike, Malicious Damage",
+        "Terrorist Activity",
+        "Theft",
+        "Burglary/Housebreaking"
+      ],
+      "coverageLimits": {
+        "ownDamage": {
+          "sumInsured": 850000,
+          "deductible": 5000
+        },
+        "thirdPartyLiability": {
+          "bodilyInjury": "Unlimited",
+          "propertyDamage": 750000
+        },
+        "personalAccident": {
+          "ownerDriver": 1500000,
+          "passengers": 200000
+        }
+      },
+      "deductibles": {
+        "ownDamage": 5000,
+        "thirdParty": 0,
+        "personalAccident": 0
+      },
+      "addOnCoverages": [
+        {
+          "name": "Zero Depreciation",
+          "sumInsured": 850000,
+          "premium": 3500,
+          "description": "No depreciation deduction on claim settlement"
+        },
+        {
+          "name": "Engine Protection",
+          "sumInsured": 850000,
+          "premium": 2800,
+          "description": "Protection against engine damage due to water ingression"
+        },
+        {
+          "name": "Roadside Assistance",
+          "sumInsured": 50000,
+          "premium": 500,
+          "description": "24x7 roadside assistance services"
+        }
+      ],
+      "specialConditions": [
+        "Vehicle must be driven by a person holding valid driving license",
+        "Vehicle should be in roadworthy condition",
+        "Any modification to the vehicle must be intimated to the insurer",
+        "Claims must be reported within 48 hours of occurrence"
+      ]
+    },
+    {
+      "id": "2",
+      "policyId": "2",
+      "coveredRisks": [
+        "Third Party Bodily Injury",
+        "Third Party Property Damage",
+        "Personal Accident to Owner-Driver"
+      ],
+      "coverageLimits": {
+        "thirdPartyLiability": {
+          "bodilyInjury": "Unlimited",
+          "propertyDamage": 100000
+        },
+        "personalAccident": {
+          "ownerDriver": 100000
+        }
+      },
+      "deductibles": {
+        "thirdParty": 0,
+        "personalAccident": 0
+      },
+      "addOnCoverages": [],
+      "specialConditions": [
+        "Valid driving license mandatory",
+        "Helmet mandatory for rider and pillion",
+        "Vehicle registration must be valid"
+      ]
+    },
+    {
+      "id": "3",
+      "policyId": "3",
+      "coveredRisks": [
+        "Accidental Damage",
+        "Fire and Allied Perils",
+        "Theft",
+        "Natural Calamities",
+        "Man-made Calamities",
+        "Third Party Liability"
+      ],
+      "coverageLimits": {
+        "ownDamage": {
+          "sumInsured": 1200000,
+          "deductible": 7500
+        },
+        "thirdPartyLiability": {
+          "bodilyInjury": "Unlimited",
+          "propertyDamage": 750000
+        },
+        "personalAccident": {
+          "ownerDriver": 1500000,
+          "passengers": 200000
+        }
+      },
+      "deductibles": {
+        "ownDamage": 7500,
+        "thirdParty": 0,
+        "personalAccident": 0
+      },
+      "addOnCoverages": [
+        {
+          "name": "Return to Invoice",
+          "sumInsured": 1200000,
+          "premium": 4200,
+          "description": "Get invoice value in case of total loss"
+        },
+        {
+          "name": "Key Replacement",
+          "sumInsured": 5000,
+          "premium": 300,
+          "description": "Coverage for lost or stolen keys"
+        }
+      ],
+      "specialConditions": [
+        "Anti-theft device installation mandatory",
+        "GPS tracking system required",
+        "Annual vehicle inspection required"
+      ]
+    }
+  ],
+  "insuredDetails": [
+    {
+      "id": "1",
+      "policyId": "1",
+      "primaryPolicyholder": {
+        "name": "Rajesh Kumar Sharma",
+        "dateOfBirth": "1985-06-15",
+        "gender": "Male",
+        "maritalStatus": "Married",
+        "occupation": "Software Engineer",
+        "email": "rajesh.sharma@email.com",
+        "phone": "+91-9876543210",
+        "panNumber": "ABCDE1234F",
+        "aadharNumber": "1234-5678-9012",
+        "drivingLicenseNumber": "MH01-20230001234",
+        "licenseIssueDate": "2023-06-15",
+        "licenseExpiryDate": "2028-06-14",
+        "address": {
+          "street": "Flat 301, Sunrise Apartments, Linking Road",
+          "city": "Mumbai",
+          "state": "Maharashtra",
+          "pincode": "400050",
+          "country": "India"
+        }
+      },
+      "additionalDrivers": [
+        {
+          "name": "Priya Sharma",
+          "relationship": "Spouse",
+          "dateOfBirth": "1988-03-20",
+          "drivingLicenseNumber": "MH01-20220005678",
+          "licenseIssueDate": "2022-03-20",
+          "licenseExpiryDate": "2027-03-19",
+          "drivingExperience": "8 years"
+        },
+        {
+          "name": "Amit Sharma",
+          "relationship": "Brother",
+          "dateOfBirth": "1990-11-10",
+          "drivingLicenseNumber": "MH01-20210009876",
+          "licenseIssueDate": "2021-11-10",
+          "licenseExpiryDate": "2026-11-09",
+          "drivingExperience": "5 years"
+        }
+      ],
+      "nomineeDetails": {
+        "name": "Priya Sharma",
+        "relationship": "Spouse",
+        "dateOfBirth": "1988-03-20",
+        "address": "Same as policyholder"
+      }
+    },
+    {
+      "id": "2",
+      "policyId": "2",
+      "primaryPolicyholder": {
+        "name": "Anita Desai",
+        "dateOfBirth": "1992-09-25",
+        "gender": "Female",
+        "maritalStatus": "Single",
+        "occupation": "Marketing Executive",
+        "email": "anita.desai@email.com",
+        "phone": "+91-9876543211",
+        "panNumber": "FGHIJ5678K",
+        "aadharNumber": "5678-9012-3456",
+        "drivingLicenseNumber": "MH01-20240002345",
+        "licenseIssueDate": "2024-03-20",
+        "licenseExpiryDate": "2029-03-19",
+        "address": {
+          "street": "B-204, Green Valley Society, Andheri East",
+          "city": "Mumbai",
+          "state": "Maharashtra",
+          "pincode": "400069",
+          "country": "India"
+        }
+      },
+      "additionalDrivers": [],
+      "nomineeDetails": {
+        "name": "Ramesh Desai",
+        "relationship": "Father",
+        "dateOfBirth": "1965-04-12",
+        "address": "Same as policyholder"
+      }
+    },
+    {
+      "id": "3",
+      "policyId": "3",
+      "primaryPolicyholder": {
+        "name": "Vikram Singh Rathore",
+        "dateOfBirth": "1980-12-08",
+        "gender": "Male",
+        "maritalStatus": "Married",
+        "occupation": "Business Owner",
+        "email": "vikram.rathore@email.com",
+        "phone": "+91-9876543212",
+        "panNumber": "KLMNO9012P",
+        "aadharNumber": "9012-3456-7890",
+        "drivingLicenseNumber": "MH01-20200003456",
+        "licenseIssueDate": "2020-12-08",
+        "licenseExpiryDate": "2025-12-07",
+        "address": {
+          "street": "Villa 15, Royal Gardens, Juhu",
+          "city": "Mumbai",
+          "state": "Maharashtra",
+          "pincode": "400049",
+          "country": "India"
+        }
+      },
+      "additionalDrivers": [
+        {
+          "name": "Meera Rathore",
+          "relationship": "Spouse",
+          "dateOfBirth": "1983-07-22",
+          "drivingLicenseNumber": "MH01-20210004567",
+          "licenseIssueDate": "2021-07-22",
+          "licenseExpiryDate": "2026-07-21",
+          "drivingExperience": "12 years"
+        }
+      ],
+      "nomineeDetails": {
+        "name": "Arjun Singh Rathore",
+        "relationship": "Son",
+        "dateOfBirth": "2010-05-15",
+        "address": "Same as policyholder"
+      }
+    }
+  ],
+  "claimsHistory": [
+    {
+      "id": "1",
+      "policyId": "1",
+      "claimNumber": "CLM2024001",
+      "claimDate": "2024-03-15",
+      "claimType": "Own Damage",
+      "incidentDate": "2024-03-14",
+      "incidentLocation": "Mumbai-Pune Highway, Near Lonavala",
+      "incidentDescription": "Collision with another vehicle due to sudden braking",
+      "claimedAmount": 45000,
+      "settledAmount": 42000,
+      "claimStatus": "Settled",
+      "settlementDate": "2024-03-25",
+      "garageDetails": {
+        "name": "Premium Auto Repairs",
+        "address": "Shop No. 15, Auto Hub, Andheri East, Mumbai",
+        "phone": "+91-9876543213"
+      },
+      "surveyorDetails": {
+        "name": "Mr. Suresh Patil",
+        "phone": "+91-9876543214",
+        "surveyDate": "2024-03-16"
+      }
+    },
+    {
+      "id": "2",
+      "policyId": "1",
+      "claimNumber": "CLM2023002",
+      "claimDate": "2023-11-08",
+      "claimType": "Own Damage",
+      "incidentDate": "2023-11-07",
+      "incidentLocation": "Bandra West, Mumbai",
+      "incidentDescription": "Vehicle damaged due to falling tree branch during storm",
+      "claimedAmount": 18500,
+      "settledAmount": 17000,
+      "claimStatus": "Settled",
+      "settlementDate": "2023-11-20",
+      "garageDetails": {
+        "name": "City Auto Works",
+        "address": "Lane 3, Bandra West, Mumbai",
+        "phone": "+91-9876543215"
+      },
+      "surveyorDetails": {
+        "name": "Ms. Kavita Joshi",
+        "phone": "+91-9876543216",
+        "surveyDate": "2023-11-09"
+      }
+    },
+    {
+      "id": "3",
+      "policyId": "2",
+      "claimNumber": "CLM2024003",
+      "claimDate": "2024-04-20",
+      "claimType": "Third Party",
+      "incidentDate": "2024-04-19",
+      "incidentLocation": "S.V. Road, Malad West",
+      "incidentDescription": "Minor collision with pedestrian",
+      "claimedAmount": 25000,
+      "settledAmount": 22000,
+      "claimStatus": "Settled",
+      "settlementDate": "2024-05-05",
+      "garageDetails": null,
+      "surveyorDetails": {
+        "name": "Mr. Ravi Kumar",
+        "phone": "+91-9876543217",
+        "surveyDate": "2024-04-21"
+      }
+    },
+    {
+      "id": "4",
+      "policyId": "3",
+      "claimNumber": "CLM2024004",
+      "claimDate": "2024-02-10",
+      "claimType": "Theft",
+      "incidentDate": "2024-02-09",
+      "incidentLocation": "Juhu Beach Parking",
+      "incidentDescription": "Vehicle stolen from parking area",
+      "claimedAmount": 1200000,
+      "settledAmount": 1150000,
+      "claimStatus": "Settled",
+      "settlementDate": "2024-03-15",
+      "garageDetails": null,
+      "surveyorDetails": {
+        "name": "Mr. Ashok Mehta",
+        "phone": "+91-9876543218",
+        "surveyDate": "2024-02-12"
+      }
+    },
+    {
+      "id": "5",
+      "policyId": "1",
+      "claimNumber": "CLM2024005",
+      "claimDate": "2024-05-18",
+      "claimType": "Own Damage",
+      "incidentDate": "2024-05-17",
+      "incidentLocation": "Worli Sea Face",
+      "incidentDescription": "Vehicle damaged due to heavy rainfall and flooding",
+      "claimedAmount": 35000,
+      "settledAmount": null,
+      "claimStatus": "Under Process",
+      "settlementDate": null,
+      "garageDetails": {
+        "name": "Elite Car Care",
+        "address": "Worli, Mumbai",
+        "phone": "+91-9876543219"
+      },
+      "surveyorDetails": {
+        "name": "Mr. Deepak Shah",
+        "phone": "+91-9876543220",
+        "surveyDate": "2024-05-19"
+      }
+    },
+    {
+      "id": "6",
+      "policyId": "2",
+      "claimNumber": "CLM2023006",
+      "claimDate": "2023-12-22",
+      "claimType": "Own Damage",
+      "incidentDate": "2023-12-21",
+      "incidentLocation": "Linking Road, Bandra",
+      "incidentDescription": "Skidded and hit roadside barrier",
+      "claimedAmount": 8500,
+      "settledAmount": 8000,
+      "claimStatus": "Settled",
+      "settlementDate": "2024-01-05",
+      "garageDetails": {
+        "name": "Quick Fix Auto",
+        "address": "Bandra West, Mumbai",
+        "phone": "+91-9876543221"
+      },
+      "surveyorDetails": {
+        "name": "Ms. Sunita Rao",
+        "phone": "+91-9876543222",
+        "surveyDate": "2023-12-23"
+      }
+    }
+  ]
+}
