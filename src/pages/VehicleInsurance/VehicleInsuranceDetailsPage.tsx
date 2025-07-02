@@ -317,7 +317,203 @@ const VehicleInsuranceDetailsPage: React.FC = () => {
   if (!policy) return null;
 
 
-  const challans = ()=>()
+  const challans = ()=>(
+    <div className="space-y-6">
+            {/* Challan Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
+                <div className="flex items-center space-x-3 mb-2">
+                  <Gavel className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Total Challans</span>
+                </div>
+                <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                  {challanSummary.totalChallans}
+                </p>
+              </div>
+
+              <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
+                <div className="flex items-center space-x-3 mb-2">
+                  <DollarSign className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Total Fine</span>
+                </div>
+                <p className="text-2xl font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                  {formatCurrency(challanSummary.totalFineAmount)}
+                </p>
+              </div>
+
+              <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
+                <div className="flex items-center space-x-3 mb-2">
+                  <CheckCircle className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Paid Amount</span>
+                </div>
+                <p className="text-2xl font-bold font-poppins text-green-600">
+                  {formatCurrency(challanSummary.paidAmount)}
+                </p>
+              </div>
+
+              <div className="rounded-xl p-6" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
+                <div className="flex items-center space-x-3 mb-2">
+                  <AlertTriangle className="h-6 w-6" style={{ color: 'var(--color-primary)' }} />
+                  <span className="font-roboto" style={{ color: 'var(--color-muted)' }}>Pending Amount</span>
+                </div>
+                <p className="text-2xl font-bold font-poppins text-red-600">
+                  {formatCurrency(challanSummary.pendingAmount)}
+                </p>
+              </div>
+            </div>
+
+            {/* Search and Filter */}
+            <div className="rounded-xl shadow-lg p-6" style={{ backgroundColor: 'var(--color-card)' }}>
+              <div className="flex flex-col lg:flex-row gap-4 mb-6">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5" style={{ color: 'var(--color-muted)' }} />
+                  <input
+                    type="text"
+                    placeholder="Search by challan ID, violation type, or location..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border rounded-lg font-roboto focus:outline-none focus:ring-2 transition-all"
+                    style={{ 
+                      borderColor: 'var(--color-border)',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-foreground)',
+                      '--tw-ring-color': 'var(--color-primary)'
+                    }}
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value as any)}
+                    className="border rounded-lg px-4 py-3 font-roboto focus:outline-none focus:ring-2 transition-all"
+                    style={{ 
+                      borderColor: 'var(--color-border)',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-foreground)',
+                      '--tw-ring-color': 'var(--color-primary)'
+                    }}
+                  >
+                    <option value="all">All Status</option>
+                    <option value="paid">Paid</option>
+                    <option value="pending">Pending</option>
+                    <option value="overdue">Overdue</option>
+                    <option value="disputed">Disputed</option>
+                  </select>
+
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as any)}
+                    className="border rounded-lg px-4 py-3 font-roboto focus:outline-none focus:ring-2 transition-all"
+                    style={{ 
+                      borderColor: 'var(--color-border)',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-foreground)',
+                      '--tw-ring-color': 'var(--color-primary)'
+                    }}
+                  >
+                    <option value="date">Sort by Date</option>
+                    <option value="amount">Sort by Amount</option>
+                    <option value="status">Sort by Status</option>
+                  </select>
+
+                  <button
+                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                    className="px-4 py-3 border rounded-lg transition-all duration-200"
+                    style={{ 
+                      borderColor: 'var(--color-border)',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-foreground)'
+                    }}
+                  >
+                    {sortOrder === 'asc' ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Challans Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b" style={{ borderColor: 'var(--color-border)' }}>
+                      <th className="text-left py-3 px-4 font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Challan ID
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Date
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Violation Type
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Location
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Fine Amount
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Status
+                      </th>
+                      <th className="text-left py-3 px-4 font-semibold font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedChallans.map((challan) => (
+                      <tr key={challan.id} className="border-b hover:bg-opacity-50 transition-colors" style={{ borderColor: 'var(--color-border)' }}>
+                        <td className="py-4 px-4">
+                          <span className="font-semibold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                            {challan.challanId}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                            {formatDate(challan.dateOfViolation)}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="font-roboto" style={{ color: 'var(--color-foreground)' }}>
+                            {challan.violationType}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="font-roboto text-sm" style={{ color: 'var(--color-muted)' }}>
+                            {challan.location}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="font-bold font-poppins" style={{ color: 'var(--color-foreground)' }}>
+                            {formatCurrency(challan.fineAmount)}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="flex items-center space-x-2">
+                            {getStatusIcon(challan.paymentStatus)}
+                            <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(challan.paymentStatus)}`}>
+                              {challan.paymentStatus}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="flex space-x-2">
+                            <button className="py-1 px-3 rounded-lg font-medium font-roboto text-sm transition-all duration-200" style={{ backgroundColor: 'var(--color-secondary)', color: 'var(--color-primary)' }}>
+                              View
+                            </button>
+                            {challan.paymentStatus === 'pending' || challan.paymentStatus === 'overdue' ? (
+                              <button className="py-1 px-3 rounded-lg font-medium font-roboto text-sm text-white transition-all duration-200 hover:opacity-90" style={{ backgroundColor: 'var(--color-primary)' }}>
+                                Pay Now
+                              </button>
+                            ) : null}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+  )
 
   const renderPolicyOverview = () => (
     <div className="space-y-6">
