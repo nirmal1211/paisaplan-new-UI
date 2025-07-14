@@ -9,8 +9,8 @@ import PoliciesPage from "./pages/Policies/PoliciesPage";
 import MyPoliciesPage from "./pages/Policies/MyPoliciesPage";
 import PolicyDetailsPage from "./pages/Policies/PolicyDetailsPage";
 import VehicleInsuranceDetailsPage from "./pages/VehicleInsurance/VehicleInsuranceDetailsPage";
+import UniversalInsuranceDetailsPage from "./pages/UniversalInsuranceDetailsPage";
 import ClaimsPage from "./pages/Claims/ClaimsPage";
-import EndorsementsPage from "./pages/Endorsements/EndorsementsPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
 import PurchaseFlow from "./pages/Purchase/PurchaseFlow";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
@@ -26,7 +26,7 @@ function App() {
             <div className="min-h-screen bg-gray-50">
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
-                
+
                 {/* Purchase Flow Routes - With consistent navbar */}
                 <Route
                   path="/buy-policy/*"
@@ -36,7 +36,7 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                
+
                 {/* Main Application Routes - Inside Layout */}
                 <Route
                   path="/"
@@ -58,28 +58,6 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                <Route path="/policies">
-                  <Route
-                    index
-                    element={
-                      <ProtectedRoute>
-                        <Layout>
-                          <PoliciesPage />
-                        </Layout>
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path=":type"
-                    element={
-                      <ProtectedRoute>
-                        <Layout>
-                          <PoliciesPage />
-                        </Layout>
-                      </ProtectedRoute>
-                    }
-                  />
-                </Route>
 
                 <Route
                   path="/claims"
@@ -91,16 +69,7 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                <Route
-                  path="/endorsements"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <EndorsementsPage />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
+
                 <Route
                   path="/profile"
                   element={
@@ -137,6 +106,16 @@ function App() {
                     <ProtectedRoute>
                       <Layout>
                         <VehicleInsuranceDetailsPage />
+                      </Layout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/universal-insurance/:id"
+                  element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <UniversalInsuranceDetailsPage />
                       </Layout>
                     </ProtectedRoute>
                   }

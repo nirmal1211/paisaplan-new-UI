@@ -66,7 +66,6 @@ const getNavigationItems = (role: string) => {
         ],
       },
       { icon: AlertTriangle, label: "Claims", path: "/claims" },
-      { icon: Edit, label: "Endorsements", path: "/endorsements" },
     ],
     corporate_employee: [
       { icon: FileText, label: "Policies", path: "/policies" },
@@ -115,6 +114,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [accordionOpen, setAccordionOpen] = useState([]);
+  const [submenuOpen, setSubmenuOpen] = React.useState(false);
+  const submenuRef = React.useRef<HTMLDivElement>(null);
+
   const isMobile = useIsMobile();
   // Detect initial mode from body attribute or default to light
   const { mode, toggleMode } = useTheme();
@@ -125,6 +127,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return false;
   });
   const userMenuRef = useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (
+        submenuRef.current &&
+        !submenuRef.current.contains(e.target as Node)
+      ) {
+        setSubmenuOpen(false);
+      }
+    }
+    if (submenuOpen) {
+      document.addEventListener("mousedown", handleClick);
+    } else {
+      document.removeEventListener("mousedown", handleClick);
+    }
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [submenuOpen]);
 
   React.useEffect(() => {
     // Set theme on mount and whenever darkMode changes
@@ -217,82 +235,113 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       className={[
                         styles["layout-navbar__dropdown-item"],
                         styles["layout-navbar__dropdown-item--has-submenu"],
-                        "group/submenu",
                       ].join(" ")}
+                      style={{ position: "relative" }}
+                      ref={submenuRef}
                     >
-                      <ShoppingBag
-                        className={styles["layout-navbar__dropdown-icon"]}
-                      />
-                      Buy Policy
-                      <svg
-                        className={styles["layout-navbar__dropdown-chevron"]}
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
+                      <button
+                        type="button"
+                        className="flex items-center gap-2 w-full"
+                        style={{
+                          background: "none",
+                          border: "none",
+                          outline: "none",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => setSubmenuOpen((v) => !v)}
+                        aria-haspopup="true"
+                        aria-expanded={submenuOpen}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 5l7 7-7 7"
+                        <ShoppingBag
+                          className={styles["layout-navbar__dropdown-icon"]}
                         />
-                      </svg>
-                      <div
-                        className={
-                          styles["layout-navbar__dropdown-submenu"] +
-                          " group-hover/submenu:block hidden"
-                        }
-                        style={{ borderColor: SUBMENU_BORDER }}
-                      >
-                        <Link
-                          to="/buy-policy/health"
-                          className={
-                            styles["layout-navbar__dropdown-item"] +
-                            " rounded-t-xl flex items-center gap-2"
-                          }
+                        Buy Policy
+                        <svg
+                          className={styles["layout-navbar__dropdown-chevron"]}
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
                         >
-                          <HeartPulse
-                            className={styles["layout-navbar__dropdown-icon"]}
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 5l7 7-7 7"
                           />
-                          Health Insurance
-                        </Link>
+                        </svg>
+                      </button>
+                      {submenuOpen && (
                         <div
-                          className={styles["layout-navbar__dropdown-divider"]}
-                        />
-                        <Link
-                          to="/buy-policy/two-wheeler"
-                          className={
-                            styles["layout-navbar__dropdown-item"] +
-                            " flex items-center gap-2"
-                          }
+                          className={styles["layout-navbar__dropdown-submenu"]}
+                          style={{
+                            borderColor: SUBMENU_BORDER,
+                            left: "100%",
+                            top: 0,
+                            minWidth: 220,
+                            position: "absolute",
+                            display: "block",
+                            opacity: 1,
+                            transform: "translateX(0) scale(1)",
+                            zIndex: 100,
+                          }}
                         >
-                          <Bike
-                            className={styles["layout-navbar__dropdown-icon"]}
+                          <Link
+                            to="/buy-policy/health"
+                            className={
+                              styles["layout-navbar__dropdown-item"] +
+                              " rounded-t-xl flex items-center gap-2"
+                            }
+                            onClick={() => setSubmenuOpen(false)}
+                          >
+                            <HeartPulse
+                              className={styles["layout-navbar__dropdown-icon"]}
+                            />
+                            Health Insurance
+                          </Link>
+                          <div
+                            className={
+                              styles["layout-navbar__dropdown-divider"]
+                            }
                           />
-                          Two Wheeler Insurance
-                        </Link>
-                        <div
-                          className={styles["layout-navbar__dropdown-divider"]}
-                        />
-                        <Link
-                          to="/buy-policy/four-wheeler"
-                          className={
-                            styles["layout-navbar__dropdown-item"] +
-                            " rounded-b-xl flex items-center gap-2"
-                          }
-                        >
-                          <Car
-                            className={styles["layout-navbar__dropdown-icon"]}
+                          <Link
+                            to="/buy-policy/four-wheeler"
+                            className={
+                              styles["layout-navbar__dropdown-item"] +
+                              " flex items-center gap-2"
+                            }
+                            onClick={() => setSubmenuOpen(false)}
+                          >
+                            <Car
+                              className={styles["layout-navbar__dropdown-icon"]}
+                            />
+                            Motor Insurance
+                          </Link>
+                          <div
+                            className={
+                              styles["layout-navbar__dropdown-divider"]
+                            }
                           />
-                          Four Wheeler Insurance
-                        </Link>
-                      </div>
+                          <Link
+                            to="/buy-policy/two-wheeler"
+                            className={
+                              styles["layout-navbar__dropdown-item"] +
+                              " rounded-b-xl flex items-center gap-2"
+                            }
+                            onClick={() => setSubmenuOpen(false)}
+                          >
+                            <Bike
+                              className={styles["layout-navbar__dropdown-icon"]}
+                            />
+                            Two Wheeler Insurance
+                          </Link>
+                        </div>
+                      )}
                     </div>
                     <div
                       className={styles["layout-navbar__dropdown-divider"]}
                     />
                     <Link
-                      to="/policies"
+                      to="/my-policy"
                       className={
                         styles["layout-navbar__dropdown-item"] +
                         " rounded-b-xl flex items-center gap-2"
@@ -440,7 +489,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           minHeight: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
         }}
       >
-        <main className="min-h-[calc(100vh-64px)] overflow-x-hidden overflow-y-auto bg-white">
+        <main className="min-h-[calc(100vh-64px)] bg-white">
           <div>{children}</div>
         </main>
       </div>

@@ -5,8 +5,8 @@ export interface VehicleDetails {
   registrationNumber: string;
   engineNumber: string;
   chassisNumber: string;
-  fuelType: 'petrol' | 'diesel' | 'cng' | 'electric' | 'hybrid';
-  vehicleType: 'two-wheeler' | 'four-wheeler';
+  fuelType: "petrol" | "diesel" | "cng" | "electric" | "hybrid";
+  vehicleType: "two-wheeler" | "four-wheeler";
   cubicCapacity: number;
   seatingCapacity?: number;
   vehicleValue: number;
@@ -83,7 +83,7 @@ export interface ClaimsHistory {
   claimDate: string;
   claimAmount: number;
   claimType: string;
-  status: 'approved' | 'rejected' | 'pending';
+  status: "approved" | "rejected" | "pending";
   description: string;
 }
 
@@ -95,29 +95,42 @@ export interface PolicyTerm {
   gracePeriod: number; // in days
 }
 
+export interface HealthDetails {
+  insuredPersons: Array<{
+    name: string;
+    age: number;
+    relation: string;
+  }>;
+  sumInsured: number;
+  hospitalNetwork: string[];
+  preExistingDiseases?: string[];
+  policyFeatures?: string[];
+}
+
 export interface InsurancePolicy {
   id: string;
   policyNumber: string;
-  policyType: 'two-wheeler' | 'motor';
-  status: 'active' | 'expired' | 'pending' | 'cancelled';
+  policyType: "two-wheeler" | "motor" | "health";
+  status: "active" | "expired" | "pending" | "cancelled";
   provider: string;
-  
+
   // Core details
   policyHolder: PolicyHolderDetails;
-  vehicle: VehicleDetails;
-  coverage: CoverageDetails;
-  addOns: AddOnCoverage[];
-  premiumBreakdown: PremiumBreakdown;
-  policyTerm: PolicyTerm;
-  
+  vehicle?: VehicleDetails;
+  health?: HealthDetails;
+  coverage?: CoverageDetails;
+  addOns?: AddOnCoverage[];
+  premiumBreakdown?: PremiumBreakdown;
+  policyTerm?: PolicyTerm;
+
   // History and metadata
-  claimsHistory: ClaimsHistory[];
+  claimsHistory?: ClaimsHistory[];
   previousPolicies?: string[];
   createdAt: string;
   updatedAt: string;
-  
+
   // Documents
-  documents: {
+  documents?: {
     policyDocument?: string;
     rcCopy?: string;
     drivingLicense?: string;
@@ -128,7 +141,7 @@ export interface InsurancePolicy {
 
 export interface PremiumCalculatorParams {
   vehicleValue: number;
-  vehicleType: 'two-wheeler' | 'four-wheeler';
+  vehicleType: "two-wheeler" | "four-wheeler";
   fuelType: string;
   cubicCapacity: number;
   registrationYear: number;
@@ -164,28 +177,29 @@ export interface PremiumCalculationResult {
 
 export interface NavigationState {
   policy: InsurancePolicy;
-  calculatorParams: PremiumCalculatorParams;
   returnPath: string;
 }
 
 // Type guards for validation
-export const isValidPolicyType = (type: string): type is 'two-wheeler' | 'motor' => {
-  return type === 'two-wheeler' || type === 'motor';
+export const isValidPolicyType = (
+  type: string
+): type is "two-wheeler" | "motor" | "Health" => {
+  return type === "two-wheeler" || type === "motor" || type === "Health";
 };
 
 export const isValidPolicyId = (id: string): boolean => {
-  return typeof id === 'string' && id.length > 0 && /^[a-zA-Z0-9-_]+$/.test(id);
+  return typeof id === "string" && id.length > 0 && /^[a-zA-Z0-9-_]+$/.test(id);
 };
 
-export const isCompletePolicy = (policy: Partial<InsurancePolicy>): policy is InsurancePolicy => {
+export const isCompletePolicy = (
+  policy: Partial<InsurancePolicy>
+): policy is InsurancePolicy => {
   return !!(
     policy.id &&
     policy.policyNumber &&
     policy.policyType &&
     policy.policyHolder &&
-    policy.vehicle &&
     policy.coverage &&
-    policy.premiumBreakdown &&
     policy.policyTerm
   );
 };
