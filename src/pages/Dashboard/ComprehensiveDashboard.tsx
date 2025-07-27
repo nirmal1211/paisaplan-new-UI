@@ -875,9 +875,9 @@ const ComprehensiveDashboard: React.FC = () => {
         <div className="relative mb-16">
           {/* Hero Image */}
           <img
-            src="/oooWatching.png"
+            src="/oooLooking.svg"
             alt="Watching Hero"
-            className="hidden md:block absolute -top-[85px] right-2 w-24 h-auto z-30 pointer-events-none select-none"
+            className="hidden md:block absolute -top-[140px] right-2 w-[180px] z-30 pointer-events-none select-none"
             style={{ filter: "drop-shadow(0 4px 16px rgba(0,0,0,0.10))" }}
           />
 

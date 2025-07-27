@@ -42,7 +42,7 @@ type DashboardSection =
   | "dependents"
   | "faqs";
 
-const UniversalInsuranceDetailsPage: React.FC = () => {
+const InsuranceDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
@@ -430,14 +430,9 @@ const UniversalInsuranceDetailsPage: React.FC = () => {
     console.log("Downloading policy document...");
   };
 
-  const handleShare = () => {
-    console.log("Sharing policy...");
-  };
-
-  const handlePrint = () => {
-    console.log("Printing policy...");
-    window.print();
-  };
+  // const handleShare = () => {
+  //   console.log("Sharing policy...");
+  // };
 
   // Navigation handler
   const handleGoBack = () => {
@@ -605,7 +600,7 @@ const UniversalInsuranceDetailsPage: React.FC = () => {
         }}
       >
         <div className="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4">
-          <div className="flex space-x-1 overflow-x-auto scrollbar-hide py-2">
+          <div className="flex space-x-1 overflow-x-auto scrollbar-hide py-2 px-2">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeSection === tab.id;
@@ -1266,459 +1261,6 @@ const UniversalInsuranceDetailsPage: React.FC = () => {
               </p>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Registration & Legal Details */}
-      <div
-        className="rounded-xl shadow-lg p-6"
-        style={{ backgroundColor: "var(--color-card)" }}
-      >
-        <h3
-          className="text-lg font-bold font-poppins mb-6 flex items-center space-x-2"
-          style={{ color: "var(--color-foreground)" }}
-        >
-          <FileText
-            className="h-5 w-5"
-            style={{ color: "var(--color-primary)" }}
-          />
-          <span>Registration & Legal Details</span>
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div>
-            <p
-              className="text-xs font-roboto mb-1"
-              style={{ color: "var(--color-muted)" }}
-            >
-              Registration Date
-            </p>
-            <p
-              className="font-medium font-poppins text-sm"
-              style={{ color: "var(--color-foreground)" }}
-            >
-              {formatDate(policy.vehicle?.registrationDate)}
-            </p>
-          </div>
-          <div>
-            <p
-              className="text-xs font-roboto mb-1"
-              style={{ color: "var(--color-muted)" }}
-            >
-              RC Status
-            </p>
-            <span
-              className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                policy.vehicle?.rcStatus
-              )}`}
-            >
-              {policy.vehicle?.rcStatus}
-            </span>
-          </div>
-          <div>
-            <p
-              className="text-xs font-roboto mb-1"
-              style={{ color: "var(--color-muted)" }}
-            >
-              Hypothecated To
-            </p>
-            <p
-              className="font-medium font-poppins text-sm"
-              style={{ color: "var(--color-foreground)" }}
-            >
-              {policy.vehicle?.hypothecatedTo}
-            </p>
-          </div>
-          <div>
-            <p
-              className="text-xs font-roboto mb-1"
-              style={{ color: "var(--color-muted)" }}
-            >
-              Loan Account
-            </p>
-            <p
-              className="font-medium font-poppins text-sm"
-              style={{ color: "var(--color-foreground)" }}
-            >
-              {policy.vehicle?.loanAccount}
-            </p>
-          </div>
-          <div>
-            <p
-              className="text-xs font-roboto mb-1"
-              style={{ color: "var(--color-muted)" }}
-            >
-              Previous Insurer
-            </p>
-            <p
-              className="font-medium font-poppins text-sm"
-              style={{ color: "var(--color-foreground)" }}
-            >
-              {policy.vehicle?.previousInsurer}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Validity & Compliance */}
-      <div
-        className="rounded-xl shadow-lg p-6"
-        style={{ backgroundColor: "var(--color-card)" }}
-      >
-        <h3
-          className="text-lg font-bold font-poppins mb-6 flex items-center space-x-2"
-          style={{ color: "var(--color-foreground)" }}
-        >
-          <Calendar
-            className="h-5 w-5"
-            style={{ color: "var(--color-primary)" }}
-          />
-          <span>Validity & Compliance</span>
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div
-            className="text-center p-4 rounded-lg border"
-            style={{ borderColor: "var(--color-border)" }}
-          >
-            <Calendar
-              className="h-8 w-8 mx-auto mb-2"
-              style={{ color: "var(--color-primary)" }}
-            />
-            <p
-              className="text-xs font-roboto mb-1"
-              style={{ color: "var(--color-muted)" }}
-            >
-              Fitness Valid Till
-            </p>
-            <p
-              className="font-semibold font-poppins text-sm"
-              style={{ color: "var(--color-foreground)" }}
-            >
-              {formatDate(policy.vehicle?.fitnessValidTill)}
-            </p>
-          </div>
-          <div
-            className="text-center p-4 rounded-lg border"
-            style={{ borderColor: "var(--color-border)" }}
-          >
-            <Shield
-              className="h-8 w-8 mx-auto mb-2"
-              style={{ color: "var(--color-primary)" }}
-            />
-            <p
-              className="text-xs font-roboto mb-1"
-              style={{ color: "var(--color-muted)" }}
-            >
-              PUC Valid Till
-            </p>
-            <p
-              className="font-semibold font-poppins text-sm"
-              style={{ color: "var(--color-foreground)" }}
-            >
-              {formatDate(policy.vehicle?.pucValidTill)}
-            </p>
-          </div>
-          <div
-            className="text-center p-4 rounded-lg border"
-            style={{ borderColor: "var(--color-border)" }}
-          >
-            <FileText
-              className="h-8 w-8 mx-auto mb-2"
-              style={{ color: "var(--color-primary)" }}
-            />
-            <p
-              className="text-xs font-roboto mb-1"
-              style={{ color: "var(--color-muted)" }}
-            >
-              Insurance Valid Till
-            </p>
-            <p
-              className="font-semibold font-poppins text-sm"
-              style={{ color: "var(--color-foreground)" }}
-            >
-              {formatDate(policy.vehicle?.insuranceValidTill)}
-            </p>
-          </div>
-          <div
-            className="text-center p-4 rounded-lg border"
-            style={{ borderColor: "var(--color-border)" }}
-          >
-            <DollarSign
-              className="h-8 w-8 mx-auto mb-2"
-              style={{ color: "var(--color-primary)" }}
-            />
-            <p
-              className="text-xs font-roboto mb-1"
-              style={{ color: "var(--color-muted)" }}
-            >
-              Road Tax Valid Till
-            </p>
-            <p
-              className="font-semibold font-poppins text-sm"
-              style={{ color: "var(--color-foreground)" }}
-            >
-              {formatDate(policy.vehicle?.roadTaxValidTill)}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Accessories & Add-ons */}
-      <div
-        className="rounded-xl shadow-lg p-6"
-        style={{ backgroundColor: "var(--color-card)" }}
-      >
-        <h3
-          className="text-lg font-bold font-poppins mb-6 flex items-center space-x-2"
-          style={{ color: "var(--color-foreground)" }}
-        >
-          <Shield
-            className="h-5 w-5"
-            style={{ color: "var(--color-primary)" }}
-          />
-          <span>Accessories & Add-ons</span>
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {policy.vehicle?.accessories?.map((accessory: any, index: number) => (
-            <div
-              key={index}
-              className="border rounded-xl p-4"
-              style={{ borderColor: "var(--color-border)" }}
-            >
-              <div className="flex items-center space-x-3 mb-2">
-                <div
-                  className="p-2 rounded-lg"
-                  style={{ backgroundColor: "var(--color-secondary)" }}
-                >
-                  <Shield
-                    className="h-4 w-4"
-                    style={{ color: "var(--color-primary)" }}
-                  />
-                </div>
-                <div>
-                  <h4
-                    className="font-semibold font-poppins text-sm"
-                    style={{ color: "var(--color-foreground)" }}
-                  >
-                    {accessory.name}
-                  </h4>
-                  <p
-                    className="text-xs font-roboto"
-                    style={{ color: "var(--color-muted)" }}
-                  >
-                    {accessory.make}
-                  </p>
-                </div>
-              </div>
-              <p
-                className="font-bold font-poppins text-sm"
-                style={{ color: "var(--color-primary)" }}
-              >
-                ₹{accessory.value.toLocaleString()}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Vehicle Inspection */}
-      <div
-        className="rounded-xl shadow-lg p-6"
-        style={{ backgroundColor: "var(--color-card)" }}
-      >
-        <h3
-          className="text-lg font-bold font-poppins mb-6 flex items-center space-x-2"
-          style={{ color: "var(--color-foreground)" }}
-        >
-          <Eye className="h-5 w-5" style={{ color: "var(--color-primary)" }} />
-          <span>Vehicle Inspection</span>
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h4
-              className="font-semibold font-poppins text-sm mb-3"
-              style={{ color: "var(--color-foreground)" }}
-            >
-              Inspection Details
-            </h4>
-            <div className="space-y-3">
-              <div>
-                <p
-                  className="text-xs font-roboto mb-1"
-                  style={{ color: "var(--color-muted)" }}
-                >
-                  Last Inspection Date
-                </p>
-                <p
-                  className="font-medium font-poppins text-sm"
-                  style={{ color: "var(--color-foreground)" }}
-                >
-                  {formatDate(policy.vehicle?.inspection?.lastInspectionDate)}
-                </p>
-              </div>
-              <div>
-                <p
-                  className="text-xs font-roboto mb-1"
-                  style={{ color: "var(--color-muted)" }}
-                >
-                  Next Inspection Due
-                </p>
-                <p
-                  className="font-medium font-poppins text-sm"
-                  style={{ color: "var(--color-foreground)" }}
-                >
-                  {formatDate(policy.vehicle?.inspection?.nextInspectionDue)}
-                </p>
-              </div>
-              <div>
-                <p
-                  className="text-xs font-roboto mb-1"
-                  style={{ color: "var(--color-muted)" }}
-                >
-                  Inspection Agency
-                </p>
-                <p
-                  className="font-medium font-poppins text-sm"
-                  style={{ color: "var(--color-foreground)" }}
-                >
-                  {policy.vehicle?.inspection?.inspectionAgency}
-                </p>
-              </div>
-              <div>
-                <p
-                  className="text-xs font-roboto mb-1"
-                  style={{ color: "var(--color-muted)" }}
-                >
-                  Inspector Name
-                </p>
-                <p
-                  className="font-medium font-poppins text-sm"
-                  style={{ color: "var(--color-foreground)" }}
-                >
-                  {policy.vehicle?.inspection?.inspectorName}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <h4
-              className="font-semibold font-poppins text-sm mb-3"
-              style={{ color: "var(--color-foreground)" }}
-            >
-              Roadworthiness Status
-            </h4>
-            <div className="grid grid-cols-2 gap-3">
-              {Object.entries(policy.vehicle?.roadworthiness || {})
-                .slice(0, 6)
-                .map(([key, value]: [string, any]) => (
-                  <div
-                    key={key}
-                    className="flex items-center justify-between p-2 rounded-lg"
-                    style={{ backgroundColor: "var(--color-secondary)" }}
-                  >
-                    <span
-                      className="text-xs font-roboto capitalize"
-                      style={{ color: "var(--color-muted)" }}
-                    >
-                      {key
-                        .replace(/([A-Z])/g, " $1")
-                        .replace(/^./, (str) => str.toUpperCase())
-                        .replace(" Condition", "")}
-                    </span>
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                        value === "Excellent"
-                          ? "bg-green-100 text-green-800"
-                          : value === "Good"
-                          ? "bg-blue-100 text-blue-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {value}
-                    </span>
-                  </div>
-                ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Claim History */}
-      <div
-        className="rounded-xl shadow-lg p-6"
-        style={{ backgroundColor: "var(--color-card)" }}
-      >
-        <h3
-          className="text-lg font-bold font-poppins mb-6 flex items-center space-x-2"
-          style={{ color: "var(--color-foreground)" }}
-        >
-          <FileText
-            className="h-5 w-5"
-            style={{ color: "var(--color-primary)" }}
-          />
-          <span>Vehicle Claim History</span>
-        </h3>
-        <div className="space-y-4">
-          {policy.vehicle?.claimHistory?.map((claim: any, index: number) => (
-            <div
-              key={index}
-              className="border rounded-xl p-4"
-              style={{ borderColor: "var(--color-border)" }}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h4
-                    className="font-semibold font-poppins text-sm"
-                    style={{ color: "var(--color-foreground)" }}
-                  >
-                    {claim.claimNumber}
-                  </h4>
-                  <p
-                    className="text-xs font-roboto"
-                    style={{ color: "var(--color-muted)" }}
-                  >
-                    {claim.type} • {formatDate(claim.date)}
-                  </p>
-                </div>
-                <span
-                  className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                    claim.status
-                  )}`}
-                >
-                  {claim.status}
-                </span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p
-                    className="text-xs font-roboto mb-1"
-                    style={{ color: "var(--color-muted)" }}
-                  >
-                    Claim Amount
-                  </p>
-                  <p
-                    className="font-semibold font-poppins text-sm"
-                    style={{ color: "var(--color-primary)" }}
-                  >
-                    ₹{claim.amount.toLocaleString()}
-                  </p>
-                </div>
-                <div>
-                  <p
-                    className="text-xs font-roboto mb-1"
-                    style={{ color: "var(--color-muted)" }}
-                  >
-                    Garage
-                  </p>
-                  <p
-                    className="font-medium font-poppins text-sm"
-                    style={{ color: "var(--color-foreground)" }}
-                  >
-                    {claim.garage}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </div>
@@ -2560,6 +2102,193 @@ const UniversalInsuranceDetailsPage: React.FC = () => {
       </div>
     </div>
   );
+
+  // Mock coverages data for motor and two-wheeler policies
+  const mockCoverages = {
+    motor: {
+      coverages: [
+        {
+          title: "Own Damage Cover",
+          description:
+            "Covers damage to your vehicle due to accident, fire, theft, or natural calamities.",
+        },
+        {
+          title: "Third Party Liability",
+          description:
+            "Covers legal liability for injury/death or property damage to third parties.",
+        },
+        {
+          title: "Personal Accident Cover",
+          description:
+            "Provides compensation in case of death or disability of the owner-driver.",
+        },
+      ],
+      addOns: [
+        {
+          title: "Zero Depreciation",
+          description:
+            "Full claim without deduction for depreciation on parts.",
+        },
+        {
+          title: "Engine Protect",
+          description:
+            "Covers damage to engine and gearbox due to water ingression or oil leakage.",
+        },
+        {
+          title: "Roadside Assistance",
+          description:
+            "24x7 support for breakdowns, towing, fuel delivery, and more.",
+        },
+      ],
+    },
+    twoWheeler: {
+      coverages: [
+        {
+          title: "Own Damage Cover",
+          description:
+            "Covers accidental damage, fire, theft, and natural disasters for your bike.",
+        },
+        {
+          title: "Third Party Liability",
+          description:
+            "Covers injury/death or property damage to third parties.",
+        },
+        {
+          title: "Personal Accident Cover",
+          description: "Compensation for owner-rider in case of accident.",
+        },
+      ],
+      addOns: [
+        {
+          title: "Helmet Cover",
+          description: "Covers loss or damage to helmet.",
+        },
+        {
+          title: "NCB Protect",
+          description: "Retain No Claim Bonus even after a claim.",
+        },
+        {
+          title: "Roadside Assistance",
+          description: "Emergency help for breakdowns and towing.",
+        },
+      ],
+    },
+  };
+
+  // Render method for Coverages tab
+  const renderCoverages = () => {
+    // Determine policy type
+    const type = (policy.type || policy.policyType || "motor").toLowerCase();
+    const data = type.includes("two")
+      ? mockCoverages.twoWheeler
+      : mockCoverages.motor;
+    return (
+      <div className="space-y-8">
+        {/* What the policy covers */}
+        <div
+          className="rounded-xl shadow-lg p-5"
+          style={{
+            backgroundColor: "var(--color-card)",
+            borderColor: "var(--color-border)",
+            borderWidth: 1,
+          }}
+        >
+          <h3
+            className="text-base font-bold font-poppins mb-4 flex items-center gap-2"
+            style={{ color: "var(--color-primary)" }}
+          >
+            <Shield
+              className="h-5 w-5"
+              style={{ color: "var(--color-primary)" }}
+            />
+            What This Policy Covers
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {data.coverages.map((item, idx) => (
+              <div
+                key={idx}
+                className="border rounded-xl p-3 flex flex-col gap-1 hover:shadow-lg transition-all duration-200"
+                style={{
+                  backgroundColor: "var(--color-secondary)",
+                  borderColor: "var(--color-border)",
+                }}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <Shield
+                    className="h-4 w-4"
+                    style={{ color: "var(--color-primary)" }}
+                  />
+                  <h4
+                    className="font-semibold font-poppins text-sm"
+                    style={{ color: "var(--color-primary)" }}
+                  >
+                    {item.title}
+                  </h4>
+                </div>
+                <p
+                  className="font-roboto text-xs"
+                  style={{ color: "var(--color-foreground)" }}
+                >
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Add-ons */}
+        <div
+          className="rounded-xl shadow-lg p-5"
+          style={{
+            backgroundColor: "var(--color-card)",
+            borderColor: "var(--color-border)",
+            borderWidth: 1,
+          }}
+        >
+          <h3
+            className="text-base font-bold font-poppins mb-4 flex items-center gap-2"
+            style={{ color: "var(--color-primary)" }}
+          >
+            <RefreshCw
+              className="h-5 w-5"
+              style={{ color: "var(--color-primary)" }}
+            />
+            Popular Add-ons
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {data.addOns.map((addon, idx) => (
+              <div
+                key={idx}
+                className="border rounded-xl p-3 flex flex-col gap-1 hover:shadow-lg transition-all duration-200"
+                style={{
+                  backgroundColor: "var(--color-secondary)",
+                  borderColor: "var(--color-border)",
+                }}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <RefreshCw
+                    className="h-4 w-4"
+                    style={{ color: "var(--color-primary)" }}
+                  />
+                  <h4
+                    className="font-semibold font-poppins text-sm"
+                    style={{ color: "var(--color-primary)" }}
+                  >
+                    {addon.title}
+                  </h4>
+                </div>
+                <p
+                  className="font-roboto text-xs"
+                  style={{ color: "var(--color-foreground)" }}
+                >
+                  {addon.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const renderClaims = () => {
     // Mock claims data - in real app this would come from API
@@ -3796,6 +3525,8 @@ const UniversalInsuranceDetailsPage: React.FC = () => {
         return renderHospitals();
       case "claims":
         return renderClaims();
+      case "coverage":
+        return renderCoverages();
       case "documents":
         return renderDocuments();
       case "endorsements":
@@ -3834,13 +3565,13 @@ const UniversalInsuranceDetailsPage: React.FC = () => {
                   className="text-xl font-bold font-poppins"
                   style={{ color: "var(--color-foreground)" }}
                 >
-                  Policy Details
+                  {policy.policyType} insurance
                 </h1>
                 <p
                   className="text-sm font-roboto"
                   style={{ color: "var(--color-muted)" }}
                 >
-                  {policy.policyNumber}
+                  {policy.policyName} - {policy.policyNumber}
                 </p>
               </div>
             </div>
@@ -3864,7 +3595,7 @@ const UniversalInsuranceDetailsPage: React.FC = () => {
                 >
                   <Download className="h-5 w-5" />
                 </button>
-                <button
+                {/* <button
                   onClick={handleShare}
                   className="p-2 rounded-lg transition-all duration-200"
                   style={{
@@ -3874,18 +3605,7 @@ const UniversalInsuranceDetailsPage: React.FC = () => {
                   title="Share"
                 >
                   <Share2 className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={handlePrint}
-                  className="p-2 rounded-lg transition-all duration-200"
-                  style={{
-                    backgroundColor: "var(--color-secondary)",
-                    color: "var(--color-primary)",
-                  }}
-                  title="Print"
-                >
-                  <Printer className="h-5 w-5" />
-                </button>
+                </button> */}
               </div>
             </div>
           </div>
@@ -3903,4 +3623,4 @@ const UniversalInsuranceDetailsPage: React.FC = () => {
   );
 };
 
-export default UniversalInsuranceDetailsPage;
+export default InsuranceDetailsPage;

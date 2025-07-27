@@ -133,7 +133,7 @@ const MyPoliciesPage: React.FC = () => {
       }
 
       // 8. Navigate to universal insurance details page
-      const targetRoute = `/universal-insurance/${policyId}`;
+      const targetRoute = `/insurance-details/${policyId}`;
 
       console.log("Navigating to:", targetRoute);
       console.log("Navigation state:", navigationState);
@@ -764,7 +764,7 @@ const MyPoliciesPage: React.FC = () => {
                     <button
                       onClick={() => {
                         // Navigate to UniversalInsuranceDetailsPage for all policy types
-                        navigate(`/universal-insurance/${policy.id}`, {
+                        navigate(`/insurance-details/${policy.id}`, {
                           state: {
                             policy: {
                               ...policy,

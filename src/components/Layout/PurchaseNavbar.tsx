@@ -258,53 +258,6 @@ const PurchaseNavbar: React.FC = () => {
           <span className="hidden sm:inline-block">Renewals</span>
         </Link>
       </div>
-      {/* Login Button (rightmost) */}
-      <div className={styles["layout-navbar__user-menu"]}>
-        <Link
-          to="/login"
-          onClick={() => {
-            KeycloakService.initKeycloak();
-          }}
-          className={styles["layout-navbar__user-btn"]}
-          style={{
-            fontWeight: 600,
-            fontSize: 14,
-            display: "flex",
-            alignItems: "center",
-            gap: 7,
-            background: "transparent",
-            color: "var(--color-primary)",
-            border: "1.5px solid var(--color-primary)",
-            borderRadius: 10,
-            padding: "6px 16px",
-            boxShadow: "none",
-            transition:
-              "background 0.18s, color 0.18s, border 0.18s, box-shadow 0.18s",
-            lineHeight: 1.2,
-          }}
-          onMouseOver={(e) => {
-            (e.currentTarget as HTMLElement).style.background =
-              "rgba(106,17,203,0.09)";
-            (e.currentTarget as HTMLElement).style.color =
-              "var(--color-primary)";
-            (e.currentTarget as HTMLElement).style.borderColor =
-              "var(--color-primary)";
-            (e.currentTarget as HTMLElement).style.boxShadow =
-              "0 2px 8px 0 rgba(106,17,203,0.10)";
-          }}
-          onMouseOut={(e) => {
-            (e.currentTarget as HTMLElement).style.background = "transparent";
-            (e.currentTarget as HTMLElement).style.color =
-              "var(--color-primary)";
-            (e.currentTarget as HTMLElement).style.borderColor =
-              "var(--color-primary)";
-            (e.currentTarget as HTMLElement).style.boxShadow = "none";
-          }}
-        >
-          <LogIn className="h-5 w-5" />
-          Login
-        </Link>
-      </div>
     </nav>
   );
 };

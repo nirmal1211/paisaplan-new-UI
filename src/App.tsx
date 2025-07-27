@@ -2,14 +2,9 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import AuthProvider from "./contexts/AuthContext";
-import LoginPage from "./pages/Auth/LoginPage";
-import DashboardPage from "./pages/Dashboard/DashboardPage";
 import ComprehensiveDashboard from "./pages/Dashboard/ComprehensiveDashboard";
-import PoliciesPage from "./pages/Policies/PoliciesPage";
 import MyPoliciesPage from "./pages/Policies/MyPoliciesPage";
-import PolicyDetailsPage from "./pages/Policies/PolicyDetailsPage";
-import VehicleInsuranceDetailsPage from "./pages/VehicleInsurance/VehicleInsuranceDetailsPage";
-import UniversalInsuranceDetailsPage from "./pages/UniversalInsuranceDetailsPage";
+import InsuranceDetailsPage from "./pages/Policies/InsuranceDetailsPage";
 import ClaimsPage from "./pages/Claims/ClaimsPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
 import PurchaseFlow from "./pages/Purchase/PurchaseFlow";
@@ -25,11 +20,9 @@ function App() {
           <Router>
             <div className="min-h-screen bg-gray-50">
               <Routes>
-                <Route path="/login" element={<LoginPage />} />
-
                 {/* Purchase Flow Routes - With consistent navbar */}
                 <Route
-                  path="/buy-policy/*"
+                  path="personal/buy-policy/*"
                   element={
                     <ProtectedRoute>
                       <PurchaseFlow />
@@ -38,18 +31,9 @@ function App() {
                 />
 
                 {/* Main Application Routes - Inside Layout */}
+
                 <Route
-                  path="/"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <ComprehensiveDashboard />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/dashboard"
+                  path="/personal/dashboard"
                   element={
                     <ProtectedRoute>
                       <Layout>
@@ -90,32 +74,13 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+
                 <Route
-                  path="/my-policy/:id"
+                  path="/insurance-details/:id"
                   element={
                     <ProtectedRoute>
                       <Layout>
-                        <PolicyDetailsPage />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/vehicle-insurance/:id"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <VehicleInsuranceDetailsPage />
-                      </Layout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/universal-insurance/:id"
-                  element={
-                    <ProtectedRoute>
-                      <Layout>
-                        <UniversalInsuranceDetailsPage />
+                        <InsuranceDetailsPage />
                       </Layout>
                     </ProtectedRoute>
                   }
