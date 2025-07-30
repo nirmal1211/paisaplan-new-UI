@@ -5,25 +5,12 @@ import "./index.css";
 import "./styles/theme.css";
 import KeycloakService from "./keycloackService.ts";
 import { REACT_TOKEN } from "./utils/Constants/SessionStorageConstants.ts";
-import Home from "./pages/Home/Home.tsx";
 
 const rootElement = document.getElementById("root");
-const root = createRoot(rootElement);
-
-interface Config {
-  authURL: string;
-  clientId: string;
-  gatewayURL: string;
-  realm: string;
-  socketFileServerURL: string;
-  socketURL: string;
-  sxpProjectID: string;
-  sxpSocketURL: string;
-  [key: string]: any;
-}
 
 const renderRoot = () => {
   if (rootElement) {
+    const root = createRoot(rootElement);
     root.render(
       <StrictMode>
         <App />
@@ -34,40 +21,80 @@ const renderRoot = () => {
   }
 };
 
-const renderLanding = (config: Config): void => {
-  root.render(
-    <Home
-      onLogin={() => KeycloakService.initAndLogin(config)}
-      config={config}
-    />
-  );
+// Check if authentication is required based on route
+const requiresAuth = () => {
+  const publicRoutes = ["/", "/home", "/login", "/about", "/contact"];
+  const currentPath = window.location.pathname;
+  return !publicRoutes.includes(currentPath);
 };
 
-if (sessionStorage.getItem(REACT_TOKEN)) {
-  const envs = sessionStorage.getItem("config");
-  const config = JSON.parse(envs);
-  KeycloakService.initKeycloak(
-    () => renderRoot(),
-    config,
-    () => {
-      renderLanding(config);
+// Renders the landing (Home) page for unauthenticated users
+const renderLanding = (config) => {
+  if (config && config.realm) {
+    const targetUrl = `/personal/${config.realm}`;
+    if (window.location.pathname !== targetUrl) {
+      window.location.replace(targetUrl);
+      return;
     }
-  );
-} else {
-  fetch(`${"https://apps-dev.trovity.com"}${window.location.pathname}.json`)
-    .then(async (r) => r.json())
-    .then((config) => {
-      sessionStorage.setItem("config", JSON.stringify(config));
-      KeycloakService.initKeycloak(
-        () => renderRoot(),
-        config,
-        () => {
-          renderLanding(config);
-        }
+  }
+  if (rootElement) {
+    const root = createRoot(rootElement);
+    // Home expects onLogin and config props
+    import("./pages/Home/Home").then(({ default: Home }) => {
+      root.render(
+        <StrictMode>
+          <Home
+            onLogin={() => KeycloakService.initAndLogin(config)}
+            config={config}
+          />
+        </StrictMode>
       );
-    })
-    .catch(() => {
-      const root = createRoot(rootElement);
-      root.render(<h6>Error Loading Application</h6>);
     });
-}
+  } else {
+    console.error("Root element not found");
+  }
+};
+const initializeApp = () => {
+  if (requiresAuth()) {
+    // Authentication required for protected routes
+    if (sessionStorage.getItem(REACT_TOKEN)) {
+      const envs = sessionStorage.getItem("config");
+      if (envs) {
+        const config = JSON.parse(envs);
+        KeycloakService.initKeycloak(
+          () => {
+            renderRoot();
+            if (window.location.pathname !== "/dashboard") {
+              window.location.replace("/dashboard");
+            }
+          },
+          config,
+          () => {
+            // Only redirect to /personal/:realm for logout/session timeout
+            renderLanding(config);
+          }
+        );
+      }
+    } else {
+      fetch(`${"https://apps-dev.trovity.com"}${window.location.pathname}.json`)
+        .then(async (r) => r.json())
+        .then((config) => {
+          sessionStorage.setItem("config", JSON.stringify(config));
+          // For unauthenticated, show landing (may redirect to /personal/:realm)
+          renderLanding(config);
+        })
+        .catch(() => {
+          if (rootElement) {
+            const root = createRoot(rootElement);
+            root.render(<h6>Error Loading Application</h6>);
+          }
+        });
+    }
+  } else {
+    // No authentication required for public routes
+    renderRoot();
+  }
+};
+
+// Initialize the application
+initializeApp();
