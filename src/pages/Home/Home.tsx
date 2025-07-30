@@ -878,21 +878,21 @@ const Home = ({ onLogin, config }) => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                name: "",
+                name: "efg",
                 role: "CEO & Co-Founder",
                 desc: "Former VP at HDFC Life with 20+ years in insurance. IIT Delhi alumnus passionate about democratizing insurance access.",
                 icon: Users,
                 color: "var(--color-primary)",
               },
               {
-                name: "",
+                name: "xyz",
                 role: "CTO & Co-Founder",
                 desc: "Ex-Google engineer with expertise in AI/ML. MIT graduate leading our technology innovation and digital transformation.",
                 icon: Briefcase,
                 color: "var(--color-accent)",
               },
               {
-                name: "",
+                name: "abc",
                 role: "COO & Co-Founder",
                 desc: "Former McKinsey consultant with 15+ years in strategy. IIM Ahmedabad graduate driving operational excellence.",
                 icon: Award,
