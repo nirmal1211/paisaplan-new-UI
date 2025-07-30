@@ -1,5 +1,10 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import AuthProvider from "./contexts/AuthContext";
 import ComprehensiveDashboard from "./pages/Dashboard/ComprehensiveDashboard";
@@ -11,6 +16,21 @@ import PurchaseFlow from "./pages/Purchase/PurchaseFlow";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import Layout from "./components/Layout/Navbar";
 import { ThemeProvider } from "./theme/ThemeProvider";
+import KeycloakService from "./keycloackService"; // adjust path as needed
+
+const LoginRedirect = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (KeycloakService.isLoggedIn()) {
+      navigate("/dashboard", { replace: true });
+    } else {
+      navigate("/login", { replace: true });
+    }
+  }, [navigate]);
+
+  return null;
+};
 
 function App() {
   return (
@@ -85,6 +105,8 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+
+                <Route path="/personal/trovity" element={<LoginRedirect />} />
               </Routes>
             </div>
           </Router>

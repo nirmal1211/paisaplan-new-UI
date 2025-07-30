@@ -24,63 +24,51 @@ const renderRoot = () => {
 // Check if authentication is required based on route
 // Renders the landing (Home) page for unauthenticated users
 const renderLanding = (config) => {
-  if (rootElement) {
-    const root = createRoot(rootElement);
-    // Home expects onLogin and config props
-    import("./pages/Home/Home").then(({ default: Home }) => {
-      root.render(
-        <StrictMode>
-          <Home onLogin={() => KeycloakService.doLogin()} config={config} />
-        </StrictMode>
-      );
-    });
-  } else {
-    console.error("Root element not found");
-  }
-};
-const requiresAuth = () => {
-  const publicRoutes = ["/", "/home", "/login", "/about", "/contact"];
-  const currentPath = window.location.pathname;
-  return !publicRoutes.includes(currentPath);
+  const root = createRoot(rootElement);
+  // Home expects onLogin and config props
+  import("./pages/Home/Home").then(({ default: Home }) => {
+    root.render(
+      <StrictMode>
+        <Home onLogin={() => KeycloakService.doLogin()} config={config} />
+      </StrictMode>
+    );
+  });
 };
 
 const initializeApp = () => {
-  if (requiresAuth()) {
-    // Authentication required for protected routes
-    if (sessionStorage.getItem(REACT_TOKEN)) {
-      const envs = sessionStorage.getItem("config");
-      if (envs) {
-        const config = JSON.parse(envs);
+  if (sessionStorage.getItem(REACT_TOKEN)) {
+    const envs = sessionStorage.getItem("config");
+    if (envs) {
+      const config = JSON.parse(envs);
+      KeycloakService.initKeycloak(
+        () => {
+          renderRoot();
+        },
+        config,
+        () => {
+          renderLanding(config);
+        }
+      );
+    }
+  } else {
+    fetch(`${"https://apps-dev.trovity.com"}${window.location.pathname}.json`)
+      .then(async (r) => r.json())
+      .then((config) => {
+        sessionStorage.setItem("config", JSON.stringify(config));
         KeycloakService.initKeycloak(
-          () => {
-            renderRoot();
-            if (window.location.pathname !== "/dashboard") {
-              window.location.replace("/dashboard");
-            }
-          },
+          () => renderRoot(),
           config,
           () => {
             renderLanding(config);
           }
         );
-      }
-    } else {
-      fetch(`${"https://apps-dev.trovity.com"}${window.location.pathname}.json`)
-        .then(async (r) => r.json())
-        .then((config) => {
-          sessionStorage.setItem("config", JSON.stringify(config));
-          KeycloakService.initKeycloak(() => renderRoot(), config);
-        })
-        .catch(() => {
-          if (rootElement) {
-            const root = createRoot(rootElement);
-            root.render(<h6>Error Loading Application</h6>);
-          }
-        });
-    }
-  } else {
-    // No authentication required for public routes
-    renderRoot();
+      })
+      .catch(() => {
+        if (rootElement) {
+          const root = createRoot(rootElement);
+          root.render(<h6>Error Loading Application</h6>);
+        }
+      });
   }
 };
 
