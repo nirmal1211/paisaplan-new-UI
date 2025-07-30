@@ -1,35 +1,29 @@
 import React, { useState, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Calendar,
   Shield,
   FileText,
   ChevronDown,
-  ChevronUp,
   Search,
   X,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
 } from "lucide-react";
-import { mockPolicies, mockFAQs, insuranceSlides } from "../../data/mockData";
-import { Policy, FAQ } from "../../types/policy";
-import {
-  InsurancePolicy,
-  NavigationState,
-  isValidPolicyType,
-  isValidPolicyId,
-  isCompletePolicy,
-} from "../../types/insurance";
+import { mockPolicies, insuranceSlides } from "../../data/mockData";
 import InsuranceCarousel from "../../components/UI/carousel-insurance";
 import UploadPolicyModal from "../../components/UploadPolicyModal";
 import PolicyRenewalListModal from "../../components/PolicyRenewalListModal";
 
 const MyPoliciesPage: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<"policies" | "faqs">("policies");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [activeTab, setActiveTab] = useState<
+    "active" | "verification" | "expired"
+  >("active");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showRenewalModal, setShowRenewalModal] = useState(false);
-  const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
   const [isNavigating, setIsNavigating] = useState<boolean>(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
 
@@ -46,18 +40,34 @@ const MyPoliciesPage: React.FC = () => {
   // Filter policies based on selected filters and search query
   const filteredPolicies = useMemo(() => {
     return mockPolicies.filter((policy) => {
-      const statusMatch =
-        statusFilter === "all" ||
-        policy.status.toLowerCase() === statusFilter.toLowerCase();
       const typeMatch = typeFilter === "all" || policy.type === typeFilter;
       const searchMatch =
         searchQuery === "" ||
         policy.policyNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
         policy.provider.toLowerCase().includes(searchQuery.toLowerCase()) ||
         policy.type.toLowerCase().includes(searchQuery.toLowerCase());
-      return statusMatch && typeMatch && searchMatch;
+
+      return typeMatch && searchMatch;
     });
-  }, [statusFilter, typeFilter, searchQuery]);
+  }, [typeFilter, searchQuery]);
+
+  // Separate verification pending and active policies
+  const verificationPendingPolicies = useMemo(() => {
+    return filteredPolicies.filter(
+      (policy) => policy.status === "Verification Pending"
+    );
+  }, [filteredPolicies]);
+
+  const activePolicies = useMemo(() => {
+    return filteredPolicies.filter(
+      (policy) =>
+        policy.status !== "Verification Pending" && policy.status !== "Expired"
+    );
+  }, [filteredPolicies]);
+
+  const expiredPolicies = useMemo(() => {
+    return filteredPolicies.filter((policy) => policy.status === "Expired");
+  }, [filteredPolicies]);
 
   const policyTypes = [
     "Health",
@@ -76,215 +86,6 @@ const MyPoliciesPage: React.FC = () => {
    * Handles navigation to vehicle insurance details page with comprehensive data validation
    * and premium calculator integration
    */
-  const handleViewMoreClick = async (
-    policyId: string,
-    policyType: "two-wheeler" | "motor",
-    policyDetails: InsurancePolicy
-  ): Promise<void> => {
-    try {
-      setIsNavigating(true);
-
-      // 1. Validate input parameters
-      if (!isValidPolicyId(policyId)) {
-        throw new Error("Invalid policy ID format");
-      }
-
-      if (!isValidPolicyType(policyType)) {
-        throw new Error(
-          'Invalid policy type. Must be "two-wheeler" or "motor"'
-        );
-      }
-
-      if (!isCompletePolicy(policyDetails)) {
-        throw new Error("Incomplete policy data. Missing required fields");
-      }
-
-      // 2. Validate policy data completeness
-      const requiredFields = [
-        "policyHolder.name",
-        "policyHolder.email",
-        "vehicle.make",
-        "vehicle.model",
-        "vehicle.registrationNumber",
-        "coverage.ownDamage.sumInsured",
-        "premiumBreakdown.totalPremium",
-      ];
-
-      for (const field of requiredFields) {
-        const value = field
-          .split(".")
-          .reduce((obj, key) => obj?.[key], policyDetails);
-        if (!value) {
-          throw new Error(`Missing required field: ${field}`);
-        }
-      }
-
-      // 3. Prepare premium calculator parameters
-
-      // 6. Prepare navigation state
-      const navigationState: NavigationState = {
-        policy: policyDetails,
-        returnPath: "/my-policy",
-      };
-
-      // 7. Validate navigation state
-      if (!navigationState.policy) {
-        throw new Error("Failed to prepare navigation data");
-      }
-
-      // 8. Navigate to universal insurance details page
-      const targetRoute = `/insurance-details/${policyId}`;
-
-      console.log("Navigating to:", targetRoute);
-      console.log("Navigation state:", navigationState);
-
-      navigate(targetRoute, {
-        state: navigationState,
-        replace: false,
-      });
-
-      // 9. Log successful navigation for analytics
-      console.log(`Successfully navigated to policy details: ${policyId}`);
-    } catch (error) {
-      console.error("Navigation error:", error);
-
-      // Handle different types of errors
-      if (error instanceof Error) {
-        switch (error.message) {
-          case "Invalid policy ID format":
-            alert("Invalid policy ID. Please try again.");
-            break;
-          case 'Invalid policy type. Must be "two-wheeler" or "motor"':
-            alert("This policy type is not supported for detailed view.");
-            break;
-          case "Incomplete policy data. Missing required fields":
-            alert("Policy data is incomplete. Please contact support.");
-            break;
-          default:
-            alert(`Unable to view policy details: ${error.message}`);
-        }
-      } else {
-        alert("An unexpected error occurred. Please try again.");
-      }
-    } finally {
-      setIsNavigating(false);
-    }
-  };
-
-  /**
-   * Mock function to create sample insurance policy data
-   * In a real application, this would fetch from an API
-   */
-  const createMockInsurancePolicy = (
-    policyId: string,
-    type: "two-wheeler" | "motor"
-  ): InsurancePolicy => {
-    return {
-      id: policyId,
-      policyNumber: `${type.toUpperCase()}-2024-${policyId}`,
-      policyType: type,
-      status: "active",
-      provider: "Sample Insurance Co.",
-      policyHolder: {
-        id: "holder-1",
-        name: "John Doe",
-        email: "john.doe@example.com",
-        phone: "+91-9876543210",
-        dateOfBirth: "1985-06-15",
-        address: {
-          street: "123 Main Street",
-          city: "Mumbai",
-          state: "Maharashtra",
-          pincode: "400001",
-        },
-        panNumber: "ABCDE1234F",
-        aadharNumber: "1234-5678-9012",
-        drivingLicenseNumber: "MH01-20230001234",
-        licenseExpiryDate: "2028-06-15",
-      },
-      vehicle: {
-        make: type === "two-wheeler" ? "Honda" : "Maruti Suzuki",
-        model: type === "two-wheeler" ? "Activa 6G" : "Swift",
-        year: 2022,
-        registrationNumber:
-          type === "two-wheeler" ? "MH01AB1234" : "MH01CD5678",
-        engineNumber: "ENG123456789",
-        chassisNumber: "CHS987654321",
-        fuelType: type === "two-wheeler" ? "petrol" : "petrol",
-        vehicleType: type === "two-wheeler" ? "two-wheeler" : "four-wheeler",
-        cubicCapacity: type === "two-wheeler" ? 109 : 1197,
-        seatingCapacity: type === "two-wheeler" ? 2 : 5,
-        vehicleValue: type === "two-wheeler" ? 75000 : 650000,
-        registrationDate: "2022-03-15",
-        previousInsurer: "Previous Insurance Co.",
-        ncbPercentage: 20,
-      },
-      coverage: {
-        ownDamage: {
-          sumInsured: type === "two-wheeler" ? 75000 : 650000,
-          deductible: type === "two-wheeler" ? 1000 : 5000,
-          coverage: ["Accident", "Theft", "Fire", "Natural Calamities"],
-        },
-        thirdPartyLiability: {
-          bodilyInjury: 1500000,
-          propertyDamage: 75000,
-        },
-        personalAccident: {
-          ownerDriver: 1500000,
-          passengers: type === "two-wheeler" ? 100000 : 200000,
-        },
-      },
-      addOns: [
-        {
-          id: "zero-dep",
-          name: "Zero Depreciation",
-          description: "No depreciation on claim settlement",
-          premium: type === "two-wheeler" ? 800 : 3500,
-          isSelected: true,
-          isAvailable: true,
-        },
-        {
-          id: "roadside-assistance",
-          name: "Roadside Assistance",
-          description: "24x7 roadside assistance",
-          premium: 500,
-          isSelected: true,
-          isAvailable: true,
-        },
-      ],
-      premiumBreakdown: {
-        basePremium: type === "two-wheeler" ? 2500 : 12000,
-        addOnPremiums: type === "two-wheeler" ? 1300 : 4000,
-        discounts: {
-          ncb: type === "two-wheeler" ? 500 : 2400,
-          loyalty: 0,
-          multiPolicy: 0,
-          others: 0,
-        },
-        taxes: {
-          gst: type === "two-wheeler" ? 612 : 2448,
-          serviceTax: 0,
-        },
-        totalPremium: type === "two-wheeler" ? 3912 : 16048,
-        payableAmount: type === "two-wheeler" ? 3912 : 16048,
-      },
-      policyTerm: {
-        startDate: "2024-01-15",
-        endDate: "2025-01-14",
-        duration: 12,
-        renewalDate: "2025-01-14",
-        gracePeriod: 30,
-      },
-      claimsHistory: [],
-      createdAt: "2024-01-15T10:00:00Z",
-      updatedAt: "2024-01-15T10:00:00Z",
-      documents: {
-        policyDocument: "/documents/policy.pdf",
-        rcCopy: "/documents/rc.pdf",
-        drivingLicense: "/documents/license.pdf",
-      },
-    };
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -292,6 +93,8 @@ const MyPoliciesPage: React.FC = () => {
         return "bg-green-100 text-green-800";
       case "Pending":
         return "bg-yellow-100 text-yellow-800";
+      case "Verification Pending":
+        return "bg-orange-100 text-orange-800";
       case "Expired":
         return "bg-red-100 text-red-800";
       default:
@@ -307,10 +110,6 @@ const MyPoliciesPage: React.FC = () => {
     });
   };
 
-  const toggleFAQ = (faqId: string) => {
-    setExpandedFAQ(expandedFAQ === faqId ? null : faqId);
-  };
-
   const clearSearch = () => {
     setSearchQuery("");
   };
@@ -323,18 +122,73 @@ const MyPoliciesPage: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-4">
-          <h1
-            className="text-base md:text-lg font-bold font-poppins mb-0.5"
-            style={{ color: "var(--color-foreground)" }}
-          >
-            My Policies
-          </h1>
-          <p
-            className="font-roboto text-[11px] md:text-xs"
-            style={{ color: "var(--color-muted)" }}
-          >
-            Manage and track all your insurance policies in one place
-          </p>
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+            <div>
+              <h1
+                className="text-base md:text-lg font-bold font-poppins mb-0.5"
+                style={{ color: "var(--color-foreground)" }}
+              >
+                My Policies
+              </h1>
+              <p
+                className="font-roboto text-[11px] md:text-xs"
+                style={{ color: "var(--color-muted)" }}
+              >
+                Manage and track all your insurance policies in one place
+              </p>
+            </div>
+
+            {/* Policy View Controls - Only show when on verification, active, or expired tabs */}
+            {(activeTab === "verification" ||
+              activeTab === "active" ||
+              activeTab === "expired") && (
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                {/* Policy Statistics */}
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                    <span
+                      className="font-roboto text-xs font-medium"
+                      style={{ color: "var(--color-foreground)" }}
+                    >
+                      {verificationPendingPolicies.length} Pending
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <span
+                      className="font-roboto text-xs font-medium"
+                      style={{ color: "var(--color-foreground)" }}
+                    >
+                      {
+                        activePolicies.filter((p) => p.status === "Active")
+                          .length
+                      }{" "}
+                      Active
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                    <span
+                      className="font-roboto text-xs font-medium"
+                      style={{ color: "var(--color-foreground)" }}
+                    >
+                      {expiredPolicies.length} Expired
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                    <span
+                      className="font-roboto text-xs font-medium"
+                      style={{ color: "var(--color-foreground)" }}
+                    >
+                      {filteredPolicies.length} Total
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Top Section - 3 Column Flex - Full Width, No Overflow, Responsive */}
@@ -521,29 +375,6 @@ const MyPoliciesPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-2">
               <div className="relative">
                 <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="appearance-none border rounded-md px-2 py-1.5 pr-6 font-roboto text-xs focus:outline-none focus:ring-2 transition-all"
-                  style={{
-                    borderColor: "var(--color-border)",
-                    backgroundColor: "var(--color-background)",
-                    color: "var(--color-foreground)",
-                    "--tw-ring-color": "var(--color-primary)",
-                  }}
-                >
-                  <option value="all">All Status</option>
-                  <option value="active">Active</option>
-                  <option value="pending">Pending</option>
-                  <option value="expired">Expired</option>
-                </select>
-                <ChevronDown
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-3.5 w-3.5 pointer-events-none"
-                  style={{ color: "var(--color-muted)" }}
-                />
-              </div>
-
-              <div className="relative">
-                <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
                   className="appearance-none border rounded-md px-2 py-1.5 pr-6 font-roboto text-xs focus:outline-none focus:ring-2 transition-all"
@@ -573,359 +404,519 @@ const MyPoliciesPage: React.FC = () => {
                 style={{ backgroundColor: "var(--color-secondary)" }}
               >
                 <button
-                  onClick={() => setActiveTab("policies")}
+                  onClick={() => setActiveTab("active")}
                   className={`px-2.5 py-1.5 rounded font-medium font-roboto text-xs transition-all ${
-                    activeTab === "policies" ? "shadow-sm" : "hover:opacity-80"
+                    activeTab === "active" ? "shadow-sm" : "hover:opacity-80"
                   }`}
                   style={{
                     backgroundColor:
-                      activeTab === "policies"
+                      activeTab === "active"
                         ? "var(--color-card)"
                         : "transparent",
                     color:
-                      activeTab === "policies"
-                        ? "var(--color-primary)"
+                      activeTab === "active"
+                        ? "var(--color-success)"
                         : "var(--color-muted)",
                   }}
                 >
-                  Policies
+                  <CheckCircle className="h-3 w-3 inline mr-1" />
+                  Active
                 </button>
                 <button
-                  onClick={() => setActiveTab("faqs")}
+                  onClick={() => setActiveTab("verification")}
                   className={`px-2.5 py-1.5 rounded font-medium font-roboto text-xs transition-all ${
-                    activeTab === "faqs" ? "shadow-sm" : "hover:opacity-80"
+                    activeTab === "verification"
+                      ? "shadow-sm"
+                      : "hover:opacity-80"
                   }`}
                   style={{
                     backgroundColor:
-                      activeTab === "faqs"
+                      activeTab === "verification"
                         ? "var(--color-card)"
                         : "transparent",
                     color:
-                      activeTab === "faqs"
-                        ? "var(--color-primary)"
+                      activeTab === "verification"
+                        ? "var(--color-warning)"
                         : "var(--color-muted)",
                   }}
                 >
-                  FAQs
+                  <Clock className="h-3 w-3 inline mr-1" />
+                  Pending
+                </button>
+                <button
+                  onClick={() => setActiveTab("expired")}
+                  className={`px-2.5 py-1.5 rounded font-medium font-roboto text-xs transition-all ${
+                    activeTab === "expired" ? "shadow-sm" : "hover:opacity-80"
+                  }`}
+                  style={{
+                    backgroundColor:
+                      activeTab === "expired"
+                        ? "var(--color-card)"
+                        : "transparent",
+                    color:
+                      activeTab === "expired"
+                        ? "var(--color-destructive)"
+                        : "var(--color-muted)",
+                  }}
+                >
+                  <AlertTriangle className="h-3 w-3 inline mr-1" />
+                  Expired
                 </button>
               </div>
             </div>
           </div>
 
           {/* Search Results Info */}
-          {searchQuery && activeTab === "policies" && (
-            <div
-              className="mt-2 pt-2 border-t"
-              style={{ borderColor: "var(--color-border)" }}
-            >
-              <p
-                className="text-xs font-roboto"
-                style={{ color: "var(--color-muted)" }}
+          {searchQuery &&
+            (activeTab === "verification" ||
+              activeTab === "active" ||
+              activeTab === "expired") && (
+              <div
+                className="mt-2 pt-2 border-t"
+                style={{ borderColor: "var(--color-border)" }}
               >
-                Found {filteredPolicies.length} result
-                {filteredPolicies.length !== 1 ? "s" : ""} for "{searchQuery}"
-              </p>
-            </div>
-          )}
+                <p
+                  className="text-xs font-roboto"
+                  style={{ color: "var(--color-muted)" }}
+                >
+                  Found {filteredPolicies.length} result
+                  {filteredPolicies.length !== 1 ? "s" : ""} for "{searchQuery}"
+                  {verificationPendingPolicies.length > 0 && (
+                    <span className="ml-2 text-orange-600">
+                      ({verificationPendingPolicies.length} pending
+                      verification)
+                    </span>
+                  )}
+                </p>
+              </div>
+            )}
         </div>
 
         {/* Content Area */}
-        {activeTab === "policies" ? (
-          /* Policy Cards Grid */
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
-            {filteredPolicies.map((policy) => (
+        {activeTab === "active" && (
+          <div className="space-y-4">
+            {/* Active Policies Section */}
+            {activePolicies.length > 0 ? (
               <div
-                key={policy.id}
-                className="rounded-md shadow group overflow-hidden bg-[var(--color-card)] hover:shadow-lg transition-all duration-200 cursor-pointer min-h-[170px]"
-                style={{ fontSize: "13px" }}
+                className="rounded-xl shadow-lg overflow-hidden"
+                style={{ backgroundColor: "var(--color-card)" }}
               >
-                <div className="p-2.5">
-                  {/* Header */}
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
+                {/* Policies Grid */}
+                <div className="p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                    {activePolicies.map((policy) => (
                       <div
-                        className="p-1.5 rounded-md"
-                        style={{ backgroundColor: "var(--color-secondary)" }}
+                        key={policy.id}
+                        className="rounded-lg shadow group overflow-hidden bg-[var(--color-card)] hover:shadow-lg transition-all duration-200 cursor-pointer border border-gray-100"
+                        style={{ fontSize: "13px" }}
                       >
-                        <Shield
-                          className="h-3.5 w-3.5"
-                          style={{ color: "var(--color-primary)" }}
-                        />
-                      </div>
-                      <div>
-                        <h3
-                          className="font-semibold font-poppins text-xs"
-                          style={{ color: "var(--color-foreground)" }}
-                        >
-                          {policy.provider}
-                        </h3>
-                        <p
-                          className="text-[11px] font-roboto"
-                          style={{ color: "var(--color-muted)" }}
-                        >
-                          {policy.type} Insurance
-                        </p>
-                      </div>
-                    </div>
-                    <span
-                      className={`px-1.5 py-0.5 rounded-full text-[10px] font-medium ${getStatusColor(
-                        policy.status
-                      )}`}
-                    >
-                      {policy.status}
-                    </span>
-                  </div>
+                        <div className="p-3">
+                          {/* Header */}
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center space-x-2">
+                              <div
+                                className="p-1.5 rounded-md"
+                                style={{
+                                  backgroundColor: "var(--color-secondary)",
+                                }}
+                              >
+                                <Shield
+                                  className="h-4 w-4"
+                                  style={{ color: "var(--color-primary)" }}
+                                />
+                              </div>
+                              <div>
+                                <h3
+                                  className="font-semibold font-poppins text-sm"
+                                  style={{ color: "var(--color-foreground)" }}
+                                >
+                                  {policy.provider}
+                                </h3>
+                                <p
+                                  className="text-xs font-roboto"
+                                  style={{ color: "var(--color-muted)" }}
+                                >
+                                  {policy.type} Insurance
+                                </p>
+                              </div>
+                            </div>
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                                policy.status
+                              )}`}
+                            >
+                              {policy.status}
+                            </span>
+                          </div>
 
-                  {/* Policy Details */}
-                  <div className="space-y-1 mb-2">
-                    <div>
-                      <p
-                        className="text-[11px] font-roboto"
-                        style={{ color: "var(--color-muted)" }}
-                      >
-                        Policy Number
-                      </p>
-                      <p
-                        className="font-semibold font-poppins text-xs"
-                        style={{ color: "var(--color-foreground)" }}
-                      >
-                        {policy.policyNumber}
-                      </p>
-                    </div>
+                          {/* Policy Details */}
+                          <div className="space-y-2 mb-3">
+                            <div>
+                              <p
+                                className="text-xs font-roboto"
+                                style={{ color: "var(--color-muted)" }}
+                              >
+                                Policy Number
+                              </p>
+                              <p
+                                className="font-semibold font-poppins text-sm"
+                                style={{ color: "var(--color-foreground)" }}
+                              >
+                                {policy.policyNumber}
+                              </p>
+                            </div>
 
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <p
-                          className="text-[11px] font-roboto"
-                          style={{ color: "var(--color-muted)" }}
-                        >
-                          Valid From
-                        </p>
-                        <p
-                          className="font-medium font-roboto text-xs"
-                          style={{ color: "var(--color-foreground)" }}
-                        >
-                          {formatDate(policy.validFrom)}
-                        </p>
-                      </div>
-                      <div>
-                        <p
-                          className="text-[11px] font-roboto"
-                          style={{ color: "var(--color-muted)" }}
-                        >
-                          Valid To
-                        </p>
-                        <p
-                          className="font-medium font-roboto text-xs"
-                          style={{ color: "var(--color-foreground)" }}
-                        >
-                          {formatDate(policy.validTo)}
-                        </p>
-                      </div>
-                    </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <p
+                                  className="text-xs font-roboto"
+                                  style={{ color: "var(--color-muted)" }}
+                                >
+                                  Valid From
+                                </p>
+                                <p
+                                  className="font-medium font-roboto text-xs"
+                                  style={{ color: "var(--color-foreground)" }}
+                                >
+                                  {formatDate(policy.validFrom)}
+                                </p>
+                              </div>
+                              <div>
+                                <p
+                                  className="text-xs font-roboto"
+                                  style={{ color: "var(--color-muted)" }}
+                                >
+                                  Valid To
+                                </p>
+                                <p
+                                  className="font-medium font-roboto text-xs"
+                                  style={{ color: "var(--color-foreground)" }}
+                                >
+                                  {formatDate(policy.validTo)}
+                                </p>
+                              </div>
+                            </div>
 
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <p
-                          className="text-[11px] font-roboto"
-                          style={{ color: "var(--color-muted)" }}
-                        >
-                          Sum Insured
-                        </p>
-                        <p
-                          className="font-semibold font-poppins text-xs"
-                          style={{ color: "var(--color-primary)" }}
-                        >
-                          {policy.sumInsured}
-                        </p>
-                      </div>
-                      <div>
-                        <p
-                          className="text-[11px] font-roboto"
-                          style={{ color: "var(--color-muted)" }}
-                        >
-                          Premium
-                        </p>
-                        <p
-                          className="font-semibold font-poppins text-xs"
-                          style={{ color: "var(--color-foreground)" }}
-                        >
-                          {policy.premium}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <p
+                                  className="text-xs font-roboto"
+                                  style={{ color: "var(--color-muted)" }}
+                                >
+                                  Sum Insured
+                                </p>
+                                <p
+                                  className="font-semibold font-poppins text-sm"
+                                  style={{ color: "var(--color-primary)" }}
+                                >
+                                  {policy.sumInsured}
+                                </p>
+                              </div>
+                              <div>
+                                <p
+                                  className="text-xs font-roboto"
+                                  style={{ color: "var(--color-muted)" }}
+                                >
+                                  Premium
+                                </p>
+                                <p
+                                  className="font-semibold font-poppins text-sm"
+                                  style={{ color: "var(--color-foreground)" }}
+                                >
+                                  {policy.premium}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
 
-                  {/* Actions */}
-                  <div
-                    className="flex space-x-1 pt-2 border-t"
-                    style={{ borderColor: "var(--color-border)" }}
-                  >
-                    <button
-                      onClick={() => {
-                        // Navigate to UniversalInsuranceDetailsPage for all policy types
-                        navigate(`/insurance-details/${policy.id}`, {
-                          state: {
-                            policy: {
-                              ...policy,
-                              type: policy.type,
-                              category: policy.type,
-                              policyType: policy.type,
-                              policyNumber: policy.policyNumber,
-                              provider: policy.provider,
-                              status: policy.status,
-                              sumInsured: policy.sumInsured,
-                              premium: policy.premium,
-                              validFrom: policy.validFrom,
-                              validTo: policy.validTo,
-                              policyTerm: {
-                                startDate: policy.validFrom,
-                                endDate: policy.validTo,
-                                renewalDate: policy.validTo,
-                              },
-                            },
-                            returnPath: "/my-policy",
-                          },
-                        });
-                      }}
-                      disabled={isNavigating}
-                      className="flex-1 font-medium py-1.5 px-2 rounded-md transition-colors font-roboto text-white hover:opacity-90 disabled:opacity-50 text-xs"
-                      style={{ backgroundColor: "var(--color-primary)" }}
-                    >
-                      {isNavigating ? "Loading..." : "View Details"}
-                    </button>
-                    <button
-                      className="flex items-center justify-center p-1.5 rounded-md transition-colors"
-                      style={{
-                        backgroundColor: "var(--color-secondary)",
-                        color: "var(--color-primary)",
-                      }}
-                    >
-                      <FileText className="h-3.5 w-3.5" />
-                    </button>
+                          {/* Actions */}
+                          <div
+                            className="flex space-x-2 pt-2 border-t"
+                            style={{ borderColor: "var(--color-border)" }}
+                          >
+                            <button
+                              onClick={() => {
+                                setIsNavigating(true);
+                                navigate(`/insurance-details/${policy.id}`, {
+                                  state: {
+                                    policy: {
+                                      ...policy,
+                                      type: policy.type,
+                                      category: policy.type,
+                                      policyType: policy.type,
+                                      policyNumber: policy.policyNumber,
+                                      provider: policy.provider,
+                                      status: policy.status,
+                                      sumInsured: policy.sumInsured,
+                                      premium: policy.premium,
+                                      validFrom: policy.validFrom,
+                                      validTo: policy.validTo,
+                                      policyTerm: {
+                                        startDate: policy.validFrom,
+                                        endDate: policy.validTo,
+                                        renewalDate: policy.validTo,
+                                      },
+                                    },
+                                    returnPath: "/my-policy",
+                                  },
+                                });
+                                setTimeout(() => setIsNavigating(false), 1000);
+                              }}
+                              disabled={isNavigating}
+                              className="flex-1 font-medium py-2 px-3 rounded-md transition-colors font-roboto text-white hover:opacity-90 disabled:opacity-50 text-xs"
+                              style={{
+                                backgroundColor: "var(--color-primary)",
+                              }}
+                            >
+                              {isNavigating ? "Loading..." : "View Details"}
+                            </button>
+                            <button
+                              className="flex items-center justify-center p-2 rounded-md transition-colors"
+                              style={{
+                                backgroundColor: "var(--color-secondary)",
+                                color: "var(--color-primary)",
+                              }}
+                            >
+                              <FileText className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          /* FAQ Section */
-          <div
-            className="rounded-xl shadow-lg p-4"
-            style={{ backgroundColor: "var(--color-card)" }}
-          >
-            <h2
-              className="text-base font-bold font-poppins mb-3"
-              style={{ color: "var(--color-foreground)" }}
-            >
-              Frequently Asked Questions
-            </h2>
-            <div className="space-y-1.5">
-              {mockFAQs.map((faq) => (
-                <div
-                  key={faq.id}
-                  className="border rounded-lg overflow-hidden"
-                  style={{ borderColor: "var(--color-border)" }}
-                >
-                  <button
-                    onClick={() => toggleFAQ(faq.id)}
-                    className="w-full px-2.5 py-1.5 text-left hover:opacity-80 transition-colors flex items-center justify-between"
-                    style={{ backgroundColor: "var(--color-secondary)" }}
-                  >
-                    <span
-                      className="font-medium font-roboto text-xs"
-                      style={{ color: "var(--color-foreground)" }}
-                    >
-                      {faq.question}
-                    </span>
-                    {expandedFAQ === faq.id ? (
-                      <ChevronUp
-                        className="h-3 w-3"
-                        style={{ color: "var(--color-muted)" }}
-                      />
-                    ) : (
-                      <ChevronDown
-                        className="h-3 w-3"
-                        style={{ color: "var(--color-muted)" }}
-                      />
-                    )}
-                  </button>
-                  {expandedFAQ === faq.id && (
-                    <div
-                      className="px-2.5 py-1.5"
-                      style={{ backgroundColor: "var(--color-card)" }}
-                    >
-                      <p
-                        className="font-roboto leading-relaxed text-[11px]"
-                        style={{ color: "var(--color-foreground)" }}
-                      >
-                        {faq.answer}
-                      </p>
-                      <span
-                        className="inline-block mt-1 px-2 py-0.5 text-[10px] rounded-full font-medium"
-                        style={{
-                          backgroundColor: "var(--color-secondary)",
-                          color: "var(--color-primary)",
-                        }}
-                      >
-                        {faq.category}
-                      </span>
-                    </div>
-                  )}
+            ) : (
+              <div className="rounded-lg p-6 text-center border border-green-200 bg-green-50">
+                <div className="p-3 rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center bg-green-100">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
                 </div>
-              ))}
-            </div>
+                <h3 className="text-lg font-semibold font-poppins mb-2 text-green-800">
+                  No Active Policies
+                </h3>
+                <p className="text-sm text-green-700">
+                  You don't have any active policies at the moment.
+                </p>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Empty State for Policies */}
-        {activeTab === "policies" && filteredPolicies.length === 0 && (
-          <div
-            className="rounded-xl shadow-lg p-8 text-center"
-            style={{ backgroundColor: "var(--color-card)" }}
-          >
-            <div
-              className="p-3 rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center"
-              style={{ backgroundColor: "var(--color-secondary)" }}
-            >
-              <Shield
-                className="h-6 w-6"
-                style={{ color: "var(--color-muted)" }}
-              />
-            </div>
-            <h3
-              className="text-xl font-semibold font-poppins mb-2"
-              style={{ color: "var(--color-foreground)" }}
-            >
-              {searchQuery ? "No Matching Policies" : "No Policies Found"}
-            </h3>
-            <p
-              className="font-roboto mb-4"
-              style={{ color: "var(--color-muted)" }}
-            >
-              {searchQuery
-                ? `No policies match your search for "${searchQuery}". Try adjusting your search terms or filters.`
-                : "No policies match your current filter criteria. Try adjusting your filters or add a new policy."}
-            </p>
-            {searchQuery && (
-              <button
-                onClick={clearSearch}
-                className="mr-3 font-semibold py-2 px-4 rounded-lg transition-colors font-roboto border hover:opacity-80"
-                style={{
-                  borderColor: "var(--color-border)",
-                  color: "var(--color-primary)",
-                  backgroundColor: "var(--color-secondary)",
-                }}
+        {activeTab === "verification" && (
+          <div className="space-y-4">
+            {/* Verification Pending Policies Section */}
+            {verificationPendingPolicies.length > 0 ? (
+              <div
+                className="rounded-xl shadow-lg overflow-hidden"
+                style={{ backgroundColor: "var(--color-card)" }}
               >
-                Clear Search
-              </button>
+                {/* Policies Grid */}
+                <div className="p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                    {verificationPendingPolicies.map((policy) => (
+                      <div
+                        key={policy.id}
+                        className="rounded-lg shadow group overflow-hidden bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 hover:shadow-lg transition-all duration-200 cursor-pointer"
+                        style={{ fontSize: "13px" }}
+                      >
+                        <div className="p-3">
+                          {/* Header */}
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center space-x-2">
+                              <div className="p-1.5 rounded-md bg-orange-100">
+                                <Shield className="h-4 w-4 text-orange-600" />
+                              </div>
+                              <div>
+                                <h3 className="font-semibold font-poppins text-sm text-gray-800">
+                                  {policy.provider}
+                                </h3>
+                                <p className="text-xs font-roboto text-gray-600">
+                                  {policy.type} Insurance
+                                </p>
+                              </div>
+                            </div>
+                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                              Pending
+                            </span>
+                          </div>
+
+                          {/* Policy Details */}
+                          <div className="space-y-2 mb-3">
+                            <div>
+                              <p className="text-xs font-roboto text-gray-600">
+                                Policy Number
+                              </p>
+                              <p className="font-semibold font-poppins text-sm text-gray-800">
+                                {policy.policyNumber}
+                              </p>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <p className="text-xs font-roboto text-gray-600">
+                                  Sum Insured
+                                </p>
+                                <p className="font-semibold font-poppins text-sm text-orange-700">
+                                  {policy.sumInsured}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-roboto text-gray-600">
+                                  Premium
+                                </p>
+                                <p className="font-semibold font-poppins text-sm text-gray-800">
+                                  {policy.premium}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex space-x-2 pt-2 border-t border-orange-200">
+                            <button className="flex-1 font-medium py-2 px-3 rounded-md transition-colors font-roboto text-white hover:opacity-90 text-xs bg-orange-600">
+                              Complete Verification
+                            </button>
+                            <button className="flex items-center justify-center p-2 rounded-md transition-colors bg-orange-100 text-orange-600">
+                              <FileText className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-lg p-6 text-center border border-orange-200 bg-orange-50">
+                <div className="p-3 rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center bg-orange-100">
+                  <Clock className="h-6 w-6 text-orange-600" />
+                </div>
+                <h3 className="text-lg font-semibold font-poppins mb-2 text-orange-800">
+                  No Verification Pending Policies
+                </h3>
+                <p className="text-sm text-orange-700">
+                  All your policies have been verified and are active.
+                </p>
+              </div>
             )}
-            <button
-              className="font-semibold py-2 px-4 rounded-lg transition-colors font-roboto text-white hover:opacity-90"
-              style={{ backgroundColor: "var(--color-primary)" }}
-            >
-              Add New Policy
-            </button>
+          </div>
+        )}
+
+        {activeTab === "expired" && (
+          <div className="space-y-4">
+            {/* Expired Policies Section */}
+            {expiredPolicies.length > 0 ? (
+              <div
+                className="rounded-xl shadow-lg overflow-hidden"
+                style={{ backgroundColor: "var(--color-card)" }}
+              >
+                {/* Policies Grid */}
+                <div className="p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                    {expiredPolicies.map((policy) => (
+                      <div
+                        key={policy.id}
+                        className="rounded-lg shadow group overflow-hidden bg-gradient-to-br from-red-50 to-pink-50 border border-red-200 hover:shadow-lg transition-all duration-200 cursor-pointer"
+                        style={{ fontSize: "13px" }}
+                      >
+                        <div className="p-3">
+                          {/* Header */}
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center space-x-2">
+                              <div className="p-1.5 rounded-md bg-red-100">
+                                <Shield className="h-4 w-4 text-red-600" />
+                              </div>
+                              <div>
+                                <h3 className="font-semibold font-poppins text-sm text-gray-800">
+                                  {policy.provider}
+                                </h3>
+                                <p className="text-xs font-roboto text-gray-600">
+                                  {policy.type} Insurance
+                                </p>
+                              </div>
+                            </div>
+                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                              Expired
+                            </span>
+                          </div>
+
+                          {/* Policy Details */}
+                          <div className="space-y-2 mb-3">
+                            <div>
+                              <p className="text-xs font-roboto text-gray-600">
+                                Policy Number
+                              </p>
+                              <p className="font-semibold font-poppins text-sm text-gray-800">
+                                {policy.policyNumber}
+                              </p>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <p className="text-xs font-roboto text-gray-600">
+                                  Valid From
+                                </p>
+                                <p className="font-medium font-roboto text-xs text-gray-800">
+                                  {formatDate(policy.validFrom)}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-roboto text-gray-600">
+                                  Expired On
+                                </p>
+                                <p className="font-medium font-roboto text-xs text-red-700">
+                                  {formatDate(policy.validTo)}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <p className="text-xs font-roboto text-gray-600">
+                                  Sum Insured
+                                </p>
+                                <p className="font-semibold font-poppins text-sm text-red-700">
+                                  {policy.sumInsured}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-roboto text-gray-600">
+                                  Premium
+                                </p>
+                                <p className="font-semibold font-poppins text-sm text-gray-800">
+                                  {policy.premium}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex space-x-2 pt-2 border-t border-red-200">
+                            <button className="flex-1 font-medium py-2 px-3 rounded-md transition-colors font-roboto text-white hover:opacity-90 text-xs bg-red-600">
+                              Renew Policy
+                            </button>
+                            <button className="flex items-center justify-center p-2 rounded-md transition-colors bg-red-100 text-red-600">
+                              <FileText className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-lg p-6 text-center border border-red-200 bg-red-50">
+                <div className="p-3 rounded-full w-12 h-12 mx-auto mb-4 flex items-center justify-center bg-red-100">
+                  <AlertTriangle className="h-6 w-6 text-red-600" />
+                </div>
+                <h3 className="text-lg font-semibold font-poppins mb-2 text-red-800">
+                  No Expired Policies
+                </h3>
+                <p className="text-sm text-red-700">
+                  You don't have any expired policies at the moment.
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -2,8 +2,18 @@ export interface Policy {
   id: string;
   policyNumber: string;
   provider: string;
-  type: 'Health' | 'Motor' | 'Two-wheeler' | 'Life' | 'Travel' | 'Home' | 'Fire' | 'Marine' | 'Cyber' | 'Professional';
-  status: 'Active' | 'Pending' | 'Expired';
+  type:
+    | "Health"
+    | "Motor"
+    | "Two-wheeler"
+    | "Life"
+    | "Travel"
+    | "Home"
+    | "Fire"
+    | "Marine"
+    | "Cyber"
+    | "Professional";
+  status: "Active" | "Pending" | "Expired" | "Verification Pending";
   validFrom: string;
   validTo: string;
   sumInsured: string;

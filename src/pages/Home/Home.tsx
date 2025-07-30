@@ -878,21 +878,21 @@ const Home = ({ onLogin, config }) => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                name: "Rajesh Kumar",
+                name: "",
                 role: "CEO & Co-Founder",
                 desc: "Former VP at HDFC Life with 20+ years in insurance. IIT Delhi alumnus passionate about democratizing insurance access.",
                 icon: Users,
                 color: "var(--color-primary)",
               },
               {
-                name: "Priya Sharma",
+                name: "",
                 role: "CTO & Co-Founder",
                 desc: "Ex-Google engineer with expertise in AI/ML. MIT graduate leading our technology innovation and digital transformation.",
                 icon: Briefcase,
                 color: "var(--color-accent)",
               },
               {
-                name: "Amit Patel",
+                name: "",
                 role: "COO & Co-Founder",
                 desc: "Former McKinsey consultant with 15+ years in strategy. IIM Ahmedabad graduate driving operational excellence.",
                 icon: Award,
@@ -1321,10 +1321,10 @@ const Home = ({ onLogin, config }) => {
               <div className="space-y-4">
                 {[
                   { icon: Phone, text: "1800-123-4567" },
-                  { icon: Mail, text: "support@paisaplan.com" },
+                  { icon: Mail, text: "info@paisaplan.com" },
                   {
                     icon: MapPin,
-                    text: "Tech Park, Sector 18\nGurugram, Haryana 122015",
+                    text: "",
                   },
                 ].map((contact, index) => (
                   <div key={index} className="flex items-start space-x-3">

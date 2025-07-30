@@ -3304,15 +3304,6 @@ const UniversalInsuranceDetailsPage: React.FC = () => {
                     >
                       {endorsement.description}
                     </p>
-                    <span
-                      className="inline-block mt-2 px-2 py-1 rounded-full text-xs font-medium"
-                      style={{
-                        backgroundColor: "var(--color-secondary)",
-                        color: "var(--color-primary)",
-                      }}
-                    >
-                      Fee: {endorsement.fee}
-                    </span>
                   </div>
                 </div>
                 <button

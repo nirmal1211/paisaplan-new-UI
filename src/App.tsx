@@ -33,7 +33,7 @@ function App() {
                 {/* Main Application Routes - Inside Layout */}
 
                 <Route
-                  path="/personal/dashboard"
+                  path="/dashboard"
                   element={
                     <ProtectedRoute>
                       <Layout>

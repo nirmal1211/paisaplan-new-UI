@@ -740,11 +740,11 @@ const ClaimsPage: React.FC = () => {
                   <div className="relative">
                     {/* Character Image with Enhanced Styling */}
                     <div className="relative transform hover:scale-105 transition-transform duration-500">
-                      <img
+                      {/* <img
                         src="/oooClaims.png"
                         alt="Claims Assistant Character"
                         className="w-40 h-40 md:w-56 md:h-56 object-contain drop-shadow-2xl"
-                      />
+                      /> */}
 
                       {/* Floating Animation Elements */}
                       <div

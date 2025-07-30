@@ -22,6 +22,7 @@ import {
 import styles from "./Layout.module.scss";
 import Sidebar from "../Sidebar";
 import { useTheme } from "../../../theme/ThemeProvider";
+import KeycloakService from "../../../keycloackService";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -37,34 +38,28 @@ const getNavigationItems = (role: string) => {
   const roleSpecificItems: Record<string, any[]> = {
     retail_customer: [
       {
-        icon: FileText,
-        label: "Policy",
-        path: "/my-policy",
+        icon: ShoppingBag,
+        label: "Buy Policy",
+        path: "/buy-policy",
         dropdown: [
           {
-            label: "Buy Policy",
-            icon: ShoppingBag,
-            submenu: [
-              {
-                label: "Health Insurance",
-                path: "/buy-policy/health",
-                icon: HeartPulse,
-              },
-              {
-                label: "Two Wheeler Insurance",
-                path: "/buy-policy/two-wheeler",
-                icon: Bike,
-              },
-              {
-                label: "Four Wheeler Insurance",
-                path: "/buy-policy/four-wheeler",
-                icon: Car,
-              },
-            ],
+            label: "Health Insurance",
+            path: "/buy-policy/health",
+            icon: HeartPulse,
           },
-          { label: "My Policy", path: "/my-policy", icon: FileText },
+          {
+            label: "Motor Insurance",
+            path: "/buy-policy/four-wheeler",
+            icon: Car,
+          },
+          {
+            label: "Two Wheeler Insurance",
+            path: "/buy-policy/two-wheeler",
+            icon: Bike,
+          },
         ],
       },
+      { icon: FileText, label: "My Policy", path: "/my-policy" },
       { icon: AlertTriangle, label: "Claims", path: "/claims" },
     ],
     corporate_employee: [
@@ -113,41 +108,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [accordionOpen, setAccordionOpen] = useState([]);
-  const [submenuOpen, setSubmenuOpen] = React.useState(false);
-  const submenuRef = React.useRef<HTMLDivElement>(null);
+  const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
 
   const isMobile = useIsMobile();
   // Detect initial mode from body attribute or default to light
   const { mode, toggleMode } = useTheme();
-  const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== "undefined") {
-      return document.body.getAttribute("data-theme") === "dark";
-    }
-    return false;
-  });
   const userMenuRef = useRef<HTMLDivElement>(null);
-  React.useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (
-        submenuRef.current &&
-        !submenuRef.current.contains(e.target as Node)
-      ) {
-        setSubmenuOpen(false);
-      }
-    }
-    if (submenuOpen) {
-      document.addEventListener("mousedown", handleClick);
-    } else {
-      document.removeEventListener("mousedown", handleClick);
-    }
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [submenuOpen]);
-
-  React.useEffect(() => {
-    // Set theme on mount and whenever darkMode changes
-    document.body.setAttribute("data-theme", darkMode ? "dark" : "light");
-  }, [darkMode]);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -157,23 +124,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       ) {
         setUserMenuOpen(false);
       }
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setDropdownOpen(null);
+      }
     }
-    if (userMenuOpen) {
+    if (userMenuOpen || dropdownOpen) {
       document.addEventListener("mousedown", handleClick);
     } else {
       document.removeEventListener("mousedown", handleClick);
     }
     return () => document.removeEventListener("mousedown", handleClick);
-  }, [userMenuOpen]);
-
-  // Ensure accordionOpen is always the right length
-  React.useEffect(() => {
-    setAccordionOpen((prev) =>
-      navItems.length === prev.length
-        ? prev
-        : Array(navItems.length).fill(false)
-    );
-  }, [navItems.length]);
+  }, [userMenuOpen, dropdownOpen]);
 
   return (
     <div className="relative min-h-screen bg-gray-50">
@@ -188,7 +152,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <span className={styles["layout-navbar__brand-icon"]}>
             <Shield className="h-6 w-6 text-white" />
           </span>
-          <span className={styles["layout-navbar__brand-title"]}>Trovity</span>
+          <span
+            className={styles["layout-navbar__brand-title"]}
+            style={{ fontSize: "1.125rem" }}
+          >
+            Trovity
+          </span>
         </div>
         {/* Hamburger for mobile/tablet */}
 
@@ -196,11 +165,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = location.pathname === item.path;
-            if (item.label === "Policy" && item.dropdown) {
+            if (item.dropdown) {
               return (
                 <div
                   key={item.label}
                   className={styles["layout-navbar__dropdown"]}
+                  ref={dropdownRef}
                   tabIndex={0}
                 >
                   <button
@@ -208,7 +178,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       styles["layout-navbar__nav-link"],
                       active ? styles["layout-navbar__nav-link--active"] : "",
                     ].join(" ")}
-                    style={{ fontFamily: "Roboto, sans-serif" }}
+                    style={{
+                      fontFamily: "Roboto, sans-serif",
+                      fontSize: "0.875rem",
+                    }}
+                    onClick={() =>
+                      setDropdownOpen(
+                        dropdownOpen === item.label ? null : item.label
+                      )
+                    }
                   >
                     <Icon className={styles["layout-navbar__nav-link-icon"]} />
                     <span className="hidden sm:inline-block">{item.label}</span>
@@ -218,6 +196,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       stroke="currentColor"
                       strokeWidth="2"
                       viewBox="0 0 24 24"
+                      style={{
+                        transform:
+                          dropdownOpen === item.label
+                            ? "rotate(180deg)"
+                            : "rotate(0deg)",
+                        transition: "transform 0.2s ease",
+                      }}
                     >
                       <path
                         strokeLinecap="round"
@@ -226,133 +211,42 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       />
                     </svg>
                   </button>
-                  <div
-                    className={styles["layout-navbar__dropdown-menu"]}
-                    style={{ borderColor: SUBMENU_BORDER }}
-                  >
-                    {/* Buy Policy with nested submenu */}
+                  {dropdownOpen === item.label && (
                     <div
-                      className={[
-                        styles["layout-navbar__dropdown-item"],
-                        styles["layout-navbar__dropdown-item--has-submenu"],
-                      ].join(" ")}
-                      style={{ position: "relative" }}
-                      ref={submenuRef}
+                      className={styles["layout-navbar__dropdown-menu"]}
+                      style={{ borderColor: SUBMENU_BORDER }}
                     >
-                      <button
-                        type="button"
-                        className="flex items-center gap-2 w-full"
-                        style={{
-                          background: "none",
-                          border: "none",
-                          outline: "none",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => setSubmenuOpen((v) => !v)}
-                        aria-haspopup="true"
-                        aria-expanded={submenuOpen}
-                      >
-                        <ShoppingBag
-                          className={styles["layout-navbar__dropdown-icon"]}
-                        />
-                        Buy Policy
-                        <svg
-                          className={styles["layout-navbar__dropdown-chevron"]}
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M9 5l7 7-7 7"
-                          />
-                        </svg>
-                      </button>
-                      {submenuOpen && (
-                        <div
-                          className={styles["layout-navbar__dropdown-submenu"]}
-                          style={{
-                            borderColor: SUBMENU_BORDER,
-                            left: "100%",
-                            top: 0,
-                            minWidth: 220,
-                            position: "absolute",
-                            display: "block",
-                            opacity: 1,
-                            transform: "translateX(0) scale(1)",
-                            zIndex: 100,
-                          }}
-                        >
+                      {item.dropdown.map((dropdownItem: any, index: number) => (
+                        <div key={dropdownItem.label}>
                           <Link
-                            to="/buy-policy/health"
-                            className={
-                              styles["layout-navbar__dropdown-item"] +
-                              " rounded-t-xl flex items-center gap-2"
-                            }
-                            onClick={() => setSubmenuOpen(false)}
+                            to={dropdownItem.path}
+                            className={[
+                              styles["layout-navbar__dropdown-item"],
+                              index === 0 ? "rounded-t-xl" : "",
+                              index === item.dropdown.length - 1
+                                ? "rounded-b-xl"
+                                : "",
+                              "flex items-center gap-2",
+                            ].join(" ")}
+                            style={{ fontSize: "0.8125rem" }}
+                            onClick={() => setDropdownOpen(null)}
                           >
-                            <HeartPulse
+                            <dropdownItem.icon
                               className={styles["layout-navbar__dropdown-icon"]}
                             />
-                            Health Insurance
+                            {dropdownItem.label}
                           </Link>
-                          <div
-                            className={
-                              styles["layout-navbar__dropdown-divider"]
-                            }
-                          />
-                          <Link
-                            to="/buy-policy/four-wheeler"
-                            className={
-                              styles["layout-navbar__dropdown-item"] +
-                              " flex items-center gap-2"
-                            }
-                            onClick={() => setSubmenuOpen(false)}
-                          >
-                            <Car
-                              className={styles["layout-navbar__dropdown-icon"]}
+                          {index < item.dropdown.length - 1 && (
+                            <div
+                              className={
+                                styles["layout-navbar__dropdown-divider"]
+                              }
                             />
-                            Motor Insurance
-                          </Link>
-                          <div
-                            className={
-                              styles["layout-navbar__dropdown-divider"]
-                            }
-                          />
-                          <Link
-                            to="/buy-policy/two-wheeler"
-                            className={
-                              styles["layout-navbar__dropdown-item"] +
-                              " rounded-b-xl flex items-center gap-2"
-                            }
-                            onClick={() => setSubmenuOpen(false)}
-                          >
-                            <Bike
-                              className={styles["layout-navbar__dropdown-icon"]}
-                            />
-                            Two Wheeler Insurance
-                          </Link>
+                          )}
                         </div>
-                      )}
+                      ))}
                     </div>
-                    <div
-                      className={styles["layout-navbar__dropdown-divider"]}
-                    />
-                    <Link
-                      to="/my-policy"
-                      className={
-                        styles["layout-navbar__dropdown-item"] +
-                        " rounded-b-xl flex items-center gap-2"
-                      }
-                    >
-                      <FileText
-                        className={styles["layout-navbar__dropdown-icon"]}
-                      />
-                      My Policy
-                    </Link>
-                  </div>
+                  )}
                 </div>
               );
             }
@@ -364,7 +258,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   styles["layout-navbar__nav-link"],
                   active ? styles["layout-navbar__nav-link--active"] : "",
                 ].join(" ")}
-                style={{ fontFamily: "Roboto, sans-serif" }}
+                style={{
+                  fontFamily: "Roboto, sans-serif",
+                  fontSize: "0.875rem",
+                }}
                 title={item.label}
               >
                 <Icon className={styles["layout-navbar__nav-link-icon"]} />
@@ -439,6 +336,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     styles["layout-navbar__dropdown-item"] +
                     " rounded-t-xl flex items-center gap-2"
                   }
+                  style={{ fontSize: "0.8125rem" }}
                   onClick={() => setUserMenuOpen(false)}
                 >
                   <User className={styles["layout-navbar__dropdown-icon"]} />
@@ -451,10 +349,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     styles["layout-navbar__dropdown-item"] +
                     " rounded-b-xl flex items-center gap-2 w-full text-left"
                   }
-                  onClick={() => setUserMenuOpen(false)}
+                  style={{ fontSize: "0.8125rem" }}
+                  onClick={() => KeycloakService.doLogout()}
                 >
                   <LogOut className={styles["layout-navbar__dropdown-icon"]} />
-                  Sign out
+                  Log out
                 </button>
               </div>
               {/* Support/help block below with extra spacing */}
@@ -469,6 +368,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     styles["layout-navbar__dropdown-item"] +
                     " flex items-center gap-2 rounded"
                   }
+                  style={{ fontSize: "0.8125rem" }}
                   onClick={() => setUserMenuOpen(false)}
                 >
                   <HelpCircle

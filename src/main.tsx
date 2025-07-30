@@ -5,8 +5,6 @@ import "./index.css";
 import "./styles/theme.css";
 import KeycloakService from "./keycloackService.ts";
 import { REACT_TOKEN } from "./utils/Constants/SessionStorageConstants.ts";
-import PolicyOverview from "./components/PolicyDetails/PolicyOverview.tsx";
-import PolicyTypeSelection from "./pages/Home/Home.tsx";
 import Home from "./pages/Home/Home.tsx";
 
 const rootElement = document.getElementById("root");
