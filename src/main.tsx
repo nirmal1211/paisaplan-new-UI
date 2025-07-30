@@ -22,31 +22,15 @@ const renderRoot = () => {
 };
 
 // Check if authentication is required based on route
-const requiresAuth = () => {
-  const publicRoutes = ["/", "/home", "/login", "/about", "/contact"];
-  const currentPath = window.location.pathname;
-  return !publicRoutes.includes(currentPath);
-};
-
 // Renders the landing (Home) page for unauthenticated users
 const renderLanding = (config) => {
-  if (config && config.realm) {
-    const targetUrl = `/personal/${config.realm}`;
-    if (window.location.pathname !== targetUrl) {
-      window.location.replace(targetUrl);
-      return;
-    }
-  }
   if (rootElement) {
     const root = createRoot(rootElement);
     // Home expects onLogin and config props
     import("./pages/Home/Home").then(({ default: Home }) => {
       root.render(
         <StrictMode>
-          <Home
-            onLogin={() => KeycloakService.initAndLogin(config)}
-            config={config}
-          />
+          <Home onLogin={() => KeycloakService.doLogin()} config={config} />
         </StrictMode>
       );
     });
@@ -54,6 +38,12 @@ const renderLanding = (config) => {
     console.error("Root element not found");
   }
 };
+const requiresAuth = () => {
+  const publicRoutes = ["/", "/home", "/login", "/about", "/contact"];
+  const currentPath = window.location.pathname;
+  return !publicRoutes.includes(currentPath);
+};
+
 const initializeApp = () => {
   if (requiresAuth()) {
     // Authentication required for protected routes
@@ -70,7 +60,6 @@ const initializeApp = () => {
           },
           config,
           () => {
-            // Only redirect to /personal/:realm for logout/session timeout
             renderLanding(config);
           }
         );
@@ -80,8 +69,7 @@ const initializeApp = () => {
         .then(async (r) => r.json())
         .then((config) => {
           sessionStorage.setItem("config", JSON.stringify(config));
-          // For unauthenticated, show landing (may redirect to /personal/:realm)
-          renderLanding(config);
+          KeycloakService.initKeycloak(() => renderRoot(), config);
         })
         .catch(() => {
           if (rootElement) {
