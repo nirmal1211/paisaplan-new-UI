@@ -42,10 +42,12 @@ function App() {
               <Routes>
                 {/* Purchase Flow Routes - With consistent navbar */}
                 <Route
-                  path="personal/buy-policy/*"
+                  path="buy-policy/*"
                   element={
                     <ProtectedRoute>
-                      <PurchaseFlow />
+                      <Layout>
+                        <PurchaseFlow />
+                      </Layout>
                     </ProtectedRoute>
                   }
                 />

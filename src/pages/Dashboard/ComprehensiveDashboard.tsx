@@ -1102,7 +1102,7 @@ const ComprehensiveDashboard: React.FC = () => {
                   }}
                   asChild
                 >
-                  <a href="/buy-policy/health">
+                  <a href="/buy-policy/health-insurance">
                     <span>Explore Health Insurance Plans</span>
                   </a>
                 </Button>
@@ -1903,14 +1903,7 @@ const ComprehensiveDashboard: React.FC = () => {
         </section>
         {/* Enhanced Shared Policies Section */}
 
-        <section className="mb-12 relative">
-          {/* oooSharePolicy image at top right of Shared Policies card */}
-          {/* <img
-            src="/oooSharePolicy.png"
-            alt="Shared Policy Hero"
-            className="hidden md:block absolute top-[-6px] right-10 w-[6rem] h-auto z-30 pointer-events-none select-none"
-            style={{ filter: "drop-shadow(0 8px 32px rgba(0,0,0,0.15))" }}
-          /> */}
+        {/* <section className="mb-12 relative">
           <div
             className="rounded-2xl shadow-xl p-4 md:p-6 relative"
             style={{ backgroundColor: "var(--color-card)" }}
@@ -2069,7 +2062,7 @@ const ComprehensiveDashboard: React.FC = () => {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
         {/* Enhanced Government Schemes Section */}
 
         <section className="mb-16 relative">

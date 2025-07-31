@@ -162,10 +162,10 @@ export const insuranceSlides: InsuranceSlide[] = [
   },
   {
     id: "2",
-    type: "Motor",
+    type: "Four Wheeler",
     title: "Complete Car Insurance",
     description:
-      "Comprehensive motor insurance covering damages, theft, third-party liability and personal accident coverage for complete peace of mind.",
+      "Comprehensive Four wheeler insurance covering damages, theft, third-party liability and personal accident coverage for complete peace of mind.",
     image:
       "https://images.pexels.com/photos/3802510/pexels-photo-3802510.jpeg?auto=compress&cs=tinysrgb&w=400&h=250&dpr=2",
     features: [

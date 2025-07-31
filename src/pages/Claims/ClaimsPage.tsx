@@ -734,19 +734,13 @@ const ClaimsPage: React.FC = () => {
                     </Dialog>
                   </div>
                 </div>
-
                 {/* Right Side - Character Image */}
-                <div className="flex justify-center lg:justify-end">
-                  <div className="relative">
-                    {/* Character Image with Enhanced Styling */}
-                    <div className="relative transform hover:scale-105 transition-transform duration-500">
-                      {/* <img
-                        src="/oooClaims.png"
-                        alt="Claims Assistant Character"
-                        className="w-40 h-40 md:w-56 md:h-56 object-contain drop-shadow-2xl"
-                      /> */}
 
-                      {/* Floating Animation Elements */}
+                {/* <div className="flex justify-center lg:justify-end">
+                  <div className="relative">
+                    // Character Image with Enhanced Styling
+                    <div className="relative transform hover:scale-105 transition-transform duration-500">
+                      //image // Floating Animation Elements
                       <div
                         className="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-br rounded-full animate-bounce"
                         style={{
@@ -768,8 +762,7 @@ const ClaimsPage: React.FC = () => {
                         }}
                       />
                     </div>
-
-                    {/* Speech Bubble */}
+                    // Speech Bubble
                     <div
                       className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-white rounded-2xl p-2 shadow-xl border-2 animate-bounce"
                       style={{
@@ -782,9 +775,9 @@ const ClaimsPage: React.FC = () => {
                         className="text-xs font-semibold font-poppins text-center"
                         style={{ color: "var(--color-primary)" }}
                       >
-                        Hi! I'm here to help with your claims! 👋
+                        // Hi! I'm here to help with your claims! 👋
                       </div>
-                      {/* Speech bubble tail */}
+                      // Speech bubble tail
                       <div
                         className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent"
                         style={{
@@ -792,8 +785,7 @@ const ClaimsPage: React.FC = () => {
                         }}
                       />
                     </div>
-
-                    {/* Background Glow Effect */}
+                    // Background Glow Effect
                     <div
                       className="absolute inset-0 bg-gradient-to-br rounded-full opacity-20 blur-3xl -z-10"
                       style={{
@@ -801,7 +793,7 @@ const ClaimsPage: React.FC = () => {
                       }}
                     />
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
 

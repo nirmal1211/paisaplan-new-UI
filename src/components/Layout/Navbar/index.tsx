@@ -44,17 +44,17 @@ const getNavigationItems = (role: string) => {
         dropdown: [
           {
             label: "Health Insurance",
-            path: "/buy-policy/health",
+            path: "/buy-policy/health-insurance",
             icon: HeartPulse,
           },
           {
-            label: "Motor Insurance",
-            path: "/buy-policy/four-wheeler",
+            label: "Four Wheeler Insurance",
+            path: "/buy-policy/four-wheeler-insurance",
             icon: Car,
           },
           {
             label: "Two Wheeler Insurance",
-            path: "/buy-policy/two-wheeler",
+            path: "/buy-policy/two-wheeler-insurance",
             icon: Bike,
           },
         ],

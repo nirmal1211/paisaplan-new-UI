@@ -10,10 +10,6 @@ import ProviderDetails from "../../components/Purchase/ProviderDetails";
 const PurchaseFlow: React.FC = () => {
   const location = useLocation();
 
-  // Show navbar only on the main entry route
-  const showNavbar =
-    location.pathname === "/buy-policy" || location.pathname === "/buy-policy/";
-
   return (
     <PurchaseProvider>
       <>

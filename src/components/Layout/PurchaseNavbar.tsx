@@ -148,7 +148,7 @@ const PurchaseNavbar: React.FC = () => {
                 onClick={() => setBuyOpen(false)}
               >
                 <Car className={styles["layout-navbar__dropdown-icon"]} />
-                Motor Insurance
+                Four wheeler Insurance
               </Link>
               <div className={styles["layout-navbar__dropdown-divider"]} />
               <Link
