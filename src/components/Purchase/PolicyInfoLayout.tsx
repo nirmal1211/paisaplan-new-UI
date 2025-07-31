@@ -485,20 +485,6 @@ const PolicyInfoLayout: React.FC = () => {
       className="min-h-screen"
       style={{ backgroundColor: "var(--color-background)" }}
     >
-      {/* Back Button */}
-      <div className="px-4 sm:px-6 lg:px-8 pt-8">
-        <div className="max-w-7xl mx-auto">
-          <button
-            onClick={() => navigate("/buy-policy")}
-            className="flex items-center space-x-2 text-sm font-roboto hover:opacity-80 transition-colors"
-            style={{ color: "var(--color-primary)" }}
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back to Policy Types</span>
-          </button>
-        </div>
-      </div>
-
       {/* Main Layout */}
       <div className="px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-7xl mx-auto">
@@ -537,24 +523,24 @@ const PolicyInfoLayout: React.FC = () => {
                 className="flex space-x-1 mb-6 p-1 rounded-xl"
                 style={{ backgroundColor: "var(--color-secondary)" }}
               >
-                {['overview', 'coverage', 'process'].map((section) => (
+                {["overview", "coverage", "process"].map((section) => (
                   <button
                     key={section}
                     onClick={() => setActiveSection(section)}
                     className={`flex-1 px-2 py-2 rounded-lg font-medium font-roboto text-xs transition-all duration-200 ${
                       activeSection === section
-                        ? 'shadow-sm'
-                        : 'hover:opacity-80'
+                        ? "shadow-sm"
+                        : "hover:opacity-80"
                     }`}
                     style={{
                       backgroundColor:
                         activeSection === section
-                          ? 'var(--color-card)'
-                          : 'transparent',
+                          ? "var(--color-card)"
+                          : "transparent",
                       color:
                         activeSection === section
-                          ? 'var(--color-primary)'
-                          : 'var(--color-muted)',
+                          ? "var(--color-primary)"
+                          : "var(--color-muted)",
                     }}
                   >
                     {section.charAt(0).toUpperCase() + section.slice(1)}
