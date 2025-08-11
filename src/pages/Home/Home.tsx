@@ -15,7 +15,11 @@ import {
   CheckCircle,
   TrendingUp,
   Globe,
-  Zap
+  Zap,
+  Clock,
+  FileText,
+  Calculator,
+  Headphones
 } from 'lucide-react';
 
 interface HomeProps {
@@ -31,7 +35,8 @@ const Home: React.FC<HomeProps> = ({ onLogin, config }) => {
   const [stats, setStats] = useState({
     partners: 0,
     customers: 0,
-    claims: 0
+    claims: 0,
+    policies: 0
   });
 
   useEffect(() => {
@@ -42,6 +47,7 @@ const Home: React.FC<HomeProps> = ({ onLogin, config }) => {
       const partnersTarget = 25;
       const customersTarget = 15000;
       const claimsTarget = 98;
+      const policiesTarget = 50000;
 
       let step = 0;
       const interval = setInterval(() => {
@@ -51,25 +57,23 @@ const Home: React.FC<HomeProps> = ({ onLogin, config }) => {
         setStats({
           partners: Math.floor(partnersTarget * progress),
           customers: Math.floor(customersTarget * progress),
-          claims: Math.floor(claimsTarget * progress)
+          claims: Math.floor(claimsTarget * progress),
+          policies: Math.floor(policiesTarget * progress)
         });
 
         if (step >= steps) {
           clearInterval(interval);
-          setStats({ partners: partnersTarget, customers: customersTarget, claims: claimsTarget });
+          setStats({ 
+            partners: partnersTarget, 
+            customers: customersTarget, 
+            claims: claimsTarget,
+            policies: policiesTarget 
+          });
         }
       }, duration / steps);
     };
 
     animateStats();
-  }, []);
-
-  // Testimonials carousel
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
-    return () => clearInterval(interval);
   }, []);
 
   // Intersection Observer for scroll animations
@@ -100,217 +104,441 @@ const Home: React.FC<HomeProps> = ({ onLogin, config }) => {
     { name: 'Max Bupa', logo: 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=120&h=60&dpr=2' }
   ];
 
-  const insuranceTypes = [
+  const features = [
+    {
+      icon: Shield,
+      title: 'Comprehensive Coverage',
+      description: 'Get complete protection with our wide range of insurance products tailored to your needs.'
+    },
+    {
+      icon: Clock,
+      title: 'Quick Processing',
+      description: 'Fast claim processing and instant policy issuance with our streamlined digital platform.'
+    },
+    {
+      icon: Headphones,
+      title: '24/7 Support',
+      description: 'Round-the-clock customer support to assist you whenever you need help with your policies.'
+    },
+    {
+      icon: Calculator,
+      title: 'Best Rates',
+      description: 'Compare quotes from top insurers and get the most competitive rates in the market.'
+    }
+  ];
+
+  const services = [
     {
       icon: Heart,
       title: 'Health Insurance',
-      description: 'Comprehensive health coverage for you and your family',
-      color: 'from-red-500 to-pink-500'
+      description: 'Comprehensive health coverage for individuals and families',
+      features: ['Cashless treatment', 'Pre & post hospitalization', 'Annual health checkup']
+    },
+    {
+      icon: Car,
+      title: 'Motor Insurance',
+      description: 'Complete protection for your four-wheeler vehicles',
+      features: ['Own damage cover', 'Third party liability', 'Roadside assistance']
+    },
+    {
+      icon: Bike,
+      title: 'Two Wheeler Insurance',
+      description: 'Affordable coverage for bikes and scooters',
+      features: ['Theft protection', 'Accident coverage', 'Engine protection']
     },
     {
       icon: Shield,
       title: 'Life Insurance',
       description: 'Secure your family\'s financial future',
-      color: 'from-blue-500 to-indigo-500'
-    },
-    {
-      icon: Bike,
-      title: 'Two Wheeler',
-      description: 'Complete protection for your bike or scooter',
-      color: 'from-green-500 to-emerald-500'
-    },
-    {
-      icon: Car,
-      title: 'Four Wheeler',
-      description: 'Comprehensive car insurance coverage',
-      color: 'from-purple-500 to-violet-500'
-    }
-  ];
-
-  const testimonials = [
-    {
-      name: 'Priya Sharma',
-      role: 'Software Engineer',
-      image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      rating: 5,
-      text: 'Trovity made insurance so simple! Got my health policy in minutes with the best rates.'
-    },
-    {
-      name: 'Rajesh Kumar',
-      role: 'Business Owner',
-      image: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      rating: 5,
-      text: 'Amazing service and support. The ₹99 subscription saved me thousands on premiums!'
-    },
-    {
-      name: 'Anita Patel',
-      role: 'Teacher',
-      image: 'https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-      rating: 5,
-      text: 'Quick claim settlement and excellent customer service. Highly recommended!'
-    }
-  ];
-
-  const founders = [
-    {
-      name: 'Amit Sharma',
-      role: 'CEO & Co-Founder',
-      image: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&dpr=2',
-      bio: '15+ years in fintech and insurance. Former VP at leading insurance companies.'
-    },
-    {
-      name: 'Sneha Gupta',
-      role: 'CTO & Co-Founder',
-      image: 'https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&dpr=2',
-      bio: 'Tech visionary with expertise in AI and digital transformation in insurance.'
+      features: ['Term life coverage', 'Investment options', 'Tax benefits']
     }
   ];
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)' }}>
-      {/* Floating Action Button */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <button
-          onClick={onLogin}
-          className="w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-3xl group"
-          style={{ 
-            background: `linear-gradient(135deg, var(--color-primary), var(--color-accent))`,
-            boxShadow: '0 8px 32px rgba(185, 34, 80, 0.3)'
-          }}
-        >
-          <Phone className="h-6 w-6 text-white group-hover:animate-pulse" />
-        </button>
-      </div>
-
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0">
-          <div 
-            className="absolute inset-0 opacity-10"
-            style={{
-              background: `linear-gradient(135deg, var(--color-primary), var(--color-accent), var(--color-secondary))`
-            }}
-          />
-          {/* Animated particles */}
-          <div className="absolute inset-0">
-            {[...Array(20)].map((_, i) => (
+      <section className="relative py-20 lg:py-32 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <div className="text-left">
+              <h1 
+                className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                Insurance Made
+                <span 
+                  className="block"
+                  style={{ color: 'var(--color-primary)' }}
+                >
+                  Simple & Smart
+                </span>
+              </h1>
+              
+              <p 
+                className="text-lg md:text-xl mb-8 leading-relaxed max-w-xl"
+                style={{ color: 'var(--color-muted)' }}
+              >
+                Partner with India's leading insurers. Get the best rates, instant quotes, 
+                and hassle-free claims with our comprehensive insurance solutions.
+              </p>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 mb-12">
+                <button
+                  onClick={onLogin}
+                  className="px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-xl group relative overflow-hidden"
+                  style={{ 
+                    backgroundColor: 'var(--color-primary)',
+                    color: 'var(--color-primary-foreground)'
+                  }}
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    Get Started
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </button>
+                
+                <button
+                  className="px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 border-2 group"
+                  style={{ 
+                    borderColor: 'var(--color-primary)',
+                    color: 'var(--color-primary)',
+                    backgroundColor: 'transparent'
+                  }}
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    Learn More
+                    <Play className="h-5 w-5" />
+                  </span>
+                </button>
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="flex items-center gap-8">
+                <div className="text-center">
+                  <div 
+                    className="text-2xl font-bold"
+                    style={{ color: 'var(--color-primary)' }}
+                  >
+                    {stats.partners}+
+                  </div>
+                  <div 
+                    className="text-sm"
+                    style={{ color: 'var(--color-muted)' }}
+                  >
+                    Insurance Partners
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div 
+                    className="text-2xl font-bold"
+                    style={{ color: 'var(--color-primary)' }}
+                  >
+                    {stats.customers.toLocaleString()}+
+                  </div>
+                  <div 
+                    className="text-sm"
+                    style={{ color: 'var(--color-muted)' }}
+                  >
+                    Happy Customers
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div 
+                    className="text-2xl font-bold"
+                    style={{ color: 'var(--color-primary)' }}
+                  >
+                    {stats.claims}%
+                  </div>
+                  <div 
+                    className="text-sm"
+                    style={{ color: 'var(--color-muted)' }}
+                  >
+                    Claim Settlement
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Content - Hero Image */}
+            <div className="relative">
+              <div 
+                className="rounded-3xl p-8 shadow-2xl"
+                style={{ backgroundColor: 'var(--color-card)' }}
+              >
+                <img
+                  src="https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=2"
+                  alt="Insurance Dashboard"
+                  className="w-full h-80 object-cover rounded-2xl"
+                />
+                
+                {/* Floating Stats Card */}
+                <div 
+                  className="absolute -bottom-6 -left-6 p-6 rounded-2xl shadow-xl"
+                  style={{ backgroundColor: 'var(--color-primary)' }}
+                >
+                  <div className="text-white text-center">
+                    <div className="text-3xl font-bold mb-1">{stats.policies.toLocaleString()}+</div>
+                    <div className="text-sm opacity-90">Policies Managed</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section 
+        id="features"
+        data-animate
+        className={`py-20 transition-all duration-1000 ${isVisible.features ? 'animate-fade-in' : 'opacity-0'}`}
+        style={{ backgroundColor: 'var(--color-secondary)' }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 
+              className="text-3xl md:text-4xl font-bold mb-4"
+              style={{ color: 'var(--color-foreground)' }}
+            >
+              Why Choose Trovity?
+            </h2>
+            <p 
+              className="text-lg max-w-2xl mx-auto"
+              style={{ color: 'var(--color-muted)' }}
+            >
+              We make insurance simple, transparent, and accessible for everyone
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
               <div
-                key={i}
-                className="absolute w-2 h-2 rounded-full opacity-20 animate-pulse"
-                style={{
-                  backgroundColor: 'var(--color-primary)',
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 3}s`,
-                  animationDuration: `${3 + Math.random() * 2}s`
-                }}
-              />
+                key={index}
+                className="text-center p-8 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                style={{ backgroundColor: 'var(--color-card)' }}
+              >
+                <div 
+                  className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center"
+                  style={{ backgroundColor: 'var(--color-secondary)' }}
+                >
+                  <feature.icon 
+                    className="h-8 w-8"
+                    style={{ color: 'var(--color-primary)' }}
+                  />
+                </div>
+                <h3 
+                  className="text-xl font-bold mb-4"
+                  style={{ color: 'var(--color-foreground)' }}
+                >
+                  {feature.title}
+                </h3>
+                <p 
+                  className="leading-relaxed"
+                  style={{ color: 'var(--color-muted)' }}
+                >
+                  {feature.description}
+                </p>
+              </div>
             ))}
           </div>
         </div>
+      </section>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="animate-fade-in">
-            <h1 
-              className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
+      {/* Services Section */}
+      <section 
+        id="services"
+        data-animate
+        className={`py-20 transition-all duration-1000 ${isVisible.services ? 'animate-slide-up' : 'opacity-0'}`}
+        style={{ backgroundColor: 'var(--color-background)' }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 
+              className="text-3xl md:text-4xl font-bold mb-4"
               style={{ color: 'var(--color-foreground)' }}
             >
-              Insurance Made
-              <span 
-                className="block bg-gradient-to-r bg-clip-text text-transparent"
-                style={{ 
-                  backgroundImage: `linear-gradient(135deg, var(--color-primary), var(--color-accent))`
-                }}
-              >
-                Simple & Smart
-              </span>
-            </h1>
-            
+              Our Insurance Solutions
+            </h2>
             <p 
-              className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed"
+              className="text-lg max-w-2xl mx-auto"
               style={{ color: 'var(--color-muted)' }}
             >
-              Partner with India's leading insurers. Get the best rates, instant quotes, 
-              and hassle-free claims with our exclusive ₹99 subscription plan.
+              Comprehensive coverage options designed to protect what matters most to you
             </p>
+          </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <button
-                onClick={onLogin}
-                className="px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl group relative overflow-hidden"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {services.map((service, index) => (
+              <div
+                key={index}
+                className="group rounded-2xl p-8 transition-all duration-300 hover:scale-105 hover:shadow-xl border"
                 style={{ 
-                  backgroundColor: 'var(--color-primary)',
-                  color: 'var(--color-primary-foreground)',
-                  boxShadow: '0 8px 32px rgba(185, 34, 80, 0.3)'
+                  backgroundColor: 'var(--color-card)',
+                  borderColor: 'var(--color-border)'
                 }}
               >
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  Login to Dashboard
-                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-              </button>
-              
-              <button
-                className="px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl border-2 group"
-                style={{ 
-                  borderColor: 'var(--color-primary)',
-                  color: 'var(--color-primary)',
-                  backgroundColor: 'transparent'
-                }}
-              >
-                <span className="flex items-center justify-center gap-2">
-                  Get Free Quote
-                  <Zap className="h-5 w-5 group-hover:text-yellow-400 transition-colors" />
-                </span>
-              </button>
-            </div>
-
-            {/* Animated Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <div className="text-center">
-                <div 
-                  className="text-3xl md:text-4xl font-bold mb-2"
-                  style={{ color: 'var(--color-primary)' }}
-                >
-                  {stats.partners}+
+                <div className="flex items-start space-x-6">
+                  <div 
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110"
+                    style={{ backgroundColor: 'var(--color-secondary)' }}
+                  >
+                    <service.icon 
+                      className="h-8 w-8"
+                      style={{ color: 'var(--color-primary)' }}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h3 
+                      className="text-xl font-bold mb-3"
+                      style={{ color: 'var(--color-foreground)' }}
+                    >
+                      {service.title}
+                    </h3>
+                    <p 
+                      className="mb-4 leading-relaxed"
+                      style={{ color: 'var(--color-muted)' }}
+                    >
+                      {service.description}
+                    </p>
+                    <ul className="space-y-2">
+                      {service.features.map((feature, featureIndex) => (
+                        <li key={featureIndex} className="flex items-center space-x-2">
+                          <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                          <span 
+                            className="text-sm"
+                            style={{ color: 'var(--color-foreground)' }}
+                          >
+                            {feature}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    <button 
+                      className="mt-6 px-6 py-2 rounded-lg font-semibold transition-all duration-300 hover:scale-105"
+                      style={{ 
+                        backgroundColor: 'var(--color-primary)',
+                        color: 'var(--color-primary-foreground)'
+                      }}
+                    >
+                      Get Quote
+                    </button>
+                  </div>
                 </div>
-                <div style={{ color: 'var(--color-muted)' }}>Insurance Partners</div>
               </div>
-              <div className="text-center">
-                <div 
-                  className="text-3xl md:text-4xl font-bold mb-2"
-                  style={{ color: 'var(--color-primary)' }}
-                >
-                  {stats.customers.toLocaleString()}+
-                </div>
-                <div style={{ color: 'var(--color-muted)' }}>Happy Customers</div>
-              </div>
-              <div className="text-center">
-                <div 
-                  className="text-3xl md:text-4xl font-bold mb-2"
-                  style={{ color: 'var(--color-primary)' }}
-                >
-                  {stats.claims}%
-                </div>
-                <div style={{ color: 'var(--color-muted)' }}>Claim Settlement</div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
+      </section>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div 
-            className="w-6 h-10 border-2 rounded-full flex justify-center"
-            style={{ borderColor: 'var(--color-primary)' }}
-          >
-            <div 
-              className="w-1 h-3 rounded-full mt-2 animate-pulse"
-              style={{ backgroundColor: 'var(--color-primary)' }}
-            />
+      {/* Statistics Section */}
+      <section 
+        id="statistics"
+        data-animate
+        className={`py-20 transition-all duration-1000 ${isVisible.statistics ? 'animate-fade-in' : 'opacity-0'}`}
+        style={{ backgroundColor: 'var(--color-secondary)' }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 
+              className="text-3xl md:text-4xl font-bold mb-4"
+              style={{ color: 'var(--color-foreground)' }}
+            >
+              Trusted by Millions
+            </h2>
+            <p 
+              className="text-lg max-w-2xl mx-auto"
+              style={{ color: 'var(--color-muted)' }}
+            >
+              Our numbers speak for themselves - join the growing community of satisfied customers
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div 
+                className="text-4xl md:text-5xl font-bold mb-2"
+                style={{ color: 'var(--color-primary)' }}
+              >
+                {stats.partners}+
+              </div>
+              <div 
+                className="text-lg font-medium"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                Insurance Partners
+              </div>
+              <div 
+                className="text-sm mt-1"
+                style={{ color: 'var(--color-muted)' }}
+              >
+                Top-rated insurers
+              </div>
+            </div>
+            
+            <div className="text-center">
+              <div 
+                className="text-4xl md:text-5xl font-bold mb-2"
+                style={{ color: 'var(--color-primary)' }}
+              >
+                {stats.customers.toLocaleString()}+
+              </div>
+              <div 
+                className="text-lg font-medium"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                Happy Customers
+              </div>
+              <div 
+                className="text-sm mt-1"
+                style={{ color: 'var(--color-muted)' }}
+              >
+                Across India
+              </div>
+            </div>
+            
+            <div className="text-center">
+              <div 
+                className="text-4xl md:text-5xl font-bold mb-2"
+                style={{ color: 'var(--color-primary)' }}
+              >
+                {stats.policies.toLocaleString()}+
+              </div>
+              <div 
+                className="text-lg font-medium"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                Policies Issued
+              </div>
+              <div 
+                className="text-sm mt-1"
+                style={{ color: 'var(--color-muted)' }}
+              >
+                And counting
+              </div>
+            </div>
+            
+            <div className="text-center">
+              <div 
+                className="text-4xl md:text-5xl font-bold mb-2"
+                style={{ color: 'var(--color-primary)' }}
+              >
+                {stats.claims}%
+              </div>
+              <div 
+                className="text-lg font-medium"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                Claim Settlement
+              </div>
+              <div 
+                className="text-sm mt-1"
+                style={{ color: 'var(--color-muted)' }}
+              >
+                Industry leading
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -320,7 +548,7 @@ const Home: React.FC<HomeProps> = ({ onLogin, config }) => {
         id="partners"
         data-animate
         className={`py-20 transition-all duration-1000 ${isVisible.partners ? 'animate-slide-up' : 'opacity-0'}`}
-        style={{ backgroundColor: 'var(--color-secondary)' }}
+        style={{ backgroundColor: 'var(--color-background)' }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -328,304 +556,73 @@ const Home: React.FC<HomeProps> = ({ onLogin, config }) => {
               className="text-3xl md:text-4xl font-bold mb-4"
               style={{ color: 'var(--color-foreground)' }}
             >
-              Trusted by Leading Insurers
+              Our Insurance Partners
             </h2>
             <p 
               className="text-lg max-w-2xl mx-auto"
               style={{ color: 'var(--color-muted)' }}
             >
-              We've partnered with India's top insurance companies to bring you the best coverage options
+              We've partnered with India's most trusted insurance companies
             </p>
           </div>
 
-          {/* Partners Carousel */}
-          <div className="relative overflow-hidden">
-            <div className="flex animate-scroll space-x-12">
-              {[...partners, ...partners].map((partner, index) => (
-                <div
-                  key={index}
-                  className="flex-shrink-0 w-32 h-16 flex items-center justify-center rounded-xl transition-all duration-300 hover:scale-110"
-                  style={{ backgroundColor: 'var(--color-card)' }}
-                >
-                  <img
-                    src={partner.logo}
-                    alt={partner.name}
-                    className="max-w-full max-h-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
-                  />
-                </div>
-              ))}
-            </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center">
+            {partners.map((partner, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-center p-6 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg"
+                style={{ backgroundColor: 'var(--color-card)' }}
+              >
+                <img
+                  src={partner.logo}
+                  alt={partner.name}
+                  className="max-w-full max-h-12 object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
+                />
+              </div>
+            ))}
           </div>
+        </div>
+      </section>
 
-          {/* Subscription Highlight */}
-          <div className="mt-16 max-w-4xl mx-auto">
+      {/* CTA Section */}
+      <section 
+        id="cta"
+        data-animate
+        className={`py-20 transition-all duration-1000 ${isVisible.cta ? 'animate-fade-in' : 'opacity-0'}`}
+        style={{ backgroundColor: 'var(--color-secondary)' }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
             <div 
-              className="rounded-3xl p-8 text-center relative overflow-hidden"
+              className="rounded-3xl p-12 relative overflow-hidden"
               style={{ 
                 background: `linear-gradient(135deg, var(--color-primary), var(--color-accent))`,
                 boxShadow: '0 20px 40px rgba(185, 34, 80, 0.3)'
               }}
             >
               <div className="relative z-10">
-                <div className="flex items-center justify-center mb-4">
-                  <Award className="h-8 w-8 text-white mr-3" />
-                  <span className="text-2xl font-bold text-white">Exclusive Offer</span>
-                </div>
-                <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                  ₹99 Annual Subscription
-                </h3>
-                <p className="text-xl text-white/90 mb-6">
-                  Get access to exclusive rates, priority support, and premium features
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                  Ready to Get Protected?
+                </h2>
+                <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+                  Join thousands of satisfied customers who trust us with their insurance needs. 
+                  Get started today and experience the difference.
                 </p>
-                <button 
-                  className="px-8 py-3 bg-white rounded-xl font-semibold transition-all duration-300 hover:scale-105"
-                  style={{ color: 'var(--color-primary)' }}
-                >
-                  Subscribe Now
-                </button>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Insurance Types Section */}
-      <section 
-        id="insurance-types"
-        data-animate
-        className={`py-20 transition-all duration-1000 ${isVisible['insurance-types'] ? 'animate-fade-in' : 'opacity-0'}`}
-        style={{ backgroundColor: 'var(--color-background)' }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 
-              className="text-3xl md:text-4xl font-bold mb-4"
-              style={{ color: 'var(--color-foreground)' }}
-            >
-              Get Your Quote in Minutes
-            </h2>
-            <p 
-              className="text-lg max-w-2xl mx-auto"
-              style={{ color: 'var(--color-muted)' }}
-            >
-              Choose from our comprehensive insurance solutions tailored for your needs
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {insuranceTypes.map((type, index) => (
-              <div
-                key={index}
-                className="group relative rounded-3xl p-8 transition-all duration-500 hover:scale-105 hover:-translate-y-2 cursor-pointer"
-                style={{ 
-                  backgroundColor: 'var(--color-card)',
-                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)'
-                }}
-              >
-                <div className="text-center">
-                  <div 
-                    className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
-                    style={{ backgroundColor: 'var(--color-secondary)' }}
-                  >
-                    <type.icon 
-                      className="h-8 w-8"
-                      style={{ color: 'var(--color-primary)' }}
-                    />
-                  </div>
-                  <h3 
-                    className="text-xl font-bold mb-3"
-                    style={{ color: 'var(--color-foreground)' }}
-                  >
-                    {type.title}
-                  </h3>
-                  <p 
-                    className="text-sm mb-6 leading-relaxed"
-                    style={{ color: 'var(--color-muted)' }}
-                  >
-                    {type.description}
-                  </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button 
-                    className="w-full py-3 rounded-xl font-semibold transition-all duration-300 hover:shadow-lg"
-                    style={{ 
-                      backgroundColor: 'var(--color-primary)',
-                      color: 'var(--color-primary-foreground)'
-                    }}
+                    onClick={onLogin}
+                    className="px-8 py-4 bg-white rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                    style={{ color: 'var(--color-primary)' }}
                   >
-                    Get Quote
+                    Start Your Journey
+                  </button>
+                  <button 
+                    className="px-8 py-4 border-2 border-white text-white rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 hover:bg-white/10"
+                  >
+                    Talk to Expert
                   </button>
                 </div>
-                
-                {/* Hover glow effect */}
-                <div 
-                  className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"
-                  style={{ 
-                    background: `linear-gradient(135deg, var(--color-primary), var(--color-accent))`,
-                    filter: 'blur(20px)',
-                    transform: 'scale(1.1)'
-                  }}
-                />
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Founders Section */}
-      <section 
-        id="founders"
-        data-animate
-        className={`py-20 transition-all duration-1000 ${isVisible.founders ? 'animate-slide-up' : 'opacity-0'}`}
-        style={{ backgroundColor: 'var(--color-secondary)' }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 
-              className="text-3xl md:text-4xl font-bold mb-4"
-              style={{ color: 'var(--color-foreground)' }}
-            >
-              Meet Our Founders
-            </h2>
-            <p 
-              className="text-lg max-w-2xl mx-auto"
-              style={{ color: 'var(--color-muted)' }}
-            >
-              Industry veterans committed to revolutionizing insurance in India
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
-            {founders.map((founder, index) => (
-              <div
-                key={index}
-                className="text-center group"
-              >
-                <div className="relative mb-6 inline-block">
-                  <div className="w-48 h-48 mx-auto rounded-3xl overflow-hidden transition-all duration-500 group-hover:scale-105">
-                    <img
-                      src={founder.image}
-                      alt={founder.name}
-                      className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
-                    />
-                    <div 
-                      className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-300"
-                      style={{ backgroundColor: 'var(--color-primary)' }}
-                    />
-                  </div>
-                </div>
-                <h3 
-                  className="text-2xl font-bold mb-2"
-                  style={{ color: 'var(--color-foreground)' }}
-                >
-                  {founder.name}
-                </h3>
-                <p 
-                  className="text-lg mb-4"
-                  style={{ color: 'var(--color-primary)' }}
-                >
-                  {founder.role}
-                </p>
-                <p 
-                  className="leading-relaxed"
-                  style={{ color: 'var(--color-muted)' }}
-                >
-                  {founder.bio}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section 
-        id="testimonials"
-        data-animate
-        className={`py-20 transition-all duration-1000 ${isVisible.testimonials ? 'animate-fade-in' : 'opacity-0'}`}
-        style={{ backgroundColor: 'var(--color-background)' }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 
-              className="text-3xl md:text-4xl font-bold mb-4"
-              style={{ color: 'var(--color-foreground)' }}
-            >
-              What Our Customers Say
-            </h2>
-            <p 
-              className="text-lg max-w-2xl mx-auto"
-              style={{ color: 'var(--color-muted)' }}
-            >
-              Join thousands of satisfied customers who trust us with their insurance needs
-            </p>
-          </div>
-
-          <div className="relative max-w-4xl mx-auto">
-            <div className="overflow-hidden rounded-3xl">
-              <div 
-                className="flex transition-transform duration-500 ease-in-out"
-                style={{ transform: `translateX(-${currentTestimonial * 100}%)` }}
-              >
-                {testimonials.map((testimonial, index) => (
-                  <div
-                    key={index}
-                    className="w-full flex-shrink-0 p-12 text-center"
-                    style={{ backgroundColor: 'var(--color-card)' }}
-                  >
-                    <div className="mb-6">
-                      <img
-                        src={testimonial.image}
-                        alt={testimonial.name}
-                        className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
-                      />
-                      <div className="flex justify-center mb-4">
-                        {[...Array(testimonial.rating)].map((_, i) => (
-                          <Star 
-                            key={i} 
-                            className="h-5 w-5 fill-current"
-                            style={{ color: 'var(--color-accent)' }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <blockquote 
-                      className="text-xl italic mb-6 leading-relaxed"
-                      style={{ color: 'var(--color-foreground)' }}
-                    >
-                      "{testimonial.text}"
-                    </blockquote>
-                    <div>
-                      <div 
-                        className="font-bold text-lg"
-                        style={{ color: 'var(--color-foreground)' }}
-                      >
-                        {testimonial.name}
-                      </div>
-                      <div style={{ color: 'var(--color-muted)' }}>
-                        {testimonial.role}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Testimonial indicators */}
-            <div className="flex justify-center mt-8 space-x-2">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentTestimonial(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentTestimonial ? 'scale-125' : 'opacity-50'
-                  }`}
-                  style={{ 
-                    backgroundColor: index === currentTestimonial 
-                      ? 'var(--color-primary)' 
-                      : 'var(--color-muted)' 
-                  }}
-                />
-              ))}
             </div>
           </div>
         </div>
@@ -636,7 +633,7 @@ const Home: React.FC<HomeProps> = ({ onLogin, config }) => {
         id="contact"
         data-animate
         className={`py-20 transition-all duration-1000 ${isVisible.contact ? 'animate-slide-up' : 'opacity-0'}`}
-        style={{ backgroundColor: 'var(--color-secondary)' }}
+        style={{ backgroundColor: 'var(--color-background)' }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -657,28 +654,65 @@ const Home: React.FC<HomeProps> = ({ onLogin, config }) => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <div 
-              className="rounded-3xl p-8"
+              className="rounded-3xl p-8 shadow-xl"
               style={{ backgroundColor: 'var(--color-card)' }}
             >
+              <h3 
+                className="text-2xl font-bold mb-6"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                Send us a Message
+              </h3>
               <form className="space-y-6">
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Your Name"
-                    className="w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:scale-105"
-                    style={{ 
-                      borderColor: 'var(--color-border)',
-                      backgroundColor: 'var(--color-background)',
-                      color: 'var(--color-foreground)'
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = 'var(--color-primary)'}
-                    onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label 
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: 'var(--color-foreground)' }}
+                    >
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:scale-105"
+                      style={{ 
+                        borderColor: 'var(--color-border)',
+                        backgroundColor: 'var(--color-background)',
+                        color: 'var(--color-foreground)'
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = 'var(--color-primary)'}
+                      onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
+                    />
+                  </div>
+                  <div>
+                    <label 
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: 'var(--color-foreground)' }}
+                    >
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:scale-105"
+                      style={{ 
+                        borderColor: 'var(--color-border)',
+                        backgroundColor: 'var(--color-background)',
+                        color: 'var(--color-foreground)'
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = 'var(--color-primary)'}
+                      onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
+                    />
+                  </div>
                 </div>
                 <div>
+                  <label 
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: 'var(--color-foreground)' }}
+                  >
+                    Email
+                  </label>
                   <input
                     type="email"
-                    placeholder="Your Email"
                     className="w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:scale-105"
                     style={{ 
                       borderColor: 'var(--color-border)',
@@ -690,8 +724,32 @@ const Home: React.FC<HomeProps> = ({ onLogin, config }) => {
                   />
                 </div>
                 <div>
+                  <label 
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: 'var(--color-foreground)' }}
+                  >
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    className="w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:scale-105"
+                    style={{ 
+                      borderColor: 'var(--color-border)',
+                      backgroundColor: 'var(--color-background)',
+                      color: 'var(--color-foreground)'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = 'var(--color-primary)'}
+                    onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
+                  />
+                </div>
+                <div>
+                  <label 
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: 'var(--color-foreground)' }}
+                  >
+                    Message
+                  </label>
                   <textarea
-                    placeholder="Your Message"
                     rows={4}
                     className="w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:scale-105 resize-none"
                     style={{ 
@@ -705,7 +763,7 @@ const Home: React.FC<HomeProps> = ({ onLogin, config }) => {
                 </div>
                 <button
                   type="submit"
-                  className="w-full py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                  className="w-full py-4 rounded-xl font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
                   style={{ 
                     backgroundColor: 'var(--color-primary)',
                     color: 'var(--color-primary-foreground)'
@@ -716,15 +774,15 @@ const Home: React.FC<HomeProps> = ({ onLogin, config }) => {
               </form>
             </div>
 
-            {/* Contact Info */}
+            {/* Contact Information */}
             <div className="space-y-8">
               <div 
-                className="rounded-3xl p-8"
+                className="rounded-2xl p-8 shadow-lg"
                 style={{ backgroundColor: 'var(--color-card)' }}
               >
-                <div className="flex items-center mb-4">
+                <div className="flex items-center space-x-4 mb-6">
                   <div 
-                    className="w-12 h-12 rounded-xl flex items-center justify-center mr-4"
+                    className="w-12 h-12 rounded-xl flex items-center justify-center"
                     style={{ backgroundColor: 'var(--color-secondary)' }}
                   >
                     <Phone 
@@ -739,20 +797,26 @@ const Home: React.FC<HomeProps> = ({ onLogin, config }) => {
                     >
                       Call Us
                     </h3>
-                    <p style={{ color: 'var(--color-muted)' }}>
+                    <p 
+                      className="text-lg"
+                      style={{ color: 'var(--color-primary)' }}
+                    >
                       +91 1800-123-4567
                     </p>
                   </div>
                 </div>
+                <p style={{ color: 'var(--color-muted)' }}>
+                  Available 24/7 for emergency claims and support
+                </p>
               </div>
 
               <div 
-                className="rounded-3xl p-8"
+                className="rounded-2xl p-8 shadow-lg"
                 style={{ backgroundColor: 'var(--color-card)' }}
               >
-                <div className="flex items-center mb-4">
+                <div className="flex items-center space-x-4 mb-6">
                   <div 
-                    className="w-12 h-12 rounded-xl flex items-center justify-center mr-4"
+                    className="w-12 h-12 rounded-xl flex items-center justify-center"
                     style={{ backgroundColor: 'var(--color-secondary)' }}
                   >
                     <Mail 
@@ -767,20 +831,26 @@ const Home: React.FC<HomeProps> = ({ onLogin, config }) => {
                     >
                       Email Us
                     </h3>
-                    <p style={{ color: 'var(--color-muted)' }}>
+                    <p 
+                      className="text-lg"
+                      style={{ color: 'var(--color-primary)' }}
+                    >
                       support@trovity.com
                     </p>
                   </div>
                 </div>
+                <p style={{ color: 'var(--color-muted)' }}>
+                  Get detailed responses within 24 hours
+                </p>
               </div>
 
               <div 
-                className="rounded-3xl p-8"
+                className="rounded-2xl p-8 shadow-lg"
                 style={{ backgroundColor: 'var(--color-card)' }}
               >
-                <div className="flex items-center mb-4">
+                <div className="flex items-center space-x-4 mb-6">
                   <div 
-                    className="w-12 h-12 rounded-xl flex items-center justify-center mr-4"
+                    className="w-12 h-12 rounded-xl flex items-center justify-center"
                     style={{ backgroundColor: 'var(--color-secondary)' }}
                   >
                     <MapPin 
@@ -795,11 +865,17 @@ const Home: React.FC<HomeProps> = ({ onLogin, config }) => {
                     >
                       Visit Us
                     </h3>
-                    <p style={{ color: 'var(--color-muted)' }}>
-                      Mumbai, Maharashtra, India
+                    <p 
+                      className="text-lg"
+                      style={{ color: 'var(--color-primary)' }}
+                    >
+                      Mumbai, Maharashtra
                     </p>
                   </div>
                 </div>
+                <p style={{ color: 'var(--color-muted)' }}>
+                  Corporate office open Mon-Fri, 9 AM - 6 PM
+                </p>
               </div>
             </div>
           </div>
@@ -808,26 +884,135 @@ const Home: React.FC<HomeProps> = ({ onLogin, config }) => {
 
       {/* Footer */}
       <footer 
-        className="py-12 border-t"
+        className="py-16 border-t"
         style={{ 
-          backgroundColor: 'var(--color-background)',
+          backgroundColor: 'var(--color-card)',
           borderColor: 'var(--color-border)'
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-4">
-              <Shield 
-                className="h-8 w-8 mr-3"
-                style={{ color: 'var(--color-primary)' }}
-              />
-              <span 
-                className="text-2xl font-bold"
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+            {/* Brand */}
+            <div className="md:col-span-2">
+              <div className="flex items-center mb-6">
+                <Shield 
+                  className="h-8 w-8 mr-3"
+                  style={{ color: 'var(--color-primary)' }}
+                />
+                <span 
+                  className="text-2xl font-bold"
+                  style={{ color: 'var(--color-foreground)' }}
+                >
+                  Trovity
+                </span>
+              </div>
+              <p 
+                className="text-lg mb-6 max-w-md"
+                style={{ color: 'var(--color-muted)' }}
+              >
+                Making insurance simple, transparent, and accessible for everyone across India.
+              </p>
+              <div className="flex space-x-4">
+                <button 
+                  className="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
+                  style={{ backgroundColor: 'var(--color-secondary)' }}
+                >
+                  <Globe 
+                    className="h-5 w-5"
+                    style={{ color: 'var(--color-primary)' }}
+                  />
+                </button>
+                <button 
+                  className="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
+                  style={{ backgroundColor: 'var(--color-secondary)' }}
+                >
+                  <Mail 
+                    className="h-5 w-5"
+                    style={{ color: 'var(--color-primary)' }}
+                  />
+                </button>
+                <button 
+                  className="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
+                  style={{ backgroundColor: 'var(--color-secondary)' }}
+                >
+                  <Phone 
+                    className="h-5 w-5"
+                    style={{ color: 'var(--color-primary)' }}
+                  />
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h4 
+                className="font-bold text-lg mb-6"
                 style={{ color: 'var(--color-foreground)' }}
               >
-                Trovity
-              </span>
+                Quick Links
+              </h4>
+              <ul className="space-y-3">
+                {['About Us', 'Insurance Products', 'Claims', 'Support', 'Blog'].map((link) => (
+                  <li key={link}>
+                    <a 
+                      href="#"
+                      className="transition-colors duration-300 hover:underline"
+                      style={{ color: 'var(--color-muted)' }}
+                      onMouseEnter={(e) => e.target.style.color = 'var(--color-primary)'}
+                      onMouseLeave={(e) => e.target.style.color = 'var(--color-muted)'}
+                    >
+                      {link}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
+
+            {/* Contact Info */}
+            <div>
+              <h4 
+                className="font-bold text-lg mb-6"
+                style={{ color: 'var(--color-foreground)' }}
+              >
+                Contact Info
+              </h4>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <Phone 
+                    className="h-5 w-5"
+                    style={{ color: 'var(--color-primary)' }}
+                  />
+                  <span style={{ color: 'var(--color-muted)' }}>
+                    +91 1800-123-4567
+                  </span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Mail 
+                    className="h-5 w-5"
+                    style={{ color: 'var(--color-primary)' }}
+                  />
+                  <span style={{ color: 'var(--color-muted)' }}>
+                    support@trovity.com
+                  </span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <MapPin 
+                    className="h-5 w-5"
+                    style={{ color: 'var(--color-primary)' }}
+                  />
+                  <span style={{ color: 'var(--color-muted)' }}>
+                    Mumbai, Maharashtra, India
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Footer */}
+          <div 
+            className="pt-8 border-t text-center"
+            style={{ borderColor: 'var(--color-border)' }}
+          >
             <p style={{ color: 'var(--color-muted)' }}>
               © 2024 Trovity. All rights reserved. Making insurance simple and accessible for everyone.
             </p>
