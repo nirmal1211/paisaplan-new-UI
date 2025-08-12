@@ -1,0 +1,11 @@
+{
+  "auth": {
+    "getLoggedInUserRolesAccess": "/getLoggedInUserRolesAccess"
+  },
+  "user": {
+    "tour": "/user/tour",
+    "profile": "/user/profile",
+    "policies": "/user/policies",
+    "claims": "/user/claims"
+  }
+}

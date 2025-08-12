@@ -32,10 +32,31 @@ export const extractRealmFromDomain = (): string => {
 };
 
 /**
+ * Get realm from session storage config
+ * @returns The realm from config or fallback
+ */
+export const getRealmFromConfig = (): string => {
+  try {
+    const config = JSON.parse(sessionStorage.getItem("config") || "{}");
+    return config?.realm || "trovity"; // fallback to "trovity"
+  } catch (error) {
+    console.warn("Failed to parse config from session storage:", error);
+    return "trovity";
+  }
+};
+
+/**
  * Get the stored realm from session storage
  * @returns The stored realm or extracted realm as fallback
  */
 export const getStoredRealm = (): string => {
+  // First try to get from config
+  const realmFromConfig = getRealmFromConfig();
+  if (realmFromConfig) {
+    return realmFromConfig;
+  }
+
+  // Fallback to stored realm
   const storedRealm = sessionStorage.getItem("realm");
   if (storedRealm) {
     return storedRealm;
@@ -64,20 +85,29 @@ export const clearStoredRealm = (): void => {
 
 /**
  * Generate login URL for the current realm
- * @param realm Optional realm, will use stored realm if not provided
+ * @param realm Optional realm, will use realm from config if not provided
  * @returns The login URL path
  */
 export const getLoginUrl = (realm?: string): string => {
-  const currentRealm = realm || getStoredRealm();
+  const currentRealm = realm || getRealmFromConfig();
   return `/personal/${currentRealm}`;
 };
 
 /**
  * Generate register URL for the current realm
- * @param realm Optional realm, will use stored realm if not provided
+ * @param realm Optional realm, will use realm from config if not provided
  * @returns The register URL path
  */
 export const getRegisterUrl = (realm?: string): string => {
-  const currentRealm = realm || getStoredRealm();
+  const currentRealm = realm || getRealmFromConfig();
   return `/personal/${currentRealm}/register`;
+};
+
+/**
+ * Navigate to login page using window.location (for cases where React Router is not available)
+ * @param realm Optional realm, will use realm from config if not provided
+ */
+export const navigateToLogin = (realm?: string): void => {
+  const loginUrl = getLoginUrl(realm);
+  window.location.href = loginUrl;
 };

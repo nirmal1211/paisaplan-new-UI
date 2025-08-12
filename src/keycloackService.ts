@@ -42,7 +42,6 @@ const initKeycloak = (
   keycloak
     .init(options)
     .then((authenticated) => {
-      console.log("Keycloak initialized:", authenticated);
       if (authenticated) {
         storeToken(keycloak.token);
         onAuthenticatedCallback();
@@ -55,12 +54,18 @@ const initKeycloak = (
     });
 
   keycloak.onTokenExpired = () => {
-    keycloak.updateToken(5).catch(() => doLogin());
+    keycloak.updateToken(5).catch(() => {
+      console.log("❌ Token refresh failed, need to redirect to login");
+      // Don't navigate here - let the components handle it
+      // This will be handled by ProtectedRoute or store clearUserSession
+    });
   };
 
   keycloak.onAuthSuccess = () => storeToken(keycloak.token);
   keycloak.onAuthRefreshSuccess = () => storeToken(keycloak.token);
-  keycloak.onAuthLogout = () => sessionStorage.clear();
+  keycloak.onAuthLogout = () => {
+    sessionStorage.clear();
+  };
 };
 
 const initAndLogin = (config: AuthConfig) => {
@@ -85,7 +90,15 @@ const initAndLogin = (config: AuthConfig) => {
 };
 
 const doLogin = () => keycloak?.login();
-const doLogout = () => keycloak?.logout();
+const doLogout = () => {
+  // Clear session storage but don't navigate here
+  sessionStorage.clear();
+
+  // Call Keycloak logout
+  keycloak?.logout();
+
+  // Navigation will be handled by the store's clearUserSession
+};
 const getToken = () => keycloak?.token ?? "";
 const isLoggedIn = () => !!keycloak?.token;
 
@@ -116,7 +129,7 @@ const hasRole = (roles: string[]): boolean =>
 const getRoles = (): string[] => getTokenParsed()?.realm_access?.roles ?? [];
 
 const getLocation = (): string | undefined =>
-  (getTokenParsed() as any)?.location;
+  (getTokenParsed() as Record<string, unknown>)?.location as string | undefined;
 
 const KeycloakService = {
   initKeycloak,

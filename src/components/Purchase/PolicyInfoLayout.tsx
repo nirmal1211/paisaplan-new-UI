@@ -113,7 +113,6 @@ const PolicyInfoLayout: React.FC = () => {
     }
 
     setShowOtpModal(true);
-    console.log("OTP sent to:", state.formData.mobile);
   };
 
   const verifyOtp = async () => {

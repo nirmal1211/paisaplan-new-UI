@@ -98,12 +98,6 @@ const ProviderDetails: React.FC = () => {
   };
 
   const handlePurchase = () => {
-    console.log("Proceeding to purchase with:", {
-      provider,
-      selectedAddOns,
-      premiumBreakdown,
-      formData: state.formData,
-    });
     alert("Purchase flow would continue to payment gateway");
   };
 

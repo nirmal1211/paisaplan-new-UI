@@ -398,8 +398,6 @@ const InsuranceDetailsPage: React.FC = () => {
             },
           };
         }
-
-        console.log("Component initialized successfully");
       } catch (err) {
         console.error("Initialization error:", err);
         setError(
@@ -429,10 +427,6 @@ const InsuranceDetailsPage: React.FC = () => {
   const handleDownload = () => {
     console.log("Downloading policy document...");
   };
-
-  // const handleShare = () => {
-  //   console.log("Sharing policy...");
-  // };
 
   // Navigation handler
   const handleGoBack = () => {

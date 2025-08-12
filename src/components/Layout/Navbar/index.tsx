@@ -383,13 +383,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </nav>
 
       <div
-        className="w-full"
+        className="w-full custom-scrollbar"
         style={{
           marginTop: NAVBAR_HEIGHT,
-          minHeight: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
+          height: `calc(100vh - ${NAVBAR_HEIGHT}px)`,
+          overflow: "auto",
+          position: "relative",
         }}
       >
-        <main className="min-h-[calc(100vh-64px)] bg-white">
+        <main className="w-full bg-white">
           <div>{children}</div>
         </main>
       </div>
