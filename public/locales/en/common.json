@@ -1,0 +1,36 @@
+{
+  "APP": {
+    "TITLE": "Insurance Platform"
+  },
+  "RISK": {
+    "ASSESSMENT": "Risk Assessment",
+    "OVERALL_SCORE": "Overall Score"
+  },
+  "NAV": {
+    "HOME": "Home",
+    "DASHBOARD": "Dashboard",
+    "POLICIES": "Policies",
+    "CLAIMS": "Claims",
+    "PROFILE": "Profile"
+  },
+  "ACTION": {
+    "LOGIN": "Login",
+    "LOGOUT": "Logout"
+  },
+  "DASHBOARD": {
+    "GREETING": {
+      "MORNING": "Good morning",
+      "AFTERNOON": "Good afternoon",
+      "EVENING": "Good evening"
+    },
+    "SNAPSHOT": "Compact portfolio snapshot",
+    "REFRESH": "Refresh",
+    "STAT": {
+      "POLICIES": "Policies",
+      "COVERAGE": "Coverage",
+      "CLAIMS": "Claims",
+      "TOTAL_ACTIVE": "Total active",
+      "ACTIVE": "Active"
+    }
+  }
+}
