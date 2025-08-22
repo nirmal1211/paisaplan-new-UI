@@ -1,28 +1,105 @@
-// Nude/neutral color palette for light and dark modes
+export type NudeColorMode = "light" | "dark";
 
 export const nudeColors = {
   light: {
-    primary: "#b89e8c", // soft nude brown
-    accent: "#e7d7c1", // light nude accent
-    bg: "#f8f5f2", // very light nude background
-    card: "#fffaf6", // card background
-    text: "#3d2c22", // deep brown for text
-    border: "#e0d6cc", // subtle border
-    muted: "#b8a89a", // muted text
-    shadow: "0 4px 24px 0 #e7d7c144, 0 1.5px 6px 0 #b89e8c22, 0 0.5px 1.5px 0 #b89e8c11",
-    white: "#fff",
+    // Primary brand color
+    primary: "#b92250", // Maroon color from theme.css
+
+    // Background colors
+    background: "#ffffff",
+    foreground: "#0f172a",
+
+    // Card and surface colors
+    card: "#ffffff",
+    cardForeground: "#0f172a",
+
+    // Muted colors
+    muted: "#64748b",
+    mutedForeground: "#475569",
+
+    // Border colors
+    border: "#e2e8f0",
+    input: "#e2e8f0",
+
+    // Ring colors for focus states
+    ring: "#b92250",
+
+    // Accent colors
+    accent: "#f1f5f9",
+    accentForeground: "#0f172a",
+
+    // Secondary colors
+    secondary: "#f1f5f9",
+    secondaryForeground: "#0f172a",
+
+    // Destructive/error colors
+    destructive: "#ef4444",
+    destructiveForeground: "#ffffff",
+
+    // Success colors
+    success: "#10b981",
+    successForeground: "#ffffff",
+
+    // Warning colors
+    warning: "#f59e0b",
+    warningForeground: "#ffffff",
+
+    // Info colors
+    info: "#3b82f6",
+    infoForeground: "#ffffff",
   },
   dark: {
-    primary: "#b89e8c",
-    accent: "#3d2c22",
-    bg: "#23201c",
-    card: "#2d2722",
-    text: "#f8f5f2",
-    border: "#4a3e36",
-    muted: "#b8a89a",
-    shadow: "0 4px 24px 0 #3d2c2244, 0 1.5px 6px 0 #b89e8c22, 0 0.5px 1.5px 0 #b89e8c11",
-    white: "#23201c",
+    // Primary brand color (same in dark mode)
+    primary: "#b92250",
+
+    // Background colors
+    background: "#0f172a",
+    foreground: "#f8fafc",
+
+    // Card and surface colors
+    card: "#1e293b",
+    cardForeground: "#f8fafc",
+
+    // Muted colors
+    muted: "#64748b",
+    mutedForeground: "#94a3b8",
+
+    // Border colors
+    border: "#334155",
+    input: "#334155",
+
+    // Ring colors for focus states
+    ring: "#b92250",
+
+    // Accent colors
+    accent: "#1e293b",
+    accentForeground: "#f8fafc",
+
+    // Secondary colors
+    secondary: "#1e293b",
+    secondaryForeground: "#f8fafc",
+
+    // Destructive/error colors
+    destructive: "#ef4444",
+    destructiveForeground: "#ffffff",
+
+    // Success colors
+    success: "#10b981",
+    successForeground: "#ffffff",
+
+    // Warning colors
+    warning: "#f59e0b",
+    warningForeground: "#ffffff",
+
+    // Info colors
+    info: "#3b82f6",
+    infoForeground: "#ffffff",
   },
 };
 
-export type NudeColorMode = 'light' | 'dark';
+// Export individual color palettes for convenience
+export const lightColors = nudeColors.light;
+export const darkColors = nudeColors.dark;
+
+// Helper function to get colors by mode
+export const getColors = (mode: NudeColorMode) => nudeColors[mode];

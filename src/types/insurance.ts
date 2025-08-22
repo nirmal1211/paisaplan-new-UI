@@ -182,7 +182,7 @@ export interface NavigationState {
 
 // Type guards for validation
 export const isValidPolicyType = (
-  type: string
+  type: string,
 ): type is "two-wheeler" | "motor" | "Health" => {
   return type === "two-wheeler" || type === "motor" || type === "Health";
 };
@@ -192,7 +192,7 @@ export const isValidPolicyId = (id: string): boolean => {
 };
 
 export const isCompletePolicy = (
-  policy: Partial<InsurancePolicy>
+  policy: Partial<InsurancePolicy>,
 ): policy is InsurancePolicy => {
   return !!(
     policy.id &&

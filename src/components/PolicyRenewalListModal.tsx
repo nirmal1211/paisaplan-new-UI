@@ -1,11 +1,5 @@
 import React, { useState, useMemo } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-} from "./UI/dialog";
+import { Dialog, DialogContent, DialogClose } from "./UI/dialog";
 import { Search } from "lucide-react";
 import { FileText, Shield } from "lucide-react";
 

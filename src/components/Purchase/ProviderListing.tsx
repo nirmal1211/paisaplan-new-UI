@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePurchase } from "../../contexts/PurchaseContext";
 import { mockProviders } from "../../data/purchaseData";
@@ -7,26 +7,12 @@ import {
   Star,
   Check,
   ArrowRight,
-  Users,
-  Shield,
-  Phone,
   ArrowLeft,
   BarChart3,
-  TrendingUp,
-  Award,
   HelpCircle,
   MessageCircle,
-  Clock,
   Zap,
-  Heart,
-  Car,
-  Home,
-  Briefcase,
-  Activity,
   User,
-  Calendar,
-  MapPin,
-  IndianRupee,
 } from "lucide-react";
 import ComparisonPanel from "./ComparisonPanel";
 import ComparisonModal from "./ComparisonModal";
@@ -104,9 +90,9 @@ const ProviderListing: React.FC = () => {
           <button
             onClick={() => navigate(-1)}
             className="group flex items-center space-x-2 mb-4 px-3 py-1.5 rounded-lg transition-all duration-200 hover:scale-105"
-            style={{ 
+            style={{
               color: "var(--color-primary)",
-              backgroundColor: "var(--color-secondary)"
+              backgroundColor: "var(--color-secondary)",
             }}
           >
             <ArrowLeft className="h-3 w-3 transition-transform group-hover:-translate-x-1" />
@@ -125,19 +111,20 @@ const ProviderListing: React.FC = () => {
               className="text-sm font-roboto max-w-2xl mx-auto"
               style={{ color: "var(--color-muted)" }}
             >
-              Compare top-rated providers and find the perfect {state.policyType.replace("-", " ")} policy for your needs
+              Compare top-rated providers and find the perfect{" "}
+              {state.policyType.replace("-", " ")} policy for your needs
             </p>
-            
+
             {/* Quick Stats */}
             <div className="flex items-center justify-center space-x-6 mt-4">
               <div className="text-center">
-                <div 
+                <div
                   className="text-lg font-bold font-poppins"
                   style={{ color: "var(--color-primary)" }}
                 >
                   {mockProviders.length}
                 </div>
-                <div 
+                <div
                   className="text-xs font-roboto"
                   style={{ color: "var(--color-muted)" }}
                 >
@@ -145,13 +132,13 @@ const ProviderListing: React.FC = () => {
                 </div>
               </div>
               <div className="text-center">
-                <div 
+                <div
                   className="text-lg font-bold font-poppins"
                   style={{ color: "var(--color-primary)" }}
                 >
                   24/7
                 </div>
-                <div 
+                <div
                   className="text-xs font-roboto"
                   style={{ color: "var(--color-muted)" }}
                 >
@@ -159,13 +146,13 @@ const ProviderListing: React.FC = () => {
                 </div>
               </div>
               <div className="text-center">
-                <div 
+                <div
                   className="text-lg font-bold font-poppins"
                   style={{ color: "var(--color-primary)" }}
                 >
                   100%
                 </div>
-                <div 
+                <div
                   className="text-xs font-roboto"
                   style={{ color: "var(--color-muted)" }}
                 >
@@ -182,28 +169,28 @@ const ProviderListing: React.FC = () => {
           <div className="lg:col-span-1">
             <div className="sticky top-4 space-y-4">
               {/* User Details Card */}
-              <div 
+              <div
                 className="rounded-xl border p-4"
                 style={{
                   backgroundColor: "var(--color-card)",
-                  borderColor: "var(--color-border)"
+                  borderColor: "var(--color-border)",
                 }}
               >
                 <div className="flex items-center space-x-3 mb-3">
-                  <div 
+                  <div
                     className="w-10 h-10 rounded-lg flex items-center justify-center"
                     style={{ backgroundColor: "var(--color-primary)" }}
                   >
                     <User className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h3 
+                    <h3
                       className="text-sm font-bold font-poppins"
                       style={{ color: "var(--color-foreground)" }}
                     >
                       Your Details
                     </h3>
-                    <p 
+                    <p
                       className="text-xs font-roboto"
                       style={{ color: "var(--color-muted)" }}
                     >
@@ -215,13 +202,13 @@ const ProviderListing: React.FC = () => {
                 {/* User Information */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span 
+                    <span
                       className="text-xs font-roboto"
                       style={{ color: "var(--color-muted)" }}
                     >
                       Name:
                     </span>
-                    <span 
+                    <span
                       className="text-xs font-medium font-roboto"
                       style={{ color: "var(--color-foreground)" }}
                     >
@@ -230,13 +217,13 @@ const ProviderListing: React.FC = () => {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span 
+                    <span
                       className="text-xs font-roboto"
                       style={{ color: "var(--color-muted)" }}
                     >
                       Age:
                     </span>
-                    <span 
+                    <span
                       className="text-xs font-medium font-roboto"
                       style={{ color: "var(--color-foreground)" }}
                     >
@@ -245,13 +232,13 @@ const ProviderListing: React.FC = () => {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span 
+                    <span
                       className="text-xs font-roboto"
                       style={{ color: "var(--color-muted)" }}
                     >
                       City:
                     </span>
-                    <span 
+                    <span
                       className="text-xs font-medium font-roboto"
                       style={{ color: "var(--color-foreground)" }}
                     >
@@ -260,17 +247,17 @@ const ProviderListing: React.FC = () => {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span 
+                    <span
                       className="text-xs font-roboto"
                       style={{ color: "var(--color-muted)" }}
                     >
                       Policy Type:
                     </span>
-                    <span 
+                    <span
                       className="text-xs font-medium font-roboto capitalize px-2 py-0.5 rounded-full"
-                      style={{ 
+                      style={{
                         color: "var(--color-primary)",
-                        backgroundColor: "var(--color-secondary)"
+                        backgroundColor: "var(--color-secondary)",
                       }}
                     >
                       {state.policyType.replace("-", " ")}
@@ -278,13 +265,13 @@ const ProviderListing: React.FC = () => {
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span 
+                    <span
                       className="text-xs font-roboto"
                       style={{ color: "var(--color-muted)" }}
                     >
                       Coverage:
                     </span>
-                    <span 
+                    <span
                       className="text-xs font-medium font-roboto"
                       style={{ color: "var(--color-foreground)" }}
                     >
@@ -294,13 +281,13 @@ const ProviderListing: React.FC = () => {
 
                   {state.familyMembers && (
                     <div className="flex items-center justify-between">
-                      <span 
+                      <span
                         className="text-xs font-roboto"
                         style={{ color: "var(--color-muted)" }}
                       >
                         Family Size:
                       </span>
-                      <span 
+                      <span
                         className="text-xs font-medium font-roboto"
                         style={{ color: "var(--color-foreground)" }}
                       >
@@ -317,10 +304,12 @@ const ProviderListing: React.FC = () => {
                   style={{
                     color: "var(--color-primary)",
                     borderColor: "var(--color-border)",
-                    backgroundColor: "var(--color-secondary)"
+                    backgroundColor: "var(--color-secondary)",
                   }}
                 >
-                  <span className="text-xs font-medium font-roboto">Edit Details</span>
+                  <span className="text-xs font-medium font-roboto">
+                    Edit Details
+                  </span>
                 </button>
               </div>
 
@@ -400,12 +389,12 @@ const ProviderListing: React.FC = () => {
 
           {/* Provider Cards - Right Content */}
           <div className="lg:col-span-3 space-y-3">
-            {mockProviders.map((provider, index) => (
+            {mockProviders.map((provider) => (
               <div
                 key={provider.id}
                 className={`group relative overflow-hidden rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 border ${
-                  selectedProviders.includes(provider.id) 
-                    ? "shadow-md scale-[1.01]" 
+                  selectedProviders.includes(provider.id)
+                    ? "shadow-md scale-[1.01]"
                     : "shadow-sm hover:shadow-md"
                 }`}
                 style={{
@@ -413,12 +402,14 @@ const ProviderListing: React.FC = () => {
                   borderColor: selectedProviders.includes(provider.id)
                     ? "var(--color-primary)"
                     : "var(--color-border)",
-                  borderWidth: selectedProviders.includes(provider.id) ? "2px" : "1px"
+                  borderWidth: selectedProviders.includes(provider.id)
+                    ? "2px"
+                    : "1px",
                 }}
               >
                 {/* Selection Indicator */}
                 {selectedProviders.includes(provider.id) && (
-                  <div 
+                  <div
                     className="absolute top-0 left-0 right-0 h-0.5"
                     style={{ backgroundColor: "var(--color-primary)" }}
                   ></div>
@@ -434,8 +425,8 @@ const ProviderListing: React.FC = () => {
                         checked={selectedProviders.includes(provider.id)}
                         onChange={() => handleProviderSelect(provider.id)}
                         className="w-4 h-4 rounded transition-all duration-200"
-                        style={{ 
-                          accentColor: "var(--color-primary)"
+                        style={{
+                          accentColor: "var(--color-primary)",
                         }}
                       />
 
@@ -447,8 +438,10 @@ const ProviderListing: React.FC = () => {
                             alt={provider.name}
                             className="w-10 h-10 rounded-lg object-cover shadow-sm"
                           />
-                          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full flex items-center justify-center"
-                               style={{ backgroundColor: "var(--color-success)" }}>
+                          <div
+                            className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: "var(--color-success)" }}
+                          >
                             <Check className="w-1.5 h-1.5 text-white" />
                           </div>
                         </div>
@@ -471,9 +464,9 @@ const ProviderListing: React.FC = () => {
                             </div>
                             <span
                               className="text-xs font-roboto px-1.5 py-0.5 rounded-full"
-                              style={{ 
+                              style={{
                                 color: "var(--color-muted)",
-                                backgroundColor: "var(--color-secondary)"
+                                backgroundColor: "var(--color-secondary)",
                               }}
                             >
                               {provider.reviewCount || "2.5k"} reviews
@@ -490,7 +483,10 @@ const ProviderListing: React.FC = () => {
                           className="text-xl font-bold font-poppins"
                           style={{ color: "var(--color-primary)" }}
                         >
-                          {formatCurrency(provider.basePremium).replace(/,/g, ',')}
+                          {formatCurrency(provider.basePremium).replace(
+                            /,/g,
+                            ","
+                          )}
                         </span>
                         <span
                           className="text-xs font-roboto"
@@ -501,7 +497,9 @@ const ProviderListing: React.FC = () => {
                       </div>
                       <div className="flex items-center justify-end space-x-1 mt-0.5">
                         <Zap className="w-2.5 h-2.5 text-green-500" />
-                        <span className="text-xs text-green-600 font-medium">Best Value</span>
+                        <span className="text-xs text-green-600 font-medium">
+                          Best Value
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -510,9 +508,9 @@ const ProviderListing: React.FC = () => {
                   <div className="grid grid-cols-4 gap-2 mb-3">
                     <div
                       className="text-center py-2 px-2 rounded-lg border"
-                      style={{ 
+                      style={{
                         backgroundColor: "var(--color-secondary)",
-                        borderColor: "var(--color-border)"
+                        borderColor: "var(--color-border)",
                       }}
                     >
                       <div
@@ -531,9 +529,9 @@ const ProviderListing: React.FC = () => {
 
                     <div
                       className="text-center py-2 px-2 rounded-lg border"
-                      style={{ 
+                      style={{
                         backgroundColor: "var(--color-secondary)",
-                        borderColor: "var(--color-border)"
+                        borderColor: "var(--color-border)",
                       }}
                     >
                       <div
@@ -552,9 +550,9 @@ const ProviderListing: React.FC = () => {
 
                     <div
                       className="text-center py-2 px-2 rounded-lg border"
-                      style={{ 
+                      style={{
                         backgroundColor: "var(--color-secondary)",
-                        borderColor: "var(--color-border)"
+                        borderColor: "var(--color-border)",
                       }}
                     >
                       <div
@@ -573,9 +571,9 @@ const ProviderListing: React.FC = () => {
 
                     <div
                       className="text-center py-2 px-2 rounded-lg border"
-                      style={{ 
+                      style={{
                         backgroundColor: "var(--color-secondary)",
-                        borderColor: "var(--color-border)"
+                        borderColor: "var(--color-border)",
                       }}
                     >
                       <div
@@ -596,24 +594,26 @@ const ProviderListing: React.FC = () => {
                   {/* Key Benefits - Compact Horizontal */}
                   <div className="mb-3">
                     <div className="flex flex-wrap gap-1.5">
-                      {provider.keyBenefits.slice(0, 4).map((benefit, index) => (
-                        <div 
-                          key={index} 
-                          className="flex items-center space-x-1.5 px-2 py-1 rounded-full border"
-                          style={{ 
-                            backgroundColor: "var(--color-card)",
-                            borderColor: "var(--color-border)"
-                          }}
-                        >
-                          <Check className="h-2.5 w-2.5 text-green-500 flex-shrink-0" />
-                          <span
-                            className="text-xs font-roboto"
-                            style={{ color: "var(--color-foreground)" }}
+                      {provider.keyBenefits
+                        .slice(0, 4)
+                        .map((benefit, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center space-x-1.5 px-2 py-1 rounded-full border"
+                            style={{
+                              backgroundColor: "var(--color-card)",
+                              borderColor: "var(--color-border)",
+                            }}
                           >
-                            {benefit}
-                          </span>
-                        </div>
-                      ))}
+                            <Check className="h-2.5 w-2.5 text-green-500 flex-shrink-0" />
+                            <span
+                              className="text-xs font-roboto"
+                              style={{ color: "var(--color-foreground)" }}
+                            >
+                              {benefit}
+                            </span>
+                          </div>
+                        ))}
                     </div>
                   </div>
 
@@ -637,17 +637,23 @@ const ProviderListing: React.FC = () => {
                             : ""
                         }`}
                         style={{
-                          backgroundColor: selectedProviders.includes(provider.id)
+                          backgroundColor: selectedProviders.includes(
+                            provider.id
+                          )
                             ? "var(--color-primary)"
                             : "var(--color-card)",
                           color: selectedProviders.includes(provider.id)
                             ? "white"
                             : "var(--color-primary)",
-                          borderColor: "var(--color-primary)"
+                          borderColor: "var(--color-primary)",
                         }}
                       >
                         <BarChart3 className="h-3 w-3" />
-                        <span>{selectedProviders.includes(provider.id) ? "Added" : "Compare"}</span>
+                        <span>
+                          {selectedProviders.includes(provider.id)
+                            ? "Added"
+                            : "Compare"}
+                        </span>
                       </button>
                     </div>
 
@@ -658,14 +664,20 @@ const ProviderListing: React.FC = () => {
                         style={{ backgroundColor: "var(--color-secondary)" }}
                         title="Quick Quote"
                       >
-                        <Clock className="w-3 h-3" style={{ color: "var(--color-primary)" }} />
+                        <Clock
+                          className="w-3 h-3"
+                          style={{ color: "var(--color-primary)" }}
+                        />
                       </button>
                       <button
                         className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110"
                         style={{ backgroundColor: "var(--color-secondary)" }}
                         title="Customer Support"
                       >
-                        <Phone className="w-3 h-3" style={{ color: "var(--color-primary)" }} />
+                        <Phone
+                          className="w-3 h-3"
+                          style={{ color: "var(--color-primary)" }}
+                        />
                       </button>
                     </div>
                   </div>

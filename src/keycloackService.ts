@@ -22,7 +22,7 @@ type VoidCallback = () => void;
 const initKeycloak = (
   onAuthenticatedCallback: VoidCallback,
   config: AuthConfig,
-  onUnauthenticatedCallback?: VoidCallback
+  onUnauthenticatedCallback?: VoidCallback,
 ) => {
   const keycloakConfig: KeycloakConfig = {
     url: `${config.authURL}auth`,

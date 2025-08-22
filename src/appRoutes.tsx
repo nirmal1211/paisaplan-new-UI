@@ -7,9 +7,10 @@ import ClaimsPage from "./pages/Claims/ClaimsPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
 import PurchaseFlow from "./pages/Purchase/PurchaseFlow";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
-import Layout from "./components/Layout/Navbar";
 import KeycloakService from "./keycloackService";
 import { useAppStore } from "./store/useAppStore";
+import { getSessionStorageItem } from "./utils/apiUtils";
+import Navbar from "./components/Layout/Navbar";
 
 const LoginRedirect = () => {
   const navigate = useNavigate();
@@ -25,13 +26,17 @@ const LoginRedirect = () => {
 
       hasInitialized.current = true;
 
+      console.log(getSessionStorageItem("config"));
+
       if (KeycloakService.isLoggedIn()) {
         // Initialize user session (fetch user data) only on login redirect
         // This prevents duplicate API calls when navigating between routes
         await initUserSession();
         navigate("/dashboard", { replace: true });
       } else {
-        navigate("/login", { replace: true });
+        navigate(`/personal/${getSessionStorageItem("config")?.realm}`, {
+          replace: true,
+        });
       }
     };
 
@@ -46,7 +51,7 @@ const ProtectedLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => (
   <ProtectedRoute>
-    <Layout>{children}</Layout>
+    <Navbar>{children}</Navbar>
   </ProtectedRoute>
 );
 

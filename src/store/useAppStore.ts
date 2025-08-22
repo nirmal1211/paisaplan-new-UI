@@ -86,7 +86,7 @@ export const useAppStore = create(
         removeNotification: (id: string) => {
           set((state: AppState) => ({
             notifications: state.notifications.filter(
-              (n: NotificationMessage) => n.id !== id
+              (n: NotificationMessage) => n.id !== id,
             ),
           }));
         },
@@ -104,7 +104,7 @@ export const useAppStore = create(
           try {
             set({ isLoading: true });
             const client = getSessionStorageItem(
-              SESSION_STORAGE_KEYS.SUB_CLIENT
+              SESSION_STORAGE_KEYS.SUB_CLIENT,
             );
             const response = await getLoggedInUserData(authToken, client);
 
@@ -197,6 +197,6 @@ export const useAppStore = create(
     },
     {
       name: "app-store",
-    }
-  )
+    },
+  ),
 );

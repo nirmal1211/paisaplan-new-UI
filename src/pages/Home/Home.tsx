@@ -7,7 +7,6 @@ import {
   Mail,
   MapPin,
   Star,
-  ChevronRight,
   Menu,
   X,
   Facebook,
@@ -19,25 +18,19 @@ import {
   Clock,
   Heart,
   Car,
-  Home as HomeIcon,
-  Briefcase,
   Quote,
   ArrowRight,
-  Play,
   Globe,
-  Zap,
   Sparkles,
-  Target,
+  Briefcase,
 } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "../../components/UI/carousel";
 
-const Home = ({ onLogin, config }) => {
+const Home = ({ onLogin }: { onLogin: () => void }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [carouselApi, setCarouselApi] = useState(null);

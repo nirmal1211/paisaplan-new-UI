@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { usePurchase } from "../../contexts/PurchaseContext";
 import { mockProviders } from "../../data/purchaseData";
-import { AddOn, PremiumBreakdown } from "../../types/purchase";
+import { PremiumBreakdown } from "../../types/purchase";
 import {
   Star,
   Check,
@@ -13,9 +13,6 @@ import {
   FileText,
   Calculator,
   ArrowLeft,
-  Plus,
-  Minus,
-  Info,
   Award,
   Clock,
   TrendingUp,
@@ -27,7 +24,8 @@ import {
 const ProviderDetails: React.FC = () => {
   const { providerId } = useParams<{ providerId: string }>();
   const navigate = useNavigate();
-  const { state, dispatch } = usePurchase();
+  const { dispatch } = usePurchase();
+  // const state = usePurchase().state; // Currently unused
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
   const [premiumBreakdown, setPremiumBreakdown] =
     useState<PremiumBreakdown | null>(null);

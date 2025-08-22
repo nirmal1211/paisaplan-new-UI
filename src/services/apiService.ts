@@ -17,7 +17,7 @@ export interface UserProfileData {
 
 export const getLoggedInUserData = async (
   userdataToken: string,
-  childClientId?: string | null
+  childClientId?: string | null,
 ) => {
   let url = `${getGatewayUrl()}${API_ROUTES.auth.getLoggedInUserRolesAccess}`;
   if (childClientId) {

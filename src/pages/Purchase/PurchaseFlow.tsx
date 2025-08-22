@@ -1,14 +1,12 @@
 import React from "react";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { PurchaseProvider } from "../../contexts/PurchaseContext";
-import PurchaseNavbar from "../../components/Layout/PurchaseNavbar";
-import PolicyTypeSelection from "../Home/Home";
 import PolicySelectionForm from "../../components/Purchase/PolicySelectionForm";
 import ProviderListing from "../../components/Purchase/ProviderListing";
 import ProviderDetails from "../../components/Purchase/ProviderDetails";
 
 const PurchaseFlow: React.FC = () => {
-  const location = useLocation();
+  // const location = useLocation();
 
   return (
     <PurchaseProvider>

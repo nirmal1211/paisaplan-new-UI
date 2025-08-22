@@ -161,7 +161,8 @@
 
 /* Floating animation */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -175,7 +176,8 @@
 
 /* Glow effect */
 @keyframes glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 20px rgba(185, 34, 80, 0.3);
   }
   50% {
@@ -197,7 +199,9 @@
 }
 
 .hover-lift {
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition:
+    transform 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
 }
 
 .hover-lift:hover {
@@ -218,7 +222,9 @@
 }
 
 .transition-colors {
-  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out,
+  transition:
+    color 0.2s ease-in-out,
+    background-color 0.2s ease-in-out,
     border-color 0.2s ease-in-out;
 }
 

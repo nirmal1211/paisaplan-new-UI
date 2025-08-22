@@ -12,7 +12,6 @@ import {
   Trash2,
   Phone,
   Check,
-  ArrowLeft,
   Star,
   Users,
   Award,
@@ -44,7 +43,7 @@ const PolicyInfoLayout: React.FC = () => {
     return icons[iconName as keyof typeof icons] || Shield;
   };
 
-  const validateField = (field: FormField, value: any): string => {
+  const validateField = (field: FormField, value: unknown): string => {
     if (
       field.required &&
       (!value || (Array.isArray(value) && value.length === 0))
@@ -71,7 +70,7 @@ const PolicyInfoLayout: React.FC = () => {
     return "";
   };
 
-  const handleInputChange = (fieldName: string, value: any) => {
+  const handleInputChange = (fieldName: string, value: unknown) => {
     dispatch({
       type: "UPDATE_FORM_DATA",
       payload: { [fieldName]: value },
@@ -82,7 +81,11 @@ const PolicyInfoLayout: React.FC = () => {
     }
   };
 
-  const handleDependentChange = (index: number, field: string, value: any) => {
+  const handleDependentChange = (
+    index: number,
+    field: string,
+    value: unknown
+  ) => {
     const dependents = [...(state.formData.dependents || [])];
     dependents[index] = { ...dependents[index], [field]: value };
     handleInputChange("dependents", dependents);

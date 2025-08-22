@@ -201,7 +201,7 @@ export function RequestClaimForm() {
                 >
                   {(() => {
                     const dep = dependentsList.find(
-                      (d) => d.name === selectedDependent
+                      (d) => d.name === selectedDependent,
                     );
                     return dep
                       ? `Relation: ${dep.relation}, DOB: ${dep.dob}`

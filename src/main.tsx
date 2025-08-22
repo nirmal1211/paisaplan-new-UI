@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import "./styles/theme.css";
+import "./i18n"; // i18n initialization
 import KeycloakService from "./keycloackService.ts";
 import { REACT_TOKEN } from "./utils/Constants/SessionStorageConstants.ts";
 
@@ -21,9 +22,13 @@ const renderRoot = () => {
   }
 };
 
+interface AppConfig {
+  [key: string]: unknown;
+}
 // Check if authentication is required based on route
 // Renders the landing (Home) page for unauthenticated users
-const renderLanding = (config) => {
+const renderLanding = (config: AppConfig) => {
+  if (!rootElement) return;
   const root = createRoot(rootElement);
   // Home expects onLogin and config props
   import("./pages/Home/Home").then(({ default: Home }) => {

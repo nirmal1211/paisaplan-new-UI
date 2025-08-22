@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useMemo, useState, ReactNode, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 import { nudeColors, NudeColorMode } from "./colors";
 
 interface ThemeContextType {

@@ -1,23 +1,29 @@
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { PurchaseContext, PolicyFormData, Provider, PremiumBreakdown } from '../types/purchase';
+import React, { createContext, useContext, useReducer, ReactNode } from "react";
+import {
+  PurchaseContext,
+  PolicyFormData,
+  Provider,
+  PremiumBreakdown,
+} from "../types/purchase";
 
-interface PurchaseState extends PurchaseContext {}
+// State interface for Purchase context
+type PurchaseState = PurchaseContext;
 
-type PurchaseAction = 
-  | { type: 'SET_POLICY_TYPE'; payload: string }
-  | { type: 'UPDATE_FORM_DATA'; payload: Partial<PolicyFormData> }
-  | { type: 'SET_SELECTED_PROVIDERS'; payload: string[] }
-  | { type: 'SET_CURRENT_PROVIDER'; payload: Provider }
-  | { type: 'UPDATE_PREMIUM_BREAKDOWN'; payload: PremiumBreakdown }
-  | { type: 'SET_CURRENT_STEP'; payload: number }
-  | { type: 'RESET_PURCHASE' };
+type PurchaseAction =
+  | { type: "SET_POLICY_TYPE"; payload: string }
+  | { type: "UPDATE_FORM_DATA"; payload: Partial<PolicyFormData> }
+  | { type: "SET_SELECTED_PROVIDERS"; payload: string[] }
+  | { type: "SET_CURRENT_PROVIDER"; payload: Provider }
+  | { type: "UPDATE_PREMIUM_BREAKDOWN"; payload: PremiumBreakdown }
+  | { type: "SET_CURRENT_STEP"; payload: number }
+  | { type: "RESET_PURCHASE" };
 
 const initialState: PurchaseState = {
-  policyType: '',
+  policyType: "",
   formData: {
-    fullName: '',
-    email: '',
-    mobile: '',
+    fullName: "",
+    email: "",
+    mobile: "",
     mobileVerified: false,
   },
   selectedProviders: [],
@@ -25,24 +31,27 @@ const initialState: PurchaseState = {
   totalSteps: 4,
 };
 
-const purchaseReducer = (state: PurchaseState, action: PurchaseAction): PurchaseState => {
+const purchaseReducer = (
+  state: PurchaseState,
+  action: PurchaseAction
+): PurchaseState => {
   switch (action.type) {
-    case 'SET_POLICY_TYPE':
+    case "SET_POLICY_TYPE":
       return { ...state, policyType: action.payload };
-    case 'UPDATE_FORM_DATA':
-      return { 
-        ...state, 
-        formData: { ...state.formData, ...action.payload } 
+    case "UPDATE_FORM_DATA":
+      return {
+        ...state,
+        formData: { ...state.formData, ...action.payload },
       };
-    case 'SET_SELECTED_PROVIDERS':
+    case "SET_SELECTED_PROVIDERS":
       return { ...state, selectedProviders: action.payload };
-    case 'SET_CURRENT_PROVIDER':
+    case "SET_CURRENT_PROVIDER":
       return { ...state, currentProvider: action.payload };
-    case 'UPDATE_PREMIUM_BREAKDOWN':
+    case "UPDATE_PREMIUM_BREAKDOWN":
       return { ...state, premiumBreakdown: action.payload };
-    case 'SET_CURRENT_STEP':
+    case "SET_CURRENT_STEP":
       return { ...state, currentStep: action.payload };
-    case 'RESET_PURCHASE':
+    case "RESET_PURCHASE":
       return initialState;
     default:
       return state;
@@ -54,7 +63,9 @@ const PurchaseContextProvider = createContext<{
   dispatch: React.Dispatch<PurchaseAction>;
 } | null>(null);
 
-export const PurchaseProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const PurchaseProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [state, dispatch] = useReducer(purchaseReducer, initialState);
 
   return (
@@ -67,7 +78,7 @@ export const PurchaseProvider: React.FC<{ children: ReactNode }> = ({ children }
 export const usePurchase = () => {
   const context = useContext(PurchaseContextProvider);
   if (!context) {
-    throw new Error('usePurchase must be used within PurchaseProvider');
+    throw new Error("usePurchase must be used within PurchaseProvider");
   }
   return context;
 };

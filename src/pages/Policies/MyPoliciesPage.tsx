@@ -116,7 +116,7 @@ const MyPoliciesPage: React.FC = () => {
 
   return (
     <div
-      className="min-h-screen p-4 md:p-6"
+      className="min-h-screen p-2"
       style={{ backgroundColor: "var(--color-background)" }}
     >
       <div className="max-w-7xl mx-auto">

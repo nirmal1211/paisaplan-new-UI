@@ -6,10 +6,7 @@ import {
   ChevronUp,
   Eye,
   Download,
-  Phone,
   // Mail,
-  Calendar,
-  DollarSign,
   FileText,
   AlertTriangle,
   CheckCircle,
@@ -36,7 +33,6 @@ import {
   DialogContent,
 } from "../../components/UI/dialog";
 import { Button } from "../../components/UI/button";
-import { RequestClaimForm } from "../../components/Claims/RequestClaimForm";
 import { RequestClaimStepperModal } from "../../components/Claims/RequestClaimStepperModal";
 
 // Types for Claims Management
@@ -251,7 +247,7 @@ const ClaimsPage: React.FC = () => {
 
   // Filter and sort claims
   const filteredAndSortedClaims = useMemo(() => {
-    let filtered = claims.filter((claim) => {
+    const filtered = claims.filter((claim) => {
       // Search filter
       const searchMatch =
         debouncedSearchQuery === "" ||
@@ -337,7 +333,7 @@ const ClaimsPage: React.FC = () => {
 
     // Sort
     filtered.sort((a, b) => {
-      let aValue: any, bValue: any;
+      let aValue: unknown, bValue: unknown;
 
       switch (sortOption.field) {
         case "date":
@@ -1104,7 +1100,7 @@ const ClaimsPage: React.FC = () => {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 gap-3 mb-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-6">
                   {paginatedClaims.map((claim) => (
                     <div
                       key={claim.id}

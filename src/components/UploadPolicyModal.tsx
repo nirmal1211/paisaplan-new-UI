@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent } from "./UI/dialog";
-import { Shield, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 
 const policyTypes = [
   "Health",

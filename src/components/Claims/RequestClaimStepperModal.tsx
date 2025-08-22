@@ -2,16 +2,15 @@ import React, { useState, useMemo } from "react";
 import { FileText, Shield } from "lucide-react";
 import { Input } from "../UI/input";
 import { Button } from "../UI/button";
-import { RequestClaimForm } from "./RequestClaimForm";
 import { mockPolicies } from "../../data/mockData";
 
 export function RequestClaimStepperModal() {
   const [step, setStep] = useState(1);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("expiryDays");
-  const [selectedPolicy, setSelectedPolicy] = useState<any>(null);
+  const [selectedPolicy, setSelectedPolicy] = useState<unknown>(null);
   // Move form state and submitting state to top-level (fixes React hooks error)
-  const [form, setForm] = useState<any>({});
+  const [form, setForm] = useState<Record<string, unknown>>({});
   const [submitting, setSubmitting] = useState(false);
 
   // Sort and filter policies
@@ -368,9 +367,17 @@ export function RequestClaimStepperModal() {
 
     const fields = getFieldsForPolicyType(selectedPolicy.type);
 
-    const handleChange = (e: React.ChangeEvent<any>, field: any) => {
-      const value = field.type === "file" ? e.target.files[0] : e.target.value;
-      setForm((prev: any) => ({ ...prev, [field.name]: value }));
+    const handleChange = (
+      e: React.ChangeEvent<HTMLInputElement>,
+      field: unknown
+    ) => {
+      const fieldObj = field as { type: string; name: string };
+      const value =
+        fieldObj.type === "file" ? e.target.files?.[0] : e.target.value;
+      setForm((prev: unknown) => ({
+        ...(prev as Record<string, unknown>),
+        [fieldObj.name]: value,
+      }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {

@@ -9,7 +9,16 @@ export interface PolicyType {
 export interface FormField {
   id: string;
   name: string;
-  type: 'text' | 'number' | 'email' | 'tel' | 'select' | 'checkbox' | 'radio' | 'date' | 'array';
+  type:
+    | "text"
+    | "number"
+    | "email"
+    | "tel"
+    | "select"
+    | "checkbox"
+    | "radio"
+    | "date"
+    | "array";
   label: string;
   placeholder?: string;
   required: boolean;
@@ -35,18 +44,18 @@ export interface PolicyFormData {
   fullName: string;
   email: string;
   mobile: string;
-  
+
   // Health insurance specific
   age?: number;
   medicalHistory?: string[];
   dependents?: Dependent[];
-  
+
   // Vehicle insurance specific
   vehicleRegistrationNumber?: string;
   manufacturingYear?: number;
   vehicleType?: string;
   previousClaims?: string;
-  
+
   // Verification
   mobileVerified: boolean;
   otpCode?: string;

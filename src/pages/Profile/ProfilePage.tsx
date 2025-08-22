@@ -2,19 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import {
   User,
-  Calendar,
-  Phone,
-  Mail,
   CreditCard,
-  Briefcase,
   Heart,
   Bell,
   Upload,
   Trash2,
-  Eye,
-  EyeOff,
   Plus,
-  X,
   Save,
   Edit,
   FileText,
@@ -87,7 +80,7 @@ const ProfilePage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  // const [showPassword, setShowPassword] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error" | "info";
